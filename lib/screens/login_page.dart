@@ -18,11 +18,11 @@ class LoginScreen extends StatelessWidget {
   Future<String?> _loginUser(LoginData data) {
     return Future.delayed(loginTime).then((_) {
       if (!mockUsers.containsKey(data.name)) {
-        return 'User not exists';
+        return 'El Usuario no existe';
       }
-      if (mockUsers[data.name] != data.password) {
-        return 'Password does not match';
-      }
+      // if (mockUsers[data.name] != data.password) {
+      //   return 'Password does not match';
+      // }
       return null;
     });
   }
@@ -36,7 +36,7 @@ class LoginScreen extends StatelessWidget {
   Future<String?> _recoverPassword(String name) {
     return Future.delayed(loginTime).then((_) {
       if (!mockUsers.containsKey(name)) {
-        return 'User not exists';
+        return 'El Usuario no existe';
       }
       return null;
     });
@@ -119,7 +119,7 @@ class LoginScreen extends StatelessWidget {
             if (value != null &&
                 value.length < 7 &&
                 !phoneRegExp.hasMatch(value)) {
-              return "This isn't a valid phone number";
+              return "El número de teléfono no es correcto";
             }
             return null;
           },
@@ -127,6 +127,25 @@ class LoginScreen extends StatelessWidget {
       ],
       messages: LoginMessages(
         forgotPasswordButton: 'Recuperar contraseña',
+        userHint: 'Usuario',
+        passwordHint: 'Contraseña',
+        confirmPasswordHint: 'Confirmar',
+        loginButton: 'INICIAR SESIÓN',
+        signupButton: 'REGISTRO',
+        recoverPasswordButton: 'ENVIAR',
+        goBackButton: 'VOLVER',
+        confirmPasswordError: 'Las contraseñas no coinciden',
+        recoverPasswordIntro: 'Introduzca su dirección de correo',
+        recoverPasswordDescription:
+            'Lorem Ipsum is simply dummy text of the printing and typesetting industry',
+        recoverPasswordSuccess: 'La contraseña se ha recuperado correctamente',
+        flushbarTitleError: '¡Oh no!',
+        flushbarTitleSuccess: '¡Exito!',
+        recoverCodePasswordDescription:
+            'Se enviará un correo para recuperar su contraseña',
+        confirmRecoverIntro:
+            "Introduzca el código recibido en el correo y su nueva contraseña",
+        setPasswordButton: "CAMBIAR CONTRASEÑA",
       ),
       theme: LoginTheme(
         //   primaryColor: Colors.teal,
@@ -152,8 +171,9 @@ class LoginScreen extends StatelessWidget {
         //   ),
         buttonStyle: TextStyle(
           fontWeight: FontWeight.w800,
-          color: Colors.yellow,
+          color: Colors.white,
         ),
+
         //   cardTheme: CardTheme(
         //     color: Colors.yellow.shade100,
         //     elevation: 5,
@@ -192,14 +212,14 @@ class LoginScreen extends StatelessWidget {
         //     ),
       ),
       userValidator: (value) {
-        if (!value!.contains('@') || !value.endsWith('.com')) {
-          return "Email must contain '@' and end with '.com'";
+        if (value!.isEmpty) {
+          return "Introduzca un nombre de usuario";
         }
         return null;
       },
       passwordValidator: (value) {
         if (value!.isEmpty) {
-          return 'Password is empty';
+          return 'La contraseña esta vacia';
         }
         return null;
       },

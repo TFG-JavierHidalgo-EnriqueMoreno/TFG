@@ -5,7 +5,7 @@ import 'package:flutter_login/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../entities/constants.dart';
-import '../entities/transition_route_observer.dart';
+import '../widgets/transition_route_observer.dart';
 import '../widgets/animated_numeric_text.dart';
 import '../widgets/fade_in.dart';
 import '../widgets/round_button.dart';

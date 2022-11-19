@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
       initialRoute: "/",
       theme: ThemeData(
         brightness: Brightness.light,
-        primaryColor: Colors.white,
+        primaryColor: Color.fromARGB(255, 76, 175, 80),
         colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.black),
       ),
       onGenerateRoute: (RouteSettings settings) {
