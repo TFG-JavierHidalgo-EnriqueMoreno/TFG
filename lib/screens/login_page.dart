@@ -104,14 +104,16 @@ class _LoginScreenState extends StateMVC<LoginScreen> {
       additionalSignupFields: [
         const UserFormField(
           keyName: 'Username',
+          displayName: "Nombre de usuario",
           icon: Icon(FontAwesomeIcons.userLarge),
         ),
-        const UserFormField(keyName: 'Name'),
-        const UserFormField(keyName: 'Surname'),
+        const UserFormField(keyName: 'Nombre'),
+        const UserFormField(keyName: 'Apellidos'),
         UserFormField(
           keyName: 'phone_number',
-          displayName: 'Phone Number',
+          displayName: 'Numero de teléfono',
           userType: LoginUserType.phone,
+          icon: const Icon(Icons.phone_android),
           fieldValidator: (value) {
             final phoneRegExp = RegExp(
               '^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}\$',
@@ -131,7 +133,7 @@ class _LoginScreenState extends StateMVC<LoginScreen> {
         passwordHint: 'Contraseña',
         confirmPasswordHint: 'Confirmar',
         loginButton: 'INICIAR SESIÓN',
-        signupButton: 'REGISTRO',
+        signupButton: 'IR AL REGISTRO',
         recoverPasswordButton: 'ENVIAR',
         goBackButton: 'VOLVER',
         confirmPasswordError: 'Las contraseñas no coinciden',
@@ -146,7 +148,7 @@ class _LoginScreenState extends StateMVC<LoginScreen> {
         confirmRecoverIntro:
             "Introduzca el código recibido en el correo y su nueva contraseña",
         setPasswordButton: "CAMBIAR CONTRASEÑA",
-        additionalSignUpSubmitButton: "REGISTRARSE",
+        additionalSignUpSubmitButton: "REGISTRARME",
         additionalSignUpFormDescription:
             "Por favor complete este formulario para completar el registro",
       ),
@@ -230,7 +232,6 @@ class _LoginScreenState extends StateMVC<LoginScreen> {
         debugPrint('Login info');
         debugPrint('Name: ${loginData.name}');
         debugPrint('Password: ${loginData.password}');
-
         return con.loginUser(loginData);
       },
       onSignup: (signupData) {
