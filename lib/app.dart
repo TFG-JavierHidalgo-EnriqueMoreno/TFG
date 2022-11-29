@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/screens/home_page.dart';
+import 'package:my_app/screens/login_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -11,16 +12,16 @@ class MyApp extends StatelessWidget {
       initialRoute: "/",
       theme: ThemeData(
         brightness: Brightness.light,
-        primaryColor: Colors.cyan[800],
-        accentColor: Colors.cyan[300],
+        primaryColor: Color(0xFF4CAF50),
+        colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.black),
       ),
       onGenerateRoute: (RouteSettings settings) {
         return MaterialPageRoute(builder: (BuildContext context) {
           switch (settings.name) {
             case "/":
-              return const HomePage();
+              return const LoginScreen();
             default:
-              return const HomePage();
+              return const LoginScreen();
           }
         });
       },
