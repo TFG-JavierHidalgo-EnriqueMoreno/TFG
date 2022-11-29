@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/screens/user_profile.dart';
 import '../routes/custom_route.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -40,7 +41,7 @@ Widget _getDrawer(BuildContext context) {
         ListTile(
             title: const Text("Editar Perfil"),
             leading: const Icon(Icons.edit),
-            onTap: () => showHome(context)),
+            onTap: () => showProfile(context)),
         ListTile(
             title: const Text("Historial"),
             leading: const Icon(Icons.history),
@@ -58,6 +59,14 @@ showHome(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const HomePage(),
+    ),
+  );
+}
+
+showProfile(BuildContext context) {
+  Navigator.of(context).pushReplacement(
+    FadePageRoute(
+      builder: (context) => const UserProfile(),
     ),
   );
 }
