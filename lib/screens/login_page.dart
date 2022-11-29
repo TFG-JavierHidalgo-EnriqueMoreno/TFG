@@ -2,51 +2,50 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter_login/flutter_login.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mvc_pattern/mvc_pattern.dart';
 
 import 'package:my_app/entities/constants.dart';
+import 'package:my_app/screens/home_page.dart';
+import '../controllers/userController.dart';
 import '../entities/users.dart';
 import '../routes/custom_route.dart';
 import 'dashboard_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   static const routeName = '/auth';
 
   const LoginScreen({Key? key}) : super(key: key);
 
-  Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
+  @override
+  State<StatefulWidget> createState() => _LoginScreenState();
+}
 
-  Future<String?> _loginUser(LoginData data) {
-    return Future.delayed(loginTime).then((_) {
-      if (!mockUsers.containsKey(data.name)) {
-        return 'El Usuario no existe';
-      }
-      // if (mockUsers[data.name] != data.password) {
-      //   return 'Password does not match';
-      // }
-      return null;
-    });
+class _LoginScreenState extends StateMVC<LoginScreen> {
+  /// Let the 'business logic' run in a Controller
+  _LoginScreenState() : super(userController()) {
+    /// Acquire a reference to the passed Controller.
+    con = controller as userController;
   }
 
-  Future<String?> _signupUser(SignupData data) {
-    return Future.delayed(loginTime).then((_) {
-      return null;
-    });
-  }
+  late userController con;
+  // @override
+  // void initState() {
+  //   /// Look inside the parent function and see it calls
+  //   /// all it's Controllers if any.
+  //   super.initState();
 
-  Future<String?> _recoverPassword(String name) {
-    return Future.delayed(loginTime).then((_) {
-      if (!mockUsers.containsKey(name)) {
-        return 'El Usuario no existe';
-      }
-      return null;
-    });
-  }
+  //   /// Retrieve the 'app level' State object
+  //   //appState = rootState!;
 
-  Future<String?> _signupConfirm(String error, LoginData data) {
-    return Future.delayed(loginTime).then((_) {
-      return null;
-    });
-  }
+  //   /// You're able to retrieve the Controller(s) from other State objects.
+  //   var con = appState.controller;
+
+  //   con = appState.controllerByType<userController>();
+
+  //   con = appState.controllerById(con?.keyId);
+  // }
+
+  late AppStateMVC appState;
 
   @override
   Widget build(BuildContext context) {
@@ -56,8 +55,8 @@ class LoginScreen extends StatelessWidget {
       logoTag: Constants.logoTag,
       titleTag: Constants.titleTag,
       navigateBackAfterRecovery: true,
-      onConfirmRecover: _signupConfirm,
-      onConfirmSignup: _signupConfirm,
+      onConfirmRecover: con.signupConfirm,
+      onConfirmSignup: con.signupConfirm,
       loginAfterSignUp: false,
       // loginProviders: [
       //   LoginProvider(
@@ -88,30 +87,33 @@ class LoginScreen extends StatelessWidget {
       //     },
       //   ),
       // ],
-      termsOfService: [
-        // TermOfService(
-        //   id: 'newsletter',
-        //   mandatory: false,
-        //   text: 'Newsletter subscription',
-        // ),
-        TermOfService(
-          id: 'general-term',
-          mandatory: true,
-          text: 'Terminos de servicios',
-          linkUrl: 'https://github.com/NearHuscarl/flutter_login',
-        ),
-      ],
+
+      // termsOfService: [
+      //   // TermOfService(
+      //   //   id: 'newsletter',
+      //   //   mandatory: false,
+      //   //   text: 'Newsletter subscription',
+      //   // ),
+      //   TermOfService(
+      //     id: 'general-term',
+      //     mandatory: true,
+      //     text: 'Terminos de servicios',
+      //     linkUrl: 'https://github.com/NearHuscarl/flutter_login',
+      //   ),
+      // ],
       additionalSignupFields: [
         const UserFormField(
           keyName: 'Username',
+          displayName: "Nombre de usuario",
           icon: Icon(FontAwesomeIcons.userLarge),
         ),
-        const UserFormField(keyName: 'Name'),
-        const UserFormField(keyName: 'Surname'),
+        const UserFormField(keyName: 'Nombre'),
+        const UserFormField(keyName: 'Apellidos'),
         UserFormField(
           keyName: 'phone_number',
-          displayName: 'Phone Number',
+          displayName: 'Numero de teléfono',
           userType: LoginUserType.phone,
+          icon: const Icon(Icons.phone_android),
           fieldValidator: (value) {
             final phoneRegExp = RegExp(
               '^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}\$',
@@ -127,11 +129,11 @@ class LoginScreen extends StatelessWidget {
       ],
       messages: LoginMessages(
         forgotPasswordButton: 'Recuperar contraseña',
-        userHint: 'Usuario',
+        userHint: 'Correo',
         passwordHint: 'Contraseña',
         confirmPasswordHint: 'Confirmar',
         loginButton: 'INICIAR SESIÓN',
-        signupButton: 'REGISTRO',
+        signupButton: 'IR AL REGISTRO',
         recoverPasswordButton: 'ENVIAR',
         goBackButton: 'VOLVER',
         confirmPasswordError: 'Las contraseñas no coinciden',
@@ -146,6 +148,9 @@ class LoginScreen extends StatelessWidget {
         confirmRecoverIntro:
             "Introduzca el código recibido en el correo y su nueva contraseña",
         setPasswordButton: "CAMBIAR CONTRASEÑA",
+        additionalSignUpSubmitButton: "REGISTRARME",
+        additionalSignUpFormDescription:
+            "Por favor complete este formulario para completar el registro",
       ),
       theme: LoginTheme(
         //   primaryColor: Colors.teal,
@@ -227,7 +232,7 @@ class LoginScreen extends StatelessWidget {
         debugPrint('Login info');
         debugPrint('Name: ${loginData.name}');
         debugPrint('Password: ${loginData.password}');
-        return _loginUser(loginData);
+        return con.loginUser(loginData);
       },
       onSignup: (signupData) {
         debugPrint('Signup info');
@@ -245,19 +250,19 @@ class LoginScreen extends StatelessWidget {
             );
           }
         }
-        return _signupUser(signupData);
+        return con.signupUser(signupData);
       },
       onSubmitAnimationCompleted: () {
         Navigator.of(context).pushReplacement(
           FadePageRoute(
-            builder: (context) => const DashboardScreen(),
+            builder: (context) => const HomePage(),
           ),
         );
       },
       onRecoverPassword: (name) {
         debugPrint('Recover password info');
         debugPrint('Name: $name');
-        return _recoverPassword(name);
+        return con.recoverPassword(name);
         // Show new password dialog
       },
       headerWidget: const IntroWidget(),
