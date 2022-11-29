@@ -57,6 +57,71 @@ class UserProfileState extends State<UserProfile> {
               labelText: 'Nombre',
             ),
           ),
+          TextFormField(
+            // The validator receives the text that the user has entered.
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Introduzca texto';
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Apellidos',
+            ),
+          ),
+          TextFormField(
+            // The validator receives the text that the user has entered.
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Introduzca texto';
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Contraseña',
+            ),
+          ),
+          TextFormField(
+            // The validator receives the text that the user has entered.
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Introduzca texto';
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Email',
+            ),
+          ),
+          TextFormField(
+            // The validator receives the text that the user has entered.
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Introduzca texto';
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Telefono',
+            ),
+          ),
+          TextFormField(
+            // The validator receives the text that the user has entered.
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Introduzca texto';
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Foto de perfil',
+            ),
+          ),
           ElevatedButton(
             onPressed: () {
               // Validate returns true if the form is valid, or false otherwise.
@@ -101,16 +166,16 @@ Widget build(BuildContext context) {
     onPressed: () => showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text('AlertDialog Title'),
-        content: const Text('AlertDialog description'),
+        title: const Text('Eliminar usuario'),
+        content: const Text('¿Está seguro? Esta acción es irreversible'),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context, 'Cancel'),
-            child: const Text('Cancel'),
+            child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, 'OK'),
-            child: const Text('OK'),
+            child: const Text('Confirmar'),
           ),
         ],
       ),
