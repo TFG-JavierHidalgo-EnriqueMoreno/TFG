@@ -1,6 +1,7 @@
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
+import 'package:my_app/entities/EditData.dart';
 
 import '../entities/user.dart';
 import '../entities/users.dart';
@@ -48,5 +49,9 @@ class userController extends ControllerMVC {
     return Future.delayed(loginTime).then((_) {
       return null;
     });
+  }
+
+  Future<String?> editConfirm(String error, EditData data) {
+    return Future.delayed(loginTime).then((value) => null);
   }
 }
