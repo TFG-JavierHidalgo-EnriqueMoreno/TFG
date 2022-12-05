@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import '../routes/custom_route.dart';
+import 'package:my_app/entities/EditData.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:my_app/entities/user.dart';
+import 'dart:async';
+import 'package:my_app/routes/custom_route.dart';
 import 'home_page.dart';
+import 'package:my_app/entities/globals.dart' as globals;
 
 class UserProfile extends StatelessWidget {
   const UserProfile({super.key});
@@ -40,6 +45,7 @@ class UserProfileFormState extends State<UserProfileForm> {
   // Note: This is a `GlobalKey<FormState>`,
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
+
   bool _obscureText = true;
   String _password = "";
 
@@ -60,6 +66,7 @@ class UserProfileFormState extends State<UserProfileForm> {
           // Add TextFormFields and ElevatedButton here.
           TextFormField(
             // The validator receives the text that the user has entered.
+            initialValue: getUser(),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Introduzca texto';
@@ -253,4 +260,12 @@ showProfile(BuildContext context) {
       builder: (context) => const UserProfile(),
     ),
   );
+}
+
+getUser() {
+  if (globals.isLoggedIn) {
+    return "ESTA EN TRUE";
+  } else {
+    return "ESTA EN FALSE";
+  }
 }

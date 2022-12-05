@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/screens/login_page.dart';
 import 'package:my_app/screens/user_profile.dart';
 import '../routes/custom_route.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:my_app/entities/globals.dart' as globals;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,11 +16,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: globals.isLoggedIn ? Center() : LoginScreen(),
       appBar: AppBar(
         title: const Text("BattleDraft"),
       ),
       drawer: _getDrawer(context),
-      body: Center(),
     );
   }
 }
@@ -49,7 +51,7 @@ Widget _getDrawer(BuildContext context) {
         ListTile(
             title: const Text("Cerrar Sesion"),
             leading: const Icon(Icons.logout),
-            onTap: () => showHome(context)),
+            onTap: () => logout(context)),
       ],
     ),
   );
@@ -70,3 +72,21 @@ showProfile(BuildContext context) {
     ),
   );
 }
+
+logout(BuildContext context) {
+  globals.isLoggedIn = false;
+
+  Navigator.of(context).pushReplacement(
+    FadePageRoute(
+      builder: (context) => const HomePage(),
+    ),
+  );
+}
+
+// showLogin(BuildContext context) {
+//   Navigator.of(context).pushReplacement(
+//     FadePageRoute(
+//       builder: (context) => const LoginScreen(),
+//     ),
+//   );
+// }
