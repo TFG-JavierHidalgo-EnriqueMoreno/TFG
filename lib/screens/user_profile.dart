@@ -9,6 +9,8 @@ import 'package:my_app/routes/custom_route.dart';
 import 'home_page.dart';
 import 'package:my_app/entities/globals.dart' as globals;
 
+import 'login_page.dart';
+
 class UserProfile extends StatelessWidget {
   const UserProfile({super.key});
 
@@ -159,8 +161,18 @@ class UserProfileFormState extends State<UserProfileForm> {
                 // If the form is valid, display a snackbar. In the real world,
                 // you'd often call a server or save the information in a database.
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Procesando datos...')),
+                  const SnackBar(
+                      duration: Duration(seconds: 3),
+                      content: Text('Procesando datos...')),
                 );
+                Timer(const Duration(seconds: 3), () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        backgroundColor: Color(0xFF4CAF50),
+                        duration: Duration(seconds: 3),
+                        content: Text('Usuario editado con éxito')),
+                  );
+                });
               }
             },
             child: const Text('Enviar'),
@@ -177,7 +189,7 @@ class UserProfileFormState extends State<UserProfileForm> {
                     child: const Text('Cancelar'),
                   ),
                   TextButton(
-                    onPressed: () => Navigator.pop(context, 'Confirmar'),
+                    onPressed: () => deleteUser(context),
                     child: const Text('Confirmar'),
                   ),
                 ],
@@ -189,29 +201,6 @@ class UserProfileFormState extends State<UserProfileForm> {
       ),
     );
   }
-}
-
-Widget build(BuildContext context) {
-  return TextButton(
-    onPressed: () => showDialog<String>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: const Text('Eliminar usuario'),
-        content: const Text('¿Está seguro? Esta acción es irreversible'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'Cancel'),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'OK'),
-            child: const Text('Confirmar'),
-          ),
-        ],
-      ),
-    ),
-    child: const Text('Show Dialog'),
-  );
 }
 
 Widget _getDrawer(BuildContext context) {
@@ -226,13 +215,13 @@ Widget _getDrawer(BuildContext context) {
             accountEmail: accountEmail,
             currentAccountPicture: accountPicture),
         ListTile(
+            title: const Text("Inicio"),
+            leading: const Icon(Icons.home),
+            onTap: () => showHome(context)),
+        ListTile(
             title: const Text("Jugar Partido"),
             leading: const Icon(Icons.play_arrow),
             onTap: () => showHome(context)),
-        ListTile(
-            title: const Text("Editar Perfil"),
-            leading: const Icon(Icons.edit),
-            onTap: () => showProfile(context)),
         ListTile(
             title: const Text("Historial"),
             leading: const Icon(Icons.history),
@@ -240,7 +229,7 @@ Widget _getDrawer(BuildContext context) {
         ListTile(
             title: const Text("Cerrar Sesion"),
             leading: const Icon(Icons.logout),
-            onTap: () => showHome(context)),
+            onTap: () => logout(context)),
       ],
     ),
   );
@@ -254,10 +243,12 @@ showHome(BuildContext context) {
   );
 }
 
-showProfile(BuildContext context) {
+logout(BuildContext context) {
+  globals.isLoggedIn = false;
+  debugPrint('logged in: ${globals.isLoggedIn}');
   Navigator.of(context).pushReplacement(
     FadePageRoute(
-      builder: (context) => const UserProfile(),
+      builder: (context) => const LoginScreen(),
     ),
   );
 }
@@ -268,4 +259,33 @@ getUser() {
   } else {
     return "ESTA EN FALSE";
   }
+}
+
+deleteUser(BuildContext context) {
+  showDialog<String>(
+    context: context,
+    barrierColor: Colors.transparent,
+    builder: (BuildContext context) => AlertDialog(
+      title: const Text('Eliminar usuario'),
+      content: const Text('Usuario eliminado'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => afterDeleteUser(context),
+          child: const Text('Confirmar'),
+        ),
+      ],
+    ),
+  ).then((val) {
+    afterDeleteUser(context);
+  });
+}
+
+afterDeleteUser(BuildContext context) {
+  globals.isLoggedIn = false;
+  debugPrint('logged in: ${globals.isLoggedIn}');
+  Navigator.of(context).pushReplacement(
+    FadePageRoute(
+      builder: (context) => const LoginScreen(),
+    ),
+  );
 }

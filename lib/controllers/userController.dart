@@ -1,7 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:my_app/entities/EditData.dart';
+import 'package:my_app/routes/custom_route.dart';
+import 'package:my_app/screens/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'package:my_app/entities/user.dart';
@@ -33,11 +36,16 @@ class userController extends ControllerMVC {
     });
   }
 
-  Future<String?> signupUser(SignupData data) {
-    return Future.delayed(loginTime).then((_) {
-      return null;
-    });
-  }
+  signupUser(BuildContext context, SignupData data) {
+  // Guardar usuario en la BD
+  globals.isLoggedIn = true;
+  Navigator.of(context).pushReplacement(
+    FadePageRoute(
+      builder: (context) => const HomePage(),
+    ),
+  );
+}
+
 
   Future<String?> recoverPassword(String name) {
     return Future.delayed(loginTime).then((_) {

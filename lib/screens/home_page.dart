@@ -37,13 +37,13 @@ Widget _getDrawer(BuildContext context) {
             accountEmail: accountEmail,
             currentAccountPicture: accountPicture),
         ListTile(
-            title: const Text("Jugar Partido"),
-            leading: const Icon(Icons.play_arrow),
-            onTap: () => showHome(context)),
-        ListTile(
             title: const Text("Editar Perfil"),
             leading: const Icon(Icons.edit),
             onTap: () => showProfile(context)),
+        ListTile(
+            title: const Text("Jugar Partido"),
+            leading: const Icon(Icons.play_arrow),
+            onTap: () => showHome(context)),
         ListTile(
             title: const Text("Historial"),
             leading: const Icon(Icons.history),
@@ -75,10 +75,10 @@ showProfile(BuildContext context) {
 
 logout(BuildContext context) {
   globals.isLoggedIn = false;
-
+  debugPrint('logged in: ${globals.isLoggedIn}');
   Navigator.of(context).pushReplacement(
     FadePageRoute(
-      builder: (context) => const HomePage(),
+      builder: (context) => const LoginScreen(),
     ),
   );
 }

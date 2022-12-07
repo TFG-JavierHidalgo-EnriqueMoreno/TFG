@@ -252,7 +252,7 @@ class _LoginScreenState extends StateMVC<LoginScreen> {
             );
           }
         }
-        return con.signupUser(signupData);
+        return con.signupUser(context, signupData);
       },
       onSubmitAnimationCompleted: () {
         Navigator.of(context).pushReplacement(
