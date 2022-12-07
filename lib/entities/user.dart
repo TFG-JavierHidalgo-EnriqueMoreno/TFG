@@ -7,19 +7,19 @@ class User extends ModelMVC {
 
   String username = "";
   String password = "";
-  String nombre = "";
-  String apellidos = "";
-  String telefono = "";
+  String name = "";
+  String surname = "";
+  String phone = "";
   String email = "";
   int elo = 0;
 
-  // User(String username, String password, String nombre, String apellidos, String telefono,
+  // User(String username, String password, String name, String surname, String phone,
   //     String email, int elo) {
   //   this.username = username;
   //   this.password = password;
-  //   this.nombre = nombre;
-  //   this.apellidos = apellidos;
-  //   this.telefono = telefono;
+  //   this.name = name;
+  //   this.surname = surname;
+  //   this.phone = phone;
   //   this.email = email;
   //   this.elo = elo;
   // }
@@ -32,16 +32,16 @@ class User extends ModelMVC {
     return password;
   }
 
-  String get getNombre {
-    return nombre;
+  String get getName {
+    return name;
   }
 
-  String get getApellidos {
-    return apellidos;
+  String get getSurname {
+    return surname;
   }
 
-  String get getTelefono {
-    return telefono;
+  String get getPhone {
+    return phone;
   }
 
   String get getEmail {
@@ -52,31 +52,31 @@ class User extends ModelMVC {
     return elo;
   }
 
-  set setUsername(String nuevoUsername) {
-    username = nuevoUsername;
+  set setUsername(String newUsername) {
+    username = newUsername;
   }
 
-  set setPassword(String nuevoPassword) {
-    password = nuevoPassword;
+  set setPassword(String newPassword) {
+    password = newPassword;
   }
 
-  set setNombre(String nuevoNombre) {
-    nombre = nuevoNombre;
+  set setName(String newName) {
+    name = newName;
   }
 
-  set setApellidos(String nuevoApellidos) {
-    apellidos = nuevoApellidos;
+  set setSurname(String newSurname) {
+    surname = newSurname;
   }
 
-  set setTelefono(String nuevoTelefono) {
-    telefono = nuevoTelefono;
+  set setPhone(String newPhone) {
+    phone = newPhone;
   }
 
-  set setEmail(String nuevoEmail) {
-    email = nuevoEmail;
+  set setEmail(String newEmail) {
+    email = newEmail;
   }
 
-  set setElo(int nuevoElo) {
-    elo = nuevoElo;
+  set setElo(int newElo) {
+    elo = newElo;
   }
 }

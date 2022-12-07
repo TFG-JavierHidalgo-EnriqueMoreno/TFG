@@ -3,13 +3,13 @@ import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter_login/flutter_login.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
-
 import 'package:my_app/entities/constants.dart';
 import 'package:my_app/screens/home_page.dart';
-import '../controllers/userController.dart';
-import '../entities/users.dart';
-import '../routes/custom_route.dart';
+import 'package:my_app/controllers/userController.dart';
+import 'package:my_app/entities/users.dart';
+import 'package:my_app/routes/custom_route.dart';
 import 'dashboard_screen.dart';
+import 'package:my_app/entities/globals.dart' as globals;
 
 class LoginScreen extends StatefulWidget {
   static const routeName = '/auth';
@@ -21,6 +21,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends StateMVC<LoginScreen> {
+  GlobalKey<FormState> _key = GlobalKey();
+
   /// Let the 'business logic' run in a Controller
   _LoginScreenState() : super(userController()) {
     /// Acquire a reference to the passed Controller.
@@ -250,7 +252,7 @@ class _LoginScreenState extends StateMVC<LoginScreen> {
             );
           }
         }
-        return con.signupUser(signupData);
+        return con.signupUser(context, signupData);
       },
       onSubmitAnimationCompleted: () {
         Navigator.of(context).pushReplacement(
