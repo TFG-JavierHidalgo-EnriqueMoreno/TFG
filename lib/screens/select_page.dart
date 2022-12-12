@@ -64,36 +64,108 @@ class SelectPageFormState extends State<SelectPageForm> {
     // Build a Form widget using the _formKey created above.
 
     return Scaffold(
-        body: Container(
-      child: ElevatedButton(
-        onPressed: () => showDialog<String>(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-            title: const Text('Selecciona jugador'),
-            actions: <Widget>[
-              SizedBox(
-                height: 500,
-                width: 500,
-                child: ListView.builder(
-                    itemCount: lista.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        child: Text(lista[index]),
-                      );
-                    }),
-              )
-
-              // ListView.builder(
-              //     itemCount: lista.length,
-              //     itemBuilder: (context, index) {
-              //       return Card(child: Text(lista[index]));
-              //     }),
-            ],
-          ),
+      body: Stack(children: <Widget>[
+        Row(
+          children: [
+            ElevatedButton(
+                onPressed: () => showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: const Text('Selecciona jugador'),
+                        actions: <Widget>[
+                          SizedBox(
+                            height: 500,
+                            width: 500,
+                            child: ListView.builder(
+                                itemCount: lista.length,
+                                itemBuilder: (context, index) {
+                                  return Card(
+                                    child: Text(lista[index]),
+                                  );
+                                }),
+                          ),
+                        ],
+                      ),
+                    ),
+                child: const Icon(Icons.add)),
+            ElevatedButton(
+                onPressed: () => showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: const Text('Selecciona jugador'),
+                        actions: <Widget>[
+                          SizedBox(
+                            height: 500,
+                            width: 500,
+                            child: ListView.builder(
+                                itemCount: lista.length,
+                                itemBuilder: (context, index) {
+                                  return Card(
+                                    child: Text(lista[index]),
+                                  );
+                                }),
+                          ),
+                        ],
+                      ),
+                    ),
+                child: const Icon(Icons.add)),
+            ElevatedButton(
+                onPressed: () => showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: const Text('Selecciona jugador'),
+                        actions: <Widget>[
+                          SizedBox(
+                            height: 500,
+                            width: 500,
+                            child: ListView.builder(
+                                itemCount: lista.length,
+                                itemBuilder: (context, index) {
+                                  return Card(
+                                    child: Text(lista[index]),
+                                  );
+                                }),
+                          ),
+                        ],
+                      ),
+                    ),
+                child: const Icon(Icons.add)),
+          ],
         ),
-        child: const Icon(Icons.add),
-      ),
-    ));
+      ]),
+    );
+
+    // return Scaffold(
+    //     body: Container(
+    //   child: ElevatedButton(
+    //     onPressed: () => showDialog<String>(
+    //       context: context,
+    //       builder: (BuildContext context) => AlertDialog(
+    //         title: const Text('Selecciona jugador'),
+    //         actions: <Widget>[
+    //           SizedBox(
+    //             height: 500,
+    //             width: 500,
+    //             child: ListView.builder(
+    //                 itemCount: lista.length,
+    //                 itemBuilder: (context, index) {
+    //                   return Card(
+    //                     child: Text(lista[index]),
+    //                   );
+    //                 }),
+    //           )
+
+    //           // ListView.builder(
+    //           //     itemCount: lista.length,
+    //           //     itemBuilder: (context, index) {
+    //           //       return Card(child: Text(lista[index]));
+    //           //     }),
+    //         ],
+    //       ),
+    //     ),
+    //     child: const Icon(Icons.add),
+    //   ),
+    // ));
   }
 }
 
