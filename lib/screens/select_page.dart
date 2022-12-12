@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -52,6 +53,8 @@ class SelectPageFormState extends State<SelectPageForm> {
 
   bool _obscureText = true;
   String _password = "";
+  List<String> list = <String>['4-4-2', '4-3-3', '5-3-2', '5-4-1'];
+  String dropdownValue = '4-4-2';
 
   void _toggle() {
     setState(() {
@@ -61,79 +64,57 @@ class SelectPageFormState extends State<SelectPageForm> {
 
   @override
   Widget build(BuildContext context) {
-    // Build a Form widget using the _formKey created above.
-
     return Scaffold(
-      body: Stack(children: <Widget>[
-        Row(
-          children: [
-            ElevatedButton(
-                onPressed: () => showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Selecciona jugador'),
-                        actions: <Widget>[
-                          SizedBox(
-                            height: 500,
-                            width: 500,
-                            child: ListView.builder(
-                                itemCount: lista.length,
-                                itemBuilder: (context, index) {
-                                  return Card(
-                                    child: Text(lista[index]),
-                                  );
-                                }),
-                          ),
-                        ],
-                      ),
+        body: Stack(
+      children: <Widget>[
+        Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: ExactAssetImage("assets/images/field.png"),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Container(
+                  height: 40,
+                  padding: EdgeInsets.all(10),
+                  margin: const EdgeInsets.only(left: 0.0, top: 30.0, right: 15.0, bottom: 0.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white, // Background del seleccionable
+                      borderRadius: BorderRadius.circular(10)
                     ),
-                child: const Icon(Icons.add)),
-            ElevatedButton(
-                onPressed: () => showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Selecciona jugador'),
-                        actions: <Widget>[
-                          SizedBox(
-                            height: 500,
-                            width: 500,
-                            child: ListView.builder(
-                                itemCount: lista.length,
-                                itemBuilder: (context, index) {
-                                  return Card(
-                                    child: Text(lista[index]),
-                                  );
-                                }),
-                          ),
-                        ],
-                      ),
-                    ),
-                child: const Icon(Icons.add)),
-            ElevatedButton(
-                onPressed: () => showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Selecciona jugador'),
-                        actions: <Widget>[
-                          SizedBox(
-                            height: 500,
-                            width: 500,
-                            child: ListView.builder(
-                                itemCount: lista.length,
-                                itemBuilder: (context, index) {
-                                  return Card(
-                                    child: Text(lista[index]),
-                                  );
-                                }),
-                          ),
-                        ],
-                      ),
-                    ),
-                child: const Icon(Icons.add)),
+                    child: DropdownButtonHideUnderline(child: DropdownButton<String>(
+                      alignment: AlignmentDirectional.centerEnd,
+                      dropdownColor: Colors.white,
+                      value: dropdownValue,
+                      icon: const Icon(Icons.arrow_downward),
+                      elevation: 16,
+                      style: const TextStyle(color: Colors.black),
+                      onChanged: (String? value) {
+                        // This is called when the user selects an item.
+                        setState(() {
+                          dropdownValue = value!;
+                        });
+                      },
+                      items: list.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Align(alignment: Alignment.center, child: Text(value)),
+                        );
+                      }).toList(),
+                    )),)
+                    
+              ],
+            ),
           ],
         ),
-      ]),
-    );
+      ],
+    ));
 
     // return Scaffold(
     //     body: Container(
@@ -170,9 +151,9 @@ class SelectPageFormState extends State<SelectPageForm> {
 }
 
 Widget _getDrawer(BuildContext context) {
-  var accountEmail = Text("EMAIL");
-  var accountName = Text("USUARIO");
-  var accountPicture = Icon(FontAwesomeIcons.userLarge);
+  var accountEmail = const Text("EMAIL");
+  var accountName = const Text("USUARIO");
+  var accountPicture = const Icon(FontAwesomeIcons.userLarge);
   return Drawer(
     child: ListView(
       children: <Widget>[
