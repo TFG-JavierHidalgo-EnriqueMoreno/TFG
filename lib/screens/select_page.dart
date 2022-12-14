@@ -54,7 +54,22 @@ class SelectPageFormState extends State<SelectPageForm> {
   bool _obscureText = true;
   String _password = "";
   List<String> list = <String>['4-4-2', '4-3-3', '5-3-2', '5-4-1'];
-  String dropdownValue = '4-4-2';
+  String dropdownValue = '5-4-1';
+  Map<int, bool> selected = {
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+    4: false,
+    5: false,
+    6: false,
+    7: false,
+    8: false,
+    9: false,
+    10: false,
+    11: false
+  };
+  bool changed = false;
 
   void _toggle() {
     setState(() {
@@ -82,37 +97,262 @@ class SelectPageFormState extends State<SelectPageForm> {
               children: <Widget>[
                 Container(
                   height: 40,
-                  padding: EdgeInsets.all(10),
-                  margin: const EdgeInsets.only(left: 0.0, top: 30.0, right: 15.0, bottom: 0.0),
-                    decoration: BoxDecoration(
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.only(
+                      left: 0.0, top: 30.0, right: 15.0, bottom: 0.0),
+                  decoration: BoxDecoration(
                       color: Colors.white, // Background del seleccionable
-                      borderRadius: BorderRadius.circular(10)
-                    ),
-                    child: DropdownButtonHideUnderline(child: DropdownButton<String>(
-                      alignment: AlignmentDirectional.centerEnd,
-                      dropdownColor: Colors.white,
-                      value: dropdownValue,
-                      icon: const Icon(Icons.arrow_downward),
-                      elevation: 16,
-                      style: const TextStyle(color: Colors.black),
-                      onChanged: (String? value) {
-                        // This is called when the user selects an item.
-                        setState(() {
-                          dropdownValue = value!;
-                        });
-                      },
-                      items: list.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Align(alignment: Alignment.center, child: Text(value)),
-                        );
-                      }).toList(),
-                    )),)
-                    
+                      borderRadius: BorderRadius.circular(10)),
+                  child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                    alignment: AlignmentDirectional.topStart,
+                    dropdownColor: Colors.white,
+                    value: dropdownValue,
+                    icon: const Icon(Icons.arrow_downward),
+                    elevation: 0,
+                    style: const TextStyle(color: Colors.black),
+                    onChanged: (String? value) {
+                      // This is called when the user selects an item.
+                      setState(() {
+                        dropdownValue = value!;
+                      });
+                    },
+                    items: list.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Align(
+                            alignment: Alignment.center, child: Text(value)),
+                      );
+                    }).toList(),
+                  )),
+                )
               ],
             ),
           ],
         ),
+        Padding(
+          padding: const EdgeInsets.only(top: 75.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          ElevatedButton(
+                              onPressed: () async => {
+                                    await select(0, selected, context, changed),
+                                    setState(() {
+                                      if (changed == true) {
+                                        selected.update(0, (value) => !value);
+                                      }
+                                    })
+                                  },
+                              style: ElevatedButton.styleFrom(
+                                  side: const BorderSide(
+                                    width: 2.5,
+                                    color: Colors.white,
+                                  ),
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.all(20),
+                                  backgroundColor: Colors.transparent),
+                              child: selected[0] == true
+                                  ? Icon(Icons.abc)
+                                  : Icon(Icons.add))
+                        ],
+                      ),
+                      Column(
+                        children: <Widget>[
+                          ElevatedButton(
+                              onPressed: getUser,
+                              style: ElevatedButton.styleFrom(
+                                  side: const BorderSide(
+                                    width: 2.5,
+                                    color: Colors.white,
+                                  ),
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.all(20),
+                                  backgroundColor: Colors.transparent),
+                              child: const Icon(Icons.add))
+                        ],
+                      ),
+                    ]),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 60.0),
+                        child: Column(
+                          children: <Widget>[
+                            ElevatedButton(
+                                onPressed: getUser,
+                                style: ElevatedButton.styleFrom(
+                                    side: const BorderSide(
+                                      width: 2.5,
+                                      color: Colors.white,
+                                    ),
+                                    shape: const CircleBorder(),
+                                    padding: const EdgeInsets.all(20),
+                                    backgroundColor: Colors.transparent),
+                                child: const Icon(Icons.add))
+                          ],
+                        ),
+                      ),
+                      Column(
+                        children: <Widget>[
+                          ElevatedButton(
+                              onPressed: getUser,
+                              style: ElevatedButton.styleFrom(
+                                  side: const BorderSide(
+                                    width: 2.5,
+                                    color: Colors.white,
+                                  ),
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.all(20),
+                                  backgroundColor: Colors.transparent),
+                              child: const Icon(Icons.add))
+                        ],
+                      ),
+                      Column(
+                        children: <Widget>[
+                          ElevatedButton(
+                              onPressed: getUser,
+                              style: ElevatedButton.styleFrom(
+                                  side: const BorderSide(
+                                    width: 2.5,
+                                    color: Colors.white,
+                                  ),
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.all(20),
+                                  backgroundColor: Colors.transparent),
+                              child: const Icon(Icons.add))
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 60.0),
+                        child: Column(
+                          children: <Widget>[
+                            ElevatedButton(
+                                onPressed: getUser,
+                                style: ElevatedButton.styleFrom(
+                                    side: const BorderSide(
+                                      width: 2.5,
+                                      color: Colors.white,
+                                    ),
+                                    shape: const CircleBorder(),
+                                    padding: const EdgeInsets.all(20),
+                                    backgroundColor: Colors.transparent),
+                                child: const Icon(Icons.add))
+                          ],
+                        ),
+                      ),
+                    ]),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 60.0),
+                        child: Column(
+                          children: <Widget>[
+                            ElevatedButton(
+                                onPressed: getUser,
+                                style: ElevatedButton.styleFrom(
+                                    side: const BorderSide(
+                                      width: 2.5,
+                                      color: Colors.white,
+                                    ),
+                                    shape: const CircleBorder(),
+                                    padding: const EdgeInsets.all(20),
+                                    backgroundColor: Colors.transparent),
+                                child: const Icon(Icons.add))
+                          ],
+                        ),
+                      ),
+                      Column(
+                        children: <Widget>[
+                          ElevatedButton(
+                              onPressed: getUser,
+                              style: ElevatedButton.styleFrom(
+                                  side: const BorderSide(
+                                    width: 2.5,
+                                    color: Colors.white,
+                                  ),
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.all(20),
+                                  backgroundColor: Colors.transparent),
+                              child: const Icon(Icons.add))
+                        ],
+                      ),
+                      Column(
+                        children: <Widget>[
+                          ElevatedButton(
+                              onPressed: getUser,
+                              style: ElevatedButton.styleFrom(
+                                  side: const BorderSide(
+                                    width: 2.5,
+                                    color: Colors.white,
+                                  ),
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.all(20),
+                                  backgroundColor: Colors.transparent),
+                              child: const Icon(Icons.add))
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 60.0),
+                        child: Column(
+                          children: <Widget>[
+                            ElevatedButton(
+                                onPressed: getUser,
+                                style: ElevatedButton.styleFrom(
+                                    side: const BorderSide(
+                                      width: 2.5,
+                                      color: Colors.white,
+                                    ),
+                                    shape: const CircleBorder(),
+                                    padding: const EdgeInsets.all(20),
+                                    backgroundColor: Colors.transparent),
+                                child: const Icon(Icons.add))
+                          ],
+                        ),
+                      ),
+                    ]),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          ElevatedButton(
+                              onPressed: getUser,
+                              style: ElevatedButton.styleFrom(
+                                  side: const BorderSide(
+                                    width: 2.5,
+                                    color: Colors.white,
+                                  ),
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.all(20),
+                                  backgroundColor: Colors.transparent),
+                              child: const Icon(Icons.add))
+                        ],
+                      ),
+                    ]),
+              )
+            ],
+          ),
+        )
       ],
     ));
 
@@ -233,6 +473,28 @@ afterDeleteUser(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const LoginScreen(),
+    ),
+  );
+}
+
+changeButton(int key, Map<int, bool> selected, BuildContext context, bool changed) {
+  Navigator.pop(context, 'Confirmar');
+  changed = true;
+}
+
+select(int key, Map<int, bool> selected, BuildContext context, bool changed) {
+  showDialog<String>(
+    context: context,
+    barrierColor: Colors.transparent,
+    builder: (BuildContext context) => AlertDialog(
+      title: const Text('Eliminar usuario'),
+      content: const Text('Usuario eliminado'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => changeButton(key, selected, context, changed),
+          child: const Text('Confirmar'),
+        ),
+      ],
     ),
   );
 }
