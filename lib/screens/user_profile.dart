@@ -221,7 +221,7 @@ Widget _getDrawer(BuildContext context) {
         ListTile(
             title: const Text("Jugar Partido"),
             leading: const Icon(Icons.play_arrow),
-            onTap: () => showHome(context)),
+            onTap: () => playGame(context)),
         ListTile(
             title: const Text("Historial"),
             leading: const Icon(Icons.history),
@@ -235,13 +235,6 @@ Widget _getDrawer(BuildContext context) {
   );
 }
 
-showHome(BuildContext context) {
-  Navigator.of(context).pushReplacement(
-    FadePageRoute(
-      builder: (context) => const HomePage(),
-    ),
-  );
-}
 
 logout(BuildContext context) {
   globals.isLoggedIn = false;

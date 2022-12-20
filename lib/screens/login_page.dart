@@ -258,7 +258,7 @@ class _LoginScreenState extends StateMVC<LoginScreen> {
       onSubmitAnimationCompleted: () {
         Navigator.of(context).pushReplacement(
           FadePageRoute(
-            builder: (context) => const SelectPage(),
+            builder: (context) => const HomePage(),
           ),
         );
       },
