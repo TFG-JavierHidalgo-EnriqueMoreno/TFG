@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -522,9 +521,9 @@ Widget _getDrawer(BuildContext context) {
             leading: const Icon(Icons.home),
             onTap: () => showHome(context)),
         ListTile(
-            title: const Text("Jugar Partido"),
-            leading: const Icon(Icons.play_arrow),
-            onTap: () => showHome(context)),
+            title: const Text("Editar Perfil"),
+            leading: const Icon(Icons.edit),
+            onTap: () => showProfile(context)),
         ListTile(
             title: const Text("Historial"),
             leading: const Icon(Icons.history),
@@ -538,13 +537,6 @@ Widget _getDrawer(BuildContext context) {
   );
 }
 
-showHome(BuildContext context) {
-  Navigator.of(context).pushReplacement(
-    FadePageRoute(
-      builder: (context) => const HomePage(),
-    ),
-  );
-}
 
 logout(BuildContext context) {
   globals.isLoggedIn = false;
