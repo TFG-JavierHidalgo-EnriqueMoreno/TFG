@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -53,8 +54,8 @@ class SelectPageFormState extends State<SelectPageForm> {
   bool _obscureText = true;
   String _password = "";
   List<String> list = <String>['4-4-2', '4-3-3', '5-3-2', '5-4-1'];
-  String dropdownValue = '5-4-1';
-  Map<int, bool> selected = {
+  String dropdownValue = '4-4-2';
+  final Map<int, bool> _selected = {
     0: false,
     1: false,
     2: false,
@@ -68,12 +69,92 @@ class SelectPageFormState extends State<SelectPageForm> {
     10: false,
     11: false
   };
-  bool changed = false;
 
   void _toggle() {
     setState(() {
       _obscureText = !_obscureText;
     });
+  }
+
+  void _changeButton(BuildContext context, bool changed, int key) {
+    Navigator.pop(context, 'Confirmar');
+    if (changed == true) {
+      setState(() {
+        _selected.update(key, (value) => !value);
+      });
+    }
+  }
+
+  select(int key, Map<int, bool> selected, BuildContext context) {
+    showDialog<String>(
+      context: context,
+      barrierColor: Colors.transparent,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Selecciona jugador'),
+        //content: const Text('Usuario eliminado'),
+        actions: <Widget>[
+          /*  Container(
+            child: Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("DL"),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(Icons.account_circle),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("En-Nesyri"),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("99"),
+                )
+              ],
+            ),
+            decoration: BoxDecoration(
+                border: Border.all(
+              color: Colors.black,
+              width: 1.0,
+            )),
+          ),*/
+          TextButton(
+              style: TextButton.styleFrom(primary: Colors.black),
+              onPressed: () => _changeButton(context, true, key),
+              child: Container(
+                height: 75,
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black, width: 1.0)),
+                child: Row(
+                  children: const <Widget>[
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text("DL", style: TextStyle(fontSize: 30)),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(Icons.account_circle, size: 30),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text("En-Nesyri", style: TextStyle(fontSize: 30)),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text("99", style: TextStyle(fontSize: 30)),
+                    ),
+                  ],
+                ),
+              )),
+          TextButton(
+            onPressed: () => _changeButton(context, true, key),
+            child: const Text('Confirmar'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -142,13 +223,8 @@ class SelectPageFormState extends State<SelectPageForm> {
                       Column(
                         children: <Widget>[
                           ElevatedButton(
-                              onPressed: () async => {
-                                    await select(0, selected, context, changed),
-                                    setState(() {
-                                      if (changed == true) {
-                                        selected.update(0, (value) => !value);
-                                      }
-                                    })
+                              onPressed: () => {
+                                    select(0, _selected, context),
                                   },
                               style: ElevatedButton.styleFrom(
                                   side: const BorderSide(
@@ -158,15 +234,17 @@ class SelectPageFormState extends State<SelectPageForm> {
                                   shape: const CircleBorder(),
                                   padding: const EdgeInsets.all(20),
                                   backgroundColor: Colors.transparent),
-                              child: selected[0] == true
-                                  ? Icon(Icons.abc)
+                              child: _selected[0] == true
+                                  ? Icon(Icons.person)
                                   : Icon(Icons.add))
                         ],
                       ),
                       Column(
                         children: <Widget>[
                           ElevatedButton(
-                              onPressed: getUser,
+                              onPressed: () => {
+                                    select(1, _selected, context),
+                                  },
                               style: ElevatedButton.styleFrom(
                                   side: const BorderSide(
                                     width: 2.5,
@@ -175,7 +253,9 @@ class SelectPageFormState extends State<SelectPageForm> {
                                   shape: const CircleBorder(),
                                   padding: const EdgeInsets.all(20),
                                   backgroundColor: Colors.transparent),
-                              child: const Icon(Icons.add))
+                              child: _selected[1] == true
+                                  ? Icon(Icons.person)
+                                  : Icon(Icons.add))
                         ],
                       ),
                     ]),
@@ -190,7 +270,9 @@ class SelectPageFormState extends State<SelectPageForm> {
                         child: Column(
                           children: <Widget>[
                             ElevatedButton(
-                                onPressed: getUser,
+                                onPressed: () => {
+                                      select(2, _selected, context),
+                                    },
                                 style: ElevatedButton.styleFrom(
                                     side: const BorderSide(
                                       width: 2.5,
@@ -199,14 +281,18 @@ class SelectPageFormState extends State<SelectPageForm> {
                                     shape: const CircleBorder(),
                                     padding: const EdgeInsets.all(20),
                                     backgroundColor: Colors.transparent),
-                                child: const Icon(Icons.add))
+                                child: _selected[2] == true
+                                    ? Icon(Icons.person)
+                                    : Icon(Icons.add))
                           ],
                         ),
                       ),
                       Column(
                         children: <Widget>[
                           ElevatedButton(
-                              onPressed: getUser,
+                              onPressed: () => {
+                                    select(3, _selected, context),
+                                  },
                               style: ElevatedButton.styleFrom(
                                   side: const BorderSide(
                                     width: 2.5,
@@ -215,13 +301,17 @@ class SelectPageFormState extends State<SelectPageForm> {
                                   shape: const CircleBorder(),
                                   padding: const EdgeInsets.all(20),
                                   backgroundColor: Colors.transparent),
-                              child: const Icon(Icons.add))
+                              child: _selected[3] == true
+                                  ? Icon(Icons.person)
+                                  : Icon(Icons.add))
                         ],
                       ),
                       Column(
                         children: <Widget>[
                           ElevatedButton(
-                              onPressed: getUser,
+                              onPressed: () => {
+                                    select(4, _selected, context),
+                                  },
                               style: ElevatedButton.styleFrom(
                                   side: const BorderSide(
                                     width: 2.5,
@@ -230,7 +320,9 @@ class SelectPageFormState extends State<SelectPageForm> {
                                   shape: const CircleBorder(),
                                   padding: const EdgeInsets.all(20),
                                   backgroundColor: Colors.transparent),
-                              child: const Icon(Icons.add))
+                              child: _selected[4] == true
+                                  ? Icon(Icons.person)
+                                  : Icon(Icons.add))
                         ],
                       ),
                       Padding(
@@ -238,7 +330,9 @@ class SelectPageFormState extends State<SelectPageForm> {
                         child: Column(
                           children: <Widget>[
                             ElevatedButton(
-                                onPressed: getUser,
+                                onPressed: () => {
+                                      select(5, _selected, context),
+                                    },
                                 style: ElevatedButton.styleFrom(
                                     side: const BorderSide(
                                       width: 2.5,
@@ -247,7 +341,9 @@ class SelectPageFormState extends State<SelectPageForm> {
                                     shape: const CircleBorder(),
                                     padding: const EdgeInsets.all(20),
                                     backgroundColor: Colors.transparent),
-                                child: const Icon(Icons.add))
+                                child: _selected[5] == true
+                                    ? Icon(Icons.person)
+                                    : Icon(Icons.add))
                           ],
                         ),
                       ),
@@ -263,7 +359,9 @@ class SelectPageFormState extends State<SelectPageForm> {
                         child: Column(
                           children: <Widget>[
                             ElevatedButton(
-                                onPressed: getUser,
+                                onPressed: () => {
+                                      select(6, _selected, context),
+                                    },
                                 style: ElevatedButton.styleFrom(
                                     side: const BorderSide(
                                       width: 2.5,
@@ -272,14 +370,18 @@ class SelectPageFormState extends State<SelectPageForm> {
                                     shape: const CircleBorder(),
                                     padding: const EdgeInsets.all(20),
                                     backgroundColor: Colors.transparent),
-                                child: const Icon(Icons.add))
+                                child: _selected[6] == true
+                                    ? Icon(Icons.person)
+                                    : Icon(Icons.add))
                           ],
                         ),
                       ),
                       Column(
                         children: <Widget>[
                           ElevatedButton(
-                              onPressed: getUser,
+                              onPressed: () => {
+                                    select(7, _selected, context),
+                                  },
                               style: ElevatedButton.styleFrom(
                                   side: const BorderSide(
                                     width: 2.5,
@@ -288,13 +390,17 @@ class SelectPageFormState extends State<SelectPageForm> {
                                   shape: const CircleBorder(),
                                   padding: const EdgeInsets.all(20),
                                   backgroundColor: Colors.transparent),
-                              child: const Icon(Icons.add))
+                              child: _selected[7] == true
+                                  ? Icon(Icons.person)
+                                  : Icon(Icons.add))
                         ],
                       ),
                       Column(
                         children: <Widget>[
                           ElevatedButton(
-                              onPressed: getUser,
+                              onPressed: () => {
+                                    select(8, _selected, context),
+                                  },
                               style: ElevatedButton.styleFrom(
                                   side: const BorderSide(
                                     width: 2.5,
@@ -303,7 +409,9 @@ class SelectPageFormState extends State<SelectPageForm> {
                                   shape: const CircleBorder(),
                                   padding: const EdgeInsets.all(20),
                                   backgroundColor: Colors.transparent),
-                              child: const Icon(Icons.add))
+                              child: _selected[8] == true
+                                  ? Icon(Icons.person)
+                                  : Icon(Icons.add))
                         ],
                       ),
                       Padding(
@@ -311,7 +419,9 @@ class SelectPageFormState extends State<SelectPageForm> {
                         child: Column(
                           children: <Widget>[
                             ElevatedButton(
-                                onPressed: getUser,
+                                onPressed: () => {
+                                      select(9, _selected, context),
+                                    },
                                 style: ElevatedButton.styleFrom(
                                     side: const BorderSide(
                                       width: 2.5,
@@ -320,7 +430,9 @@ class SelectPageFormState extends State<SelectPageForm> {
                                     shape: const CircleBorder(),
                                     padding: const EdgeInsets.all(20),
                                     backgroundColor: Colors.transparent),
-                                child: const Icon(Icons.add))
+                                child: _selected[9] == true
+                                    ? Icon(Icons.person)
+                                    : Icon(Icons.add))
                           ],
                         ),
                       ),
@@ -335,7 +447,9 @@ class SelectPageFormState extends State<SelectPageForm> {
                       Column(
                         children: <Widget>[
                           ElevatedButton(
-                              onPressed: getUser,
+                              onPressed: () => {
+                                    select(10, _selected, context),
+                                  },
                               style: ElevatedButton.styleFrom(
                                   side: const BorderSide(
                                     width: 2.5,
@@ -344,7 +458,9 @@ class SelectPageFormState extends State<SelectPageForm> {
                                   shape: const CircleBorder(),
                                   padding: const EdgeInsets.all(20),
                                   backgroundColor: Colors.transparent),
-                              child: const Icon(Icons.add))
+                              child: _selected[10] == true
+                                  ? Icon(Icons.person)
+                                  : Icon(Icons.add))
                         ],
                       ),
                     ]),
@@ -465,28 +581,6 @@ afterDeleteUser(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const LoginScreen(),
-    ),
-  );
-}
-
-changeButton(int key, Map<int, bool> selected, BuildContext context, bool changed) {
-  Navigator.pop(context, 'Confirmar');
-  changed = true;
-}
-
-select(int key, Map<int, bool> selected, BuildContext context, bool changed) {
-  showDialog<String>(
-    context: context,
-    barrierColor: Colors.transparent,
-    builder: (BuildContext context) => AlertDialog(
-      title: const Text('Eliminar usuario'),
-      content: const Text('Usuario eliminado'),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => changeButton(key, selected, context, changed),
-          child: const Text('Confirmar'),
-        ),
-      ],
     ),
   );
 }
