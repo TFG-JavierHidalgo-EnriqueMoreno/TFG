@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/screens/login_page.dart';
+import 'package:my_app/screens/select_page.dart';
 import 'package:my_app/screens/user_profile.dart';
 import '../routes/custom_route.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -16,13 +17,79 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: globals.isLoggedIn ? Center() : LoginScreen(),
+      body: globals.isLoggedIn ? _page(context) : LoginScreen(),
       appBar: AppBar(
         title: const Text("BattleDraft"),
       ),
       drawer: _getDrawer(context),
     );
   }
+}
+
+Widget _page(BuildContext context) {
+  return Padding(
+    padding: const EdgeInsets.all(20.0),
+    child: Column(
+      children: <Widget>[
+        SizedBox(
+          height: 150,
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(right: 50.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [Icon(Icons.person), Text('Liga: Oro')],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 8.0),
+                    child: Text(
+                      'Usuario',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 8.0),
+                    child: Text('Nombre apellidos'),
+                  ),
+                  Text('30 puntos')
+                ],
+              )
+            ],
+          ),
+        ),
+        Row(
+          // Ultimo partido jugado?
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Text('Información',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(onPressed: () => playGame(context), child: Text('Jugar partido'))
+            ],
+          ),
+        )
+      ],
+    ),
+  );
 }
 
 Widget _getDrawer(BuildContext context) {
@@ -43,7 +110,7 @@ Widget _getDrawer(BuildContext context) {
         ListTile(
             title: const Text("Jugar Partido"),
             leading: const Icon(Icons.play_arrow),
-            onTap: () => showHome(context)),
+            onTap: () => playGame(context)),
         ListTile(
             title: const Text("Historial"),
             leading: const Icon(Icons.history),
@@ -73,6 +140,14 @@ showProfile(BuildContext context) {
   );
 }
 
+playGame(BuildContext context) {
+  Navigator.of(context).pushReplacement(
+    FadePageRoute(
+      builder: (context) => const SelectPage(),
+    ),
+  );
+}
+
 logout(BuildContext context) {
   globals.isLoggedIn = false;
   debugPrint('logged in: ${globals.isLoggedIn}');
@@ -82,11 +157,3 @@ logout(BuildContext context) {
     ),
   );
 }
-
-// showLogin(BuildContext context) {
-//   Navigator.of(context).pushReplacement(
-//     FadePageRoute(
-//       builder: (context) => const LoginScreen(),
-//     ),
-//   );
-// }
