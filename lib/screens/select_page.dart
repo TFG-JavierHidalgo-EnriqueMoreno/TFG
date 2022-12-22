@@ -1,20 +1,12 @@
-
+import 'dart:core';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:my_app/entities/EditData.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:my_app/entities/user.dart';
-import 'dart:async';
+import 'package:my_app/screens/result_page.dart';
 import 'package:my_app/routes/custom_route.dart';
 import 'home_page.dart';
-import 'package:my_app/entities/globals.dart' as globals;
-
-import 'login_page.dart';
-
-List<String> lista = ["pepe", "manuel", "quique", "juan"];
 
 class SelectPage extends StatelessWidget {
   const SelectPage({super.key});
@@ -133,19 +125,19 @@ class SelectPageFormState extends State<SelectPageForm> {
                   children: const <Widget>[
                     Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Text("DL", style: TextStyle(fontSize: 30)),
+                      child: Text("DL", style: TextStyle(fontSize: 24)),
                     ),
                     Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Icon(Icons.account_circle, size: 30),
+                      child: Icon(Icons.account_circle, size: 24),
                     ),
                     Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Text("En-Nesyri", style: TextStyle(fontSize: 30)),
+                      child: Text("En-Nesyri", style: TextStyle(fontSize: 24)),
                     ),
                     Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Text("99", style: TextStyle(fontSize: 30)),
+                      child: Text("99", style: TextStyle(fontSize: 24)),
                     ),
                   ],
                 ),
@@ -441,7 +433,7 @@ class SelectPageFormState extends State<SelectPageForm> {
                     ]),
               ),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.only(top: 30.0),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -462,14 +454,25 @@ class SelectPageFormState extends State<SelectPageForm> {
                                   backgroundColor: Colors.transparent),
                               child: _selected[10] == true
                                   ? Icon(Icons.person)
-                                  : Icon(Icons.add))
+                                  : Icon(Icons.add)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 260.0),
+                                  child: ElevatedButton(
+                                      onPressed: () => confirm(context),
+                                      child: Text('Confirmar')),
+                                ),
+                              ],
+                            ),
                         ],
                       ),
                     ]),
-              )
+              ),
             ],
           ),
-        )
+        ),
       ],
     ));
 
@@ -539,50 +542,10 @@ Widget _getDrawer(BuildContext context) {
   );
 }
 
-
-logout(BuildContext context) {
-  globals.isLoggedIn = false;
-  debugPrint('logged in: ${globals.isLoggedIn}');
+confirm(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
-      builder: (context) => const LoginScreen(),
-    ),
-  );
-}
-
-getUser() {
-  if (globals.isLoggedIn) {
-    return "ESTA EN TRUE";
-  } else {
-    return "ESTA EN FALSE";
-  }
-}
-
-deleteUser(BuildContext context) {
-  showDialog<String>(
-    context: context,
-    barrierColor: Colors.transparent,
-    builder: (BuildContext context) => AlertDialog(
-      title: const Text('Eliminar usuario'),
-      content: const Text('Usuario eliminado'),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => afterDeleteUser(context),
-          child: const Text('Confirmar'),
-        ),
-      ],
-    ),
-  ).then((val) {
-    afterDeleteUser(context);
-  });
-}
-
-afterDeleteUser(BuildContext context) {
-  globals.isLoggedIn = false;
-  debugPrint('logged in: ${globals.isLoggedIn}');
-  Navigator.of(context).pushReplacement(
-    FadePageRoute(
-      builder: (context) => const LoginScreen(),
+      builder: (context) => const ResultPage(),
     ),
   );
 }

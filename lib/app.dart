@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/screens/home_page.dart';
 import 'package:my_app/screens/login_page.dart';
 
 class MyApp extends StatelessWidget {
@@ -12,7 +11,7 @@ class MyApp extends StatelessWidget {
       initialRoute: "/",
       theme: ThemeData(
         brightness: Brightness.light,
-        primaryColor: Color(0xFF4CAF50),
+        primaryColor: const Color(0xFF4CAF50),
         colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.black),
       ),
       onGenerateRoute: (RouteSettings settings) {

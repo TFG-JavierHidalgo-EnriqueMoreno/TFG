@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:my_app/entities/EditData.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:my_app/entities/user.dart';
-import 'dart:async';
+import 'package:my_app/screens/select_page.dart';
 import 'package:my_app/routes/custom_route.dart';
 import 'home_page.dart';
-import 'package:my_app/entities/globals.dart' as globals;
-
-import 'login_page.dart';
 
 class ResultPage extends StatelessWidget {
   const ResultPage({super.key});
@@ -214,13 +208,15 @@ class ResultPageFormState extends State<ResultPageForm> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: const <Widget>[
+                children: <Widget>[
                   Padding(
                     padding: EdgeInsets.only(right: 10),
                     child: ElevatedButton(
-                        onPressed: getUser, child: Text("Volver a jugar")),
+                        onPressed: () => playAgain(context),
+                        child: Text("Volver a jugar")),
                   ),
-                  ElevatedButton(onPressed: getUser, child: Text("Inicio"))
+                  ElevatedButton(
+                      onPressed: () => goToHome(context), child: Text("Inicio"))
                 ]),
           )
         ]);
@@ -243,9 +239,13 @@ Widget _getDrawer(BuildContext context) {
             leading: const Icon(Icons.home),
             onTap: () => showHome(context)),
         ListTile(
+            title: const Text("Editar Perfil"),
+            leading: const Icon(Icons.edit),
+            onTap: () => showProfile(context)),
+        ListTile(
             title: const Text("Jugar Partido"),
             leading: const Icon(Icons.play_arrow),
-            onTap: () => showHome(context)),
+            onTap: () => playGame(context)),
         ListTile(
             title: const Text("Historial"),
             leading: const Icon(Icons.history),
@@ -259,7 +259,7 @@ Widget _getDrawer(BuildContext context) {
   );
 }
 
-showHome(BuildContext context) {
+goToHome(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const HomePage(),
@@ -267,72 +267,10 @@ showHome(BuildContext context) {
   );
 }
 
-logout(BuildContext context) {
-  globals.isLoggedIn = false;
-  debugPrint('logged in: ${globals.isLoggedIn}');
+playAgain(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
-      builder: (context) => const LoginScreen(),
-    ),
-  );
-}
-
-getUser() {
-  if (globals.isLoggedIn) {
-    return "ESTA EN TRUE";
-  } else {
-    return "ESTA EN FALSE";
-  }
-}
-
-deleteUser(BuildContext context) {
-  showDialog<String>(
-    context: context,
-    barrierColor: Colors.transparent,
-    builder: (BuildContext context) => AlertDialog(
-      title: const Text('Eliminar usuario'),
-      content: const Text('Usuario eliminado'),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => afterDeleteUser(context),
-          child: const Text('Confirmar'),
-        ),
-      ],
-    ),
-  ).then((val) {
-    afterDeleteUser(context);
-  });
-}
-
-afterDeleteUser(BuildContext context) {
-  globals.isLoggedIn = false;
-  debugPrint('logged in: ${globals.isLoggedIn}');
-  Navigator.of(context).pushReplacement(
-    FadePageRoute(
-      builder: (context) => const LoginScreen(),
-    ),
-  );
-}
-
-changeButton(
-    int key, Map<int, bool> selected, BuildContext context, bool changed) {
-  Navigator.pop(context, 'Confirmar');
-  changed = true;
-}
-
-select(int key, Map<int, bool> selected, BuildContext context, bool changed) {
-  showDialog<String>(
-    context: context,
-    barrierColor: Colors.transparent,
-    builder: (BuildContext context) => AlertDialog(
-      title: const Text('Eliminar usuario'),
-      content: const Text('Usuario eliminado'),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => changeButton(key, selected, context, changed),
-          child: const Text('Confirmar'),
-        ),
-      ],
+      builder: (context) => const SelectPage(),
     ),
   );
 }
