@@ -455,17 +455,17 @@ class SelectPageFormState extends State<SelectPageForm> {
                               child: _selected[10] == true
                                   ? Icon(Icons.person)
                                   : Icon(Icons.add)),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 260.0),
-                                  child: ElevatedButton(
-                                      onPressed: () => confirm(context),
-                                      child: Text('Confirmar')),
-                                ),
-                              ],
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 260.0),
+                                child: ElevatedButton(
+                                    onPressed: () => confirm(context),
+                                    child: Text('Confirmar')),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ]),
