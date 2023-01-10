@@ -87,33 +87,6 @@ class SelectPageFormState extends State<SelectPageForm> {
         title: const Text('Selecciona jugador'),
         //content: const Text('Usuario eliminado'),
         actions: <Widget>[
-          /*  Container(
-            child: Row(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("DL"),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(Icons.account_circle),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("En-Nesyri"),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("99"),
-                )
-              ],
-            ),
-            decoration: BoxDecoration(
-                border: Border.all(
-              color: Colors.black,
-              width: 1.0,
-            )),
-          ),*/
           TextButton(
               style: TextButton.styleFrom(primary: Colors.black),
               onPressed: () => _changeButton(context, true, key),
@@ -475,38 +448,6 @@ class SelectPageFormState extends State<SelectPageForm> {
         ),
       ],
     ));
-
-    // return Scaffold(
-    //     body: Container(
-    //   child: ElevatedButton(
-    //     onPressed: () => showDialog<String>(
-    //       context: context,
-    //       builder: (BuildContext context) => AlertDialog(
-    //         title: const Text('Selecciona jugador'),
-    //         actions: <Widget>[
-    //           SizedBox(
-    //             height: 500,
-    //             width: 500,
-    //             child: ListView.builder(
-    //                 itemCount: lista.length,
-    //                 itemBuilder: (context, index) {
-    //                   return Card(
-    //                     child: Text(lista[index]),
-    //                   );
-    //                 }),
-    //           )
-
-    //           // ListView.builder(
-    //           //     itemCount: lista.length,
-    //           //     itemBuilder: (context, index) {
-    //           //       return Card(child: Text(lista[index]));
-    //           //     }),
-    //         ],
-    //       ),
-    //     ),
-    //     child: const Icon(Icons.add),
-    //   ),
-    // ));
   }
 }
 

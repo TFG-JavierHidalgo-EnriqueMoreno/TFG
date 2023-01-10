@@ -63,141 +63,164 @@ class UserProfileFormState extends State<UserProfileForm> {
 
     return Form(
       key: _formKey,
-      child: Column(
-        children: <Widget>[
-          // Add TextFormFields and ElevatedButton here.
-          TextFormField(
-            // The validator receives the text that the user has entered.
-            initialValue: getUser(),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Introduzca texto';
-              }
-              return null;
-            },
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Nombre',
-            ),
-          ),
+      child: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            // Add TextFormFields and ElevatedButton here.
+            TextFormField(
+              // The validator receives the text that the user has entered.
 
-          TextFormField(
-            // The validator receives the text that the user has entered.
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Introduzca texto';
-              }
-              return null;
-            },
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Apellidos',
-            ),
-          ),
-          TextFormField(
-            // The validator receives the text that the user has entered.
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Introduzca texto';
-              }
-              return null;
-            },
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Contraseña',
-              icon: Padding(
-                padding: EdgeInsets.only(top: 15.0),
-                child: Icon(Icons.lock),
+              initialValue: "",
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Introduzca texto';
+                }
+                return null;
+              },
+              decoration: const InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'Nombre',
+                icon: Padding(
+                  padding: EdgeInsets.only(top: 15.0),
+                  child: Icon(Icons.account_circle),
+                ),
               ),
             ),
-            onSaved: (value) => _password = value!,
-            obscureText: _obscureText,
-          ),
-          TextButton(
-              onPressed: _toggle,
-              child: Text(_obscureText ? "Mostrar" : "Ocultar")),
-          TextFormField(
-            // The validator receives the text that the user has entered.
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Introduzca texto';
-              }
-              return null;
-            },
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Email',
-            ),
-          ),
-          IntlPhoneField(
-            decoration: const InputDecoration(
-              labelText: 'Teléfono',
-              border: OutlineInputBorder(
-                borderSide: BorderSide(),
+
+            TextFormField(
+              // The validator receives the text that the user has entered.
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Introduzca texto';
+                }
+                return null;
+              },
+              decoration: const InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'Apellidos',
+                icon: Padding(
+                  padding: EdgeInsets.only(top: 15.0),
+                  child: Icon(Icons.account_circle),
+                ),
               ),
             ),
-            initialCountryCode: 'ES',
-            // onChanged: (phone) {
-            //   print(phone.completeNumber);
-            // },
-          ),
-          TextFormField(
-            // The validator receives the text that the user has entered.
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Introduzca texto';
-              }
-              return null;
-            },
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Foto de perfil',
+            TextFormField(
+              // The validator receives the text that the user has entered.
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Introduzca texto';
+                }
+                return null;
+              },
+              decoration: const InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'Contraseña',
+                icon: Padding(
+                  padding: EdgeInsets.only(top: 15.0),
+                  child: Icon(Icons.lock),
+                ),
+              ),
+              onSaved: (value) => _password = value!,
+              obscureText: _obscureText,
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Validate returns true if the form is valid, or false otherwise.
-              if (_formKey.currentState!.validate()) {
-                // If the form is valid, display a snackbar. In the real world,
-                // you'd often call a server or save the information in a database.
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      duration: Duration(seconds: 3),
-                      content: Text('Procesando datos...')),
-                );
-                Timer(const Duration(seconds: 3), () {
+            TextButton(
+                onPressed: _toggle,
+                child: Text(_obscureText ? "Mostrar" : "Ocultar")),
+            TextFormField(
+              // The validator receives the text that the user has entered.
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Introduzca texto';
+                }
+                return null;
+              },
+              decoration: const InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'Email',
+                icon: Padding(
+                  padding: EdgeInsets.only(top: 15.0),
+                  child: Icon(Icons.email),
+                ),
+              ),
+            ),
+            IntlPhoneField(
+              decoration: const InputDecoration(
+                labelText: 'Teléfono',
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide(),
+                ),
+                icon: Padding(
+                  padding: EdgeInsets.only(top: 15.0),
+                  child: Icon(Icons.phone),
+                ),
+              ),
+              initialCountryCode: 'ES',
+              // onChanged: (phone) {
+              //   print(phone.completeNumber);
+              // },
+            ),
+            TextFormField(
+              // The validator receives the text that the user has entered.
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Introduzca texto';
+                }
+                return null;
+              },
+              decoration: const InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'Foto de perfil',
+                icon: Padding(
+                  padding: EdgeInsets.only(top: 15.0),
+                  child: Icon(Icons.photo_camera),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Validate returns true if the form is valid, or false otherwise.
+                if (_formKey.currentState!.validate()) {
+                  // If the form is valid, display a snackbar. In the real world,
+                  // you'd often call a server or save the information in a database.
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        backgroundColor: Color(0xFF4CAF50),
                         duration: Duration(seconds: 3),
-                        content: Text('Usuario editado con éxito')),
+                        content: Text('Procesando datos...')),
                   );
-                });
-              }
-            },
-            child: const Text('Enviar'),
-          ),
-          ElevatedButton(
-            onPressed: () => showDialog<String>(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                title: const Text('¿Está seguro?'),
-                content: const Text('Esta accion es irreservible'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, 'Cancelar'),
-                    child: const Text('Cancelar'),
-                  ),
-                  TextButton(
-                    onPressed: () => deleteUser(context),
-                    child: const Text('Confirmar'),
-                  ),
-                ],
-              ),
+                  Timer(const Duration(seconds: 3), () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          backgroundColor: Color(0xFF4CAF50),
+                          duration: Duration(seconds: 3),
+                          content: Text('Usuario editado con éxito')),
+                    );
+                  });
+                }
+              },
+              child: const Text('Enviar'),
             ),
-            child: const Text('Eliminar usuario'),
-          ),
-        ],
+            ElevatedButton(
+              onPressed: () => showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text('¿Está seguro?'),
+                  content: const Text('Esta accion es irreservible'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'Cancelar'),
+                      child: const Text('Cancelar'),
+                    ),
+                    TextButton(
+                      onPressed: () => deleteUser(context),
+                      child: const Text('Confirmar'),
+                    ),
+                  ],
+                ),
+              ),
+              child: const Text('Eliminar usuario'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -235,7 +258,6 @@ Widget _getDrawer(BuildContext context) {
   );
 }
 
-
 logout(BuildContext context) {
   globals.isLoggedIn = false;
   debugPrint('logged in: ${globals.isLoggedIn}');
@@ -244,14 +266,6 @@ logout(BuildContext context) {
       builder: (context) => const LoginScreen(),
     ),
   );
-}
-
-getUser() {
-  if (globals.isLoggedIn) {
-    return "ESTA EN TRUE";
-  } else {
-    return "ESTA EN FALSE";
-  }
 }
 
 deleteUser(BuildContext context) {
