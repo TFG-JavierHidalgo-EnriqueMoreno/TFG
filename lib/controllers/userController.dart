@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_login/flutter_login.dart';
@@ -5,6 +7,7 @@ import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:my_app/entities/EditData.dart';
 import 'package:my_app/routes/custom_route.dart';
 import 'package:my_app/screens/home_page.dart';
+import 'package:my_app/services/firebase_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'package:my_app/entities/user.dart';
@@ -23,12 +26,22 @@ class userController extends ControllerMVC {
 
   Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
 
-  Future<String?> loginUser(LoginData data) {
+  Future<String?> loginUser(LoginData data) async {
+    Future<List> users = getUsers();
+
+    Map<String, String> mapUser = new HashMap();
+
+    List list = await users;
+
+    list.forEach((user) {
+      mapUser.putIfAbsent(user["email"], () => user["password"]);
+    });
+
     return Future.delayed(loginTime).then((_) async {
-      if (!mockUsers.containsKey(data.name)) {
+      if (!mapUser.containsKey(data.name)) {
         return 'El Usuario no existe';
       }
-      if (mockUsers[data.name] != data.password) {
+      if (mapUser[data.name] != data.password) {
         return 'Contraseña incorrecta';
       }
       globals.isLoggedIn = true;
@@ -37,15 +50,14 @@ class userController extends ControllerMVC {
   }
 
   signupUser(BuildContext context, SignupData data) {
-  // Guardar usuario en la BD
-  globals.isLoggedIn = true;
-  Navigator.of(context).pushReplacement(
-    FadePageRoute(
-      builder: (context) => const HomePage(),
-    ),
-  );
-}
-
+    // Guardar usuario en la BD
+    globals.isLoggedIn = true;
+    Navigator.of(context).pushReplacement(
+      FadePageRoute(
+        builder: (context) => const HomePage(),
+      ),
+    );
+  }
 
   Future<String?> recoverPassword(String name) {
     return Future.delayed(loginTime).then((_) {
