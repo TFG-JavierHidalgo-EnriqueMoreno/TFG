@@ -49,20 +49,20 @@ Widget _page(BuildContext context) {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Padding(
                     padding: EdgeInsets.only(bottom: 8.0),
                     child: Text(
-                      'Usuario',
+                      globals.userLoggedIn.username,
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.only(bottom: 8.0),
-                    child: Text('Nombre apellidos'),
+                    child: Text(globals.userLoggedIn.name),
                   ),
-                  Text('30 puntos')
+                  Text(globals.userLoggedIn.elo.toString())
                 ],
               )
             ],
@@ -83,7 +83,9 @@ Widget _page(BuildContext context) {
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(onPressed: () => playGame(context), child: Text('Jugar partido'))
+              ElevatedButton(
+                  onPressed: () => playGame(context),
+                  child: Text('Jugar partido'))
             ],
           ),
         )
@@ -93,8 +95,8 @@ Widget _page(BuildContext context) {
 }
 
 Widget _getDrawer(BuildContext context) {
-  var accountEmail = Text("EMAIL");
-  var accountName = Text("USUARIO");
+  var accountEmail = Text(globals.userLoggedIn.email);
+  var accountName = Text(globals.userLoggedIn.username);
   var accountPicture = Icon(FontAwesomeIcons.userLarge);
   return Drawer(
     child: ListView(

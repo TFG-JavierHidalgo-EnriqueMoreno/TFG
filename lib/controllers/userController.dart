@@ -45,6 +45,10 @@ class userController extends ControllerMVC {
         return 'Contraseña incorrecta';
       }
       globals.isLoggedIn = true;
+
+      var u = list.firstWhere((element) => element["email"] == data.name);
+      globals.userLoggedIn.newUser(u["username"], u["password"], u["name"],
+          u["phone"], u["email"], u["elo"]);
       return null;
     });
   }
