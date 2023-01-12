@@ -56,24 +56,34 @@ class userController extends ControllerMVC {
     });
   }
 
-  signupUser(BuildContext context, SignupData data) {
+  Future<String?> signupUser(BuildContext context, SignupData data) async {
     // Guardar usuario en la BD
 
-    String? email = data.name;
-    String? password = data.password;
-    String? phone = data.additionalSignupData?["phone_number"];
-    String? username = data.additionalSignupData?["Username"];
-    String? name = data.additionalSignupData?["Nombre"];
-    String? surname = data.additionalSignupData?["Apellidos"];
+    Future<List> users = getUsers();
 
-    saveUser(email, password, phone, username, name, surname).then((_) {
-      setState(() {});
-      // Navigator.of(context).pushReplacement(
-      //   FadePageRoute(
-      //     builder: (context) => const LoginScreen(),
-      //   ),
-      // );
+    List<String> listUser = [];
+
+    List list = await users;
+
+    list.forEach((user) {
+      listUser.add(user["email"]);
     });
+
+    if (!listUser.contains(data.name)) {
+      String? email = data.name;
+      String? password = data.password;
+      String? phone = data.additionalSignupData?["phone_number"];
+      String? username = data.additionalSignupData?["Username"];
+      String? name = data.additionalSignupData?["Nombre"];
+      String? surname = data.additionalSignupData?["Apellidos"];
+
+      saveUser(email, password, phone, username, name, surname).then((_) {
+        setState(() {});
+      });
+      return null;
+    } else {
+      return 'El Usuario ya existe';
+    }
   }
 
   Future<String?> recoverPassword(String name) {
