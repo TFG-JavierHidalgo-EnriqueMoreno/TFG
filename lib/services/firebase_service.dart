@@ -14,3 +14,15 @@ Future<List> getUsers() async {
 
   return users;
 }
+
+Future<void> saveUser(String? email, String? password, String? phone,
+    String? username, String? name, String? surname) async {
+  await db.collection("users").add({
+    "email": email,
+    "password": password,
+    "phone": phone,
+    "name": "$name $surname",
+    "username": username,
+    "elo": 0,
+  });
+}

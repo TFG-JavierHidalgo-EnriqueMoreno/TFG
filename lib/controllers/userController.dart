@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -7,6 +8,7 @@ import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:my_app/entities/EditData.dart';
 import 'package:my_app/routes/custom_route.dart';
 import 'package:my_app/screens/home_page.dart';
+import 'package:my_app/screens/login_page.dart';
 import 'package:my_app/services/firebase_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
@@ -44,6 +46,7 @@ class userController extends ControllerMVC {
       if (mapUser[data.name] != data.password) {
         return 'Contraseña incorrecta';
       }
+
       globals.isLoggedIn = true;
 
       var u = list.firstWhere((element) => element["email"] == data.name);
@@ -55,12 +58,22 @@ class userController extends ControllerMVC {
 
   signupUser(BuildContext context, SignupData data) {
     // Guardar usuario en la BD
-    globals.isLoggedIn = true;
-    Navigator.of(context).pushReplacement(
-      FadePageRoute(
-        builder: (context) => const HomePage(),
-      ),
-    );
+
+    String? email = data.name;
+    String? password = data.password;
+    String? phone = data.additionalSignupData?["phone_number"];
+    String? username = data.additionalSignupData?["Username"];
+    String? name = data.additionalSignupData?["Nombre"];
+    String? surname = data.additionalSignupData?["Apellidos"];
+
+    saveUser(email, password, phone, username, name, surname).then((_) {
+      setState(() {});
+      // Navigator.of(context).pushReplacement(
+      //   FadePageRoute(
+      //     builder: (context) => const LoginScreen(),
+      //   ),
+      // );
+    });
   }
 
   Future<String?> recoverPassword(String name) {
