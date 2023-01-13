@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:my_app/entities/EditData.dart';
+import 'package:my_app/services/firebase_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_app/entities/user.dart';
 import 'dart:async';
@@ -60,7 +61,14 @@ class UserProfileFormState extends State<UserProfileForm> {
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
-
+    TextEditingController name =
+        TextEditingController(text: globals.userLoggedIn.name);
+    TextEditingController password =
+        TextEditingController(text: globals.userLoggedIn.password);
+    TextEditingController username =
+        TextEditingController(text: globals.userLoggedIn.username);
+    TextEditingController phone =
+        TextEditingController(text: globals.userLoggedIn.phone);
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -69,8 +77,7 @@ class UserProfileFormState extends State<UserProfileForm> {
             // Add TextFormFields and ElevatedButton here.
             TextFormField(
               // The validator receives the text that the user has entered.
-
-              initialValue: "",
+              controller: name,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Introduzca texto';
@@ -87,25 +94,26 @@ class UserProfileFormState extends State<UserProfileForm> {
               ),
             ),
 
+            // TextFormField(
+            //   // The validator receives the text that the user has entered.
+            //   validator: (value) {
+            //     if (value == null || value.isEmpty) {
+            //       return 'Introduzca texto';
+            //     }
+            //     return null;
+            //   },
+            //   decoration: const InputDecoration(
+            //     border: UnderlineInputBorder(),
+            //     labelText: 'Apellidos',
+            //     icon: Padding(
+            //       padding: EdgeInsets.only(top: 15.0),
+            //       child: Icon(Icons.account_circle),
+            //     ),
+            //   ),
+            // ),
             TextFormField(
               // The validator receives the text that the user has entered.
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Introduzca texto';
-                }
-                return null;
-              },
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'Apellidos',
-                icon: Padding(
-                  padding: EdgeInsets.only(top: 15.0),
-                  child: Icon(Icons.account_circle),
-                ),
-              ),
-            ),
-            TextFormField(
-              // The validator receives the text that the user has entered.
+              controller: password,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Introduzca texto';
@@ -128,6 +136,7 @@ class UserProfileFormState extends State<UserProfileForm> {
                 child: Text(_obscureText ? "Mostrar" : "Ocultar")),
             TextFormField(
               // The validator receives the text that the user has entered.
+              controller: username,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Introduzca texto';
@@ -136,14 +145,15 @@ class UserProfileFormState extends State<UserProfileForm> {
               },
               decoration: const InputDecoration(
                 border: UnderlineInputBorder(),
-                labelText: 'Email',
+                labelText: 'Nombre de usuario',
                 icon: Padding(
                   padding: EdgeInsets.only(top: 15.0),
-                  child: Icon(Icons.email),
+                  child: Icon(Icons.abc),
                 ),
               ),
             ),
             IntlPhoneField(
+              controller: phone,
               decoration: const InputDecoration(
                 labelText: 'Teléfono',
                 border: UnderlineInputBorder(
@@ -179,21 +189,25 @@ class UserProfileFormState extends State<UserProfileForm> {
             ElevatedButton(
               onPressed: () {
                 // Validate returns true if the form is valid, or false otherwise.
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      duration: Duration(seconds: 3),
+                      content: Text('Procesando datos...')),
+                );
                 if (_formKey.currentState!.validate()) {
                   // If the form is valid, display a snackbar. In the real world,
                   // you'd often call a server or save the information in a database.
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        duration: Duration(seconds: 3),
-                        content: Text('Procesando datos...')),
-                  );
-                  Timer(const Duration(seconds: 3), () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          backgroundColor: Color(0xFF4CAF50),
-                          duration: Duration(seconds: 3),
-                          content: Text('Usuario editado con éxito')),
-                    );
+                  editUser(name.text, password.text, username.text, phone.text)
+                      .then((_) {
+                    setState(() {});
+                    Timer(const Duration(seconds: 3), () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            backgroundColor: Color(0xFF4CAF50),
+                            duration: Duration(seconds: 3),
+                            content: Text('Usuario editado con éxito')),
+                      );
+                    });
                   });
                 }
               },

@@ -34,9 +34,11 @@ class userController extends ControllerMVC {
     Map<String, String> mapUser = new HashMap();
 
     List list = await users;
+    print(list);
 
     list.forEach((user) {
-      mapUser.putIfAbsent(user["email"], () => user["password"]);
+      mapUser.putIfAbsent(
+          user["data"]["email"], () => user["data"]["password"]);
     });
 
     return Future.delayed(loginTime).then((_) async {
@@ -49,9 +51,15 @@ class userController extends ControllerMVC {
 
       globals.isLoggedIn = true;
 
-      var u = list.firstWhere((element) => element["email"] == data.name);
-      globals.userLoggedIn.newUser(u["username"], u["password"], u["name"],
-          u["phone"], u["email"], u["elo"]);
+      var u =
+          list.firstWhere((element) => element["data"]["email"] == data.name);
+      globals.userLoggedIn.newUser(
+          u["data"]["username"],
+          u["data"]["password"],
+          u["data"]["name"],
+          u["data"]["phone"],
+          u["data"]["email"],
+          u["data"]["elo"]);
       return null;
     });
   }
@@ -66,7 +74,7 @@ class userController extends ControllerMVC {
     List list = await users;
 
     list.forEach((user) {
-      listUser.add(user["email"]);
+      listUser.add(user["data"]["email"]);
     });
 
     if (!listUser.contains(data.name)) {
