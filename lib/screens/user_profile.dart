@@ -165,9 +165,6 @@ class UserProfileFormState extends State<UserProfileForm> {
                 ),
               ),
               initialCountryCode: 'ES',
-              // onChanged: (phone) {
-              //   print(phone.completeNumber);
-              // },
             ),
             TextFormField(
               // The validator receives the text that the user has entered.
@@ -189,25 +186,29 @@ class UserProfileFormState extends State<UserProfileForm> {
             ElevatedButton(
               onPressed: () {
                 // Validate returns true if the form is valid, or false otherwise.
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      duration: Duration(seconds: 3),
-                      content: Text('Procesando datos...')),
-                );
                 if (_formKey.currentState!.validate()) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        duration: Duration(seconds: 3),
+                        content: Text('Procesando datos...')),
+                  );
                   // If the form is valid, display a snackbar. In the real world,
                   // you'd often call a server or save the information in a database.
                   editUser(name.text, password.text, username.text, phone.text)
                       .then((_) {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
                     setState(() {});
-                    Timer(const Duration(seconds: 3), () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            backgroundColor: Color(0xFF4CAF50),
-                            duration: Duration(seconds: 3),
-                            content: Text('Usuario editado con éxito')),
-                      );
-                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          backgroundColor: Color(0xFF4CAF50),
+                          duration: Duration(seconds: 3),
+                          content: Text('Usuario editado con éxito')),
+                    );
+                    Navigator.of(context).pushReplacement(
+                      FadePageRoute(
+                        builder: (context) => const HomePage(),
+                      ),
+                    );
                   });
                 }
               },
@@ -241,8 +242,8 @@ class UserProfileFormState extends State<UserProfileForm> {
 }
 
 Widget _getDrawer(BuildContext context) {
-  var accountEmail = Text("EMAIL");
-  var accountName = Text("USUARIO");
+  var accountEmail = Text(globals.userLoggedIn.email);
+  var accountName = Text(globals.userLoggedIn.username);
   var accountPicture = Icon(FontAwesomeIcons.userLarge);
   return Drawer(
     child: ListView(
@@ -274,7 +275,6 @@ Widget _getDrawer(BuildContext context) {
 
 logout(BuildContext context) {
   globals.isLoggedIn = false;
-  debugPrint('logged in: ${globals.isLoggedIn}');
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const LoginScreen(),
@@ -303,7 +303,6 @@ deleteUser(BuildContext context) {
 
 afterDeleteUser(BuildContext context) {
   globals.isLoggedIn = false;
-  debugPrint('logged in: ${globals.isLoggedIn}');
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const LoginScreen(),

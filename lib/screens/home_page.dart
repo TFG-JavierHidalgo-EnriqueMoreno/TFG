@@ -43,7 +43,7 @@ Widget _page(BuildContext context) {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [Icon(Icons.person), Text('Liga: Oro')],
+                  children: [Icon(Icons.person), Text('Liga: Oro'), Text("Puntos de liga: ${globals.userLoggedIn.elo}")],
                 ),
               ),
               Column(
@@ -62,7 +62,6 @@ Widget _page(BuildContext context) {
                     padding: EdgeInsets.only(bottom: 8.0),
                     child: Text(globals.userLoggedIn.name),
                   ),
-                  Text(globals.userLoggedIn.elo.toString())
                 ],
               )
             ],
@@ -152,7 +151,6 @@ playGame(BuildContext context) {
 
 logout(BuildContext context) {
   globals.isLoggedIn = false;
-  debugPrint('logged in: ${globals.isLoggedIn}');
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const LoginScreen(),

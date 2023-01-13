@@ -34,7 +34,6 @@ class userController extends ControllerMVC {
     Map<String, String> mapUser = new HashMap();
 
     List list = await users;
-    print(list);
 
     list.forEach((user) {
       mapUser.putIfAbsent(

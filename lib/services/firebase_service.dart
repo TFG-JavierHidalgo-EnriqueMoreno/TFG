@@ -5,12 +5,10 @@ import 'package:my_app/entities/user.dart';
 FirebaseFirestore db = FirebaseFirestore.instance;
 
 Future<List> getUsers() async {
-  print("-----------------------------------------");
   List users = [];
 
   CollectionReference cUsers = db.collection("users");
   QuerySnapshot q = await cUsers.get();
-  print("-----------------------------------------");
   for (int i = 0; i < q.docs.length; i++) {
     final u = {
       "uid": q.docs[i].id,
@@ -19,8 +17,6 @@ Future<List> getUsers() async {
 
     users.add(u);
   }
-  print("-----------------------------------------");
-  print(users);
   return users;
 }
 
@@ -54,4 +50,10 @@ Future<void> editUser(
     "username": username,
     "phone": phone
   });
+
+  globals.userLoggedIn.name = name;
+  globals.userLoggedIn.username = username;
+  globals.userLoggedIn.phone = phone;
+  globals.userLoggedIn.password = password;
+
 }
