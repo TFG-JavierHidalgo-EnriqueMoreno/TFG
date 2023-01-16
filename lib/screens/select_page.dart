@@ -8,6 +8,8 @@ import 'package:my_app/screens/result_page.dart';
 import 'package:my_app/routes/custom_route.dart';
 import 'home_page.dart';
 
+import 'package:my_app/entities/globals.dart' as globals;
+
 class SelectPage extends StatelessWidget {
   const SelectPage({super.key});
 
@@ -452,8 +454,8 @@ class SelectPageFormState extends State<SelectPageForm> {
 }
 
 Widget _getDrawer(BuildContext context) {
-  var accountEmail = const Text("EMAIL");
-  var accountName = const Text("USUARIO");
+  var accountEmail = Text(globals.userLoggedIn.email);
+  var accountName = Text(globals.userLoggedIn.username);
   var accountPicture = const Icon(FontAwesomeIcons.userLarge);
   return Drawer(
     child: ListView(

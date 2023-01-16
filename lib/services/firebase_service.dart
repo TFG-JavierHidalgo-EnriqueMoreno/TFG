@@ -55,5 +55,23 @@ Future<void> editUser(
   globals.userLoggedIn.username = username;
   globals.userLoggedIn.phone = phone;
   globals.userLoggedIn.password = password;
+}
 
+Future<void> deleteUser() async {
+  Future<List> users = getUsers();
+
+  User u = globals.userLoggedIn;
+
+  List list = await users;
+  print("--------------------------");
+  print(list);
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+
+  await db.collection("users").doc(us["uid"]).delete();
+
+  globals.isLoggedIn = false;
+  globals.userLoggedIn.name = "";
+  globals.userLoggedIn.username = "";
+  globals.userLoggedIn.phone = "";
+  globals.userLoggedIn.password = "";
 }

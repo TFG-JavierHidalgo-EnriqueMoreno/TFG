@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:my_app/entities/EditData.dart';
 import 'package:my_app/services/firebase_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -226,7 +227,10 @@ class UserProfileFormState extends State<UserProfileForm> {
                       child: const Text('Cancelar'),
                     ),
                     TextButton(
-                      onPressed: () => deleteUser(context),
+                      onPressed: () {
+                        beforeDeleteUser(context);
+                        setState(() {});
+                      },
                       child: const Text('Confirmar'),
                     ),
                   ],
@@ -282,7 +286,7 @@ logout(BuildContext context) {
   );
 }
 
-deleteUser(BuildContext context) {
+beforeDeleteUser(BuildContext context) {
   showDialog<String>(
     context: context,
     barrierColor: Colors.transparent,
@@ -296,16 +300,15 @@ deleteUser(BuildContext context) {
         ),
       ],
     ),
-  ).then((val) {
-    afterDeleteUser(context);
-  });
+  );
 }
 
 afterDeleteUser(BuildContext context) {
-  globals.isLoggedIn = false;
-  Navigator.of(context).pushReplacement(
-    FadePageRoute(
-      builder: (context) => const LoginScreen(),
-    ),
-  );
+  deleteUser().then((_) {
+    Navigator.of(context).pushReplacement(
+      FadePageRoute(
+        builder: (context) => const LoginScreen(),
+      ),
+    );
+  });
 }
