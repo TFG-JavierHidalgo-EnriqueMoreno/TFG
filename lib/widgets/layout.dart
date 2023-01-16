@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 
 import '../routes/custom_route.dart';
 import '../screens/home_page.dart';
+import 'package:my_app/entities/globals.dart' as globals;
 
 Widget _getDrawer(BuildContext context) {
-  var accountEmail = Text("EMAIL");
-  var accountName = Text("USUARIO");
+  var accountEmail = Text(globals.userLoggedIn.email);
+  var accountName = Text(globals.userLoggedIn.username);
   return Drawer(
     child: ListView(
       children: <Widget>[

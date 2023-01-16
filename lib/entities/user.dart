@@ -8,21 +8,19 @@ class User extends ModelMVC {
   String username = "";
   String password = "";
   String name = "";
-  String surname = "";
   String phone = "";
   String email = "";
   int elo = 0;
 
-  // User(String username, String password, String name, String surname, String phone,
-  //     String email, int elo) {
-  //   this.username = username;
-  //   this.password = password;
-  //   this.name = name;
-  //   this.surname = surname;
-  //   this.phone = phone;
-  //   this.email = email;
-  //   this.elo = elo;
-  // }
+  User? newUser(String username, String password, String name, String phone,
+      String email, int elo) {
+    this.username = username;
+    this.password = password;
+    this.name = name;
+    this.phone = phone;
+    this.email = email;
+    this.elo = elo;
+  }
 
   String get getUsername {
     return username;
@@ -34,10 +32,6 @@ class User extends ModelMVC {
 
   String get getName {
     return name;
-  }
-
-  String get getSurname {
-    return surname;
   }
 
   String get getPhone {
@@ -62,10 +56,6 @@ class User extends ModelMVC {
 
   set setName(String newName) {
     name = newName;
-  }
-
-  set setSurname(String newSurname) {
-    surname = newSurname;
   }
 
   set setPhone(String newPhone) {

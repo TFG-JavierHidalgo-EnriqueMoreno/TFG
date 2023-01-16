@@ -5,6 +5,8 @@ import 'package:my_app/screens/select_page.dart';
 import 'package:my_app/routes/custom_route.dart';
 import 'home_page.dart';
 
+import 'package:my_app/entities/globals.dart' as globals;
+
 class ResultPage extends StatelessWidget {
   const ResultPage({super.key});
 
@@ -224,8 +226,8 @@ class ResultPageFormState extends State<ResultPageForm> {
 }
 
 Widget _getDrawer(BuildContext context) {
-  var accountEmail = const Text("EMAIL");
-  var accountName = const Text("USUARIO");
+  var accountEmail = Text(globals.userLoggedIn.email);
+  var accountName = Text(globals.userLoggedIn.username);
   var accountPicture = const Icon(FontAwesomeIcons.userLarge);
   return Drawer(
     child: ListView(

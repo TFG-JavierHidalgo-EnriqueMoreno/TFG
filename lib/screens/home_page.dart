@@ -43,26 +43,25 @@ Widget _page(BuildContext context) {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [Icon(Icons.person), Text('Liga: Oro')],
+                  children: [Icon(Icons.person), Text('Liga: Oro'), Text("Puntos de liga: ${globals.userLoggedIn.elo}")],
                 ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Padding(
                     padding: EdgeInsets.only(bottom: 8.0),
                     child: Text(
-                      'Usuario',
+                      globals.userLoggedIn.username,
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.only(bottom: 8.0),
-                    child: Text('Nombre apellidos'),
+                    child: Text(globals.userLoggedIn.name),
                   ),
-                  Text('30 puntos')
                 ],
               )
             ],
@@ -83,7 +82,9 @@ Widget _page(BuildContext context) {
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(onPressed: () => playGame(context), child: Text('Jugar partido'))
+              ElevatedButton(
+                  onPressed: () => playGame(context),
+                  child: Text('Jugar partido'))
             ],
           ),
         )
@@ -93,8 +94,8 @@ Widget _page(BuildContext context) {
 }
 
 Widget _getDrawer(BuildContext context) {
-  var accountEmail = Text("EMAIL");
-  var accountName = Text("USUARIO");
+  var accountEmail = Text(globals.userLoggedIn.email);
+  var accountName = Text(globals.userLoggedIn.username);
   var accountPicture = Icon(FontAwesomeIcons.userLarge);
   return Drawer(
     child: ListView(
@@ -150,7 +151,6 @@ playGame(BuildContext context) {
 
 logout(BuildContext context) {
   globals.isLoggedIn = false;
-  debugPrint('logged in: ${globals.isLoggedIn}');
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const LoginScreen(),

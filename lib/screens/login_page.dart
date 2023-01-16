@@ -59,7 +59,7 @@ class _LoginScreenState extends StateMVC<LoginScreen> {
       titleTag: Constants.titleTag,
       navigateBackAfterRecovery: true,
       onConfirmRecover: con.signupConfirm,
-      onConfirmSignup: con.signupConfirm,
+      //  onConfirmSignup: con.signupConfirm,
       loginAfterSignUp: false,
       // loginProviders: [
       //   LoginProvider(
