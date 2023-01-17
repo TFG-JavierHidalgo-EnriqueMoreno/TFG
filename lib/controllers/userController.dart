@@ -59,6 +59,8 @@ class userController extends ControllerMVC {
           u["data"]["phone"],
           u["data"]["email"],
           u["data"]["elo"]);
+
+      globals.userLevel.newLevel(u["level"]["name"]);
       return null;
     });
   }
