@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:my_app/entities/lineup.dart';
 import 'package:my_app/screens/result_page.dart';
 import 'package:my_app/routes/custom_route.dart';
 import 'package:my_app/services/firebase_service.dart';
@@ -439,18 +440,22 @@ class SelectPageFormState extends State<SelectPageForm> {
                                 padding: const EdgeInsets.only(left: 260.0),
                                 child: _allSelected == true
                                     ? ElevatedButton(
-                                        onPressed: () => confirm(context),
+                                        onPressed: () {
+                                          confirm(context);
+                                          setState(() {});
+                                        },
                                         child: Text('Confirmar'))
                                     : Padding(
-                                      padding: const EdgeInsets.only(top: 49.0),
-                                      child: Visibility(
-                                        child: ElevatedButton(
+                                        padding:
+                                            const EdgeInsets.only(top: 49.0),
+                                        child: Visibility(
+                                          child: ElevatedButton(
                                             onPressed: () {},
                                             child: Text(''),
                                           ),
                                           visible: false,
+                                        ),
                                       ),
-                                    ),
                               ),
                             ],
                           ),
@@ -499,6 +504,9 @@ Widget _getDrawer(BuildContext context) {
 }
 
 confirm(BuildContext context) {
+  Lineup lineup = Lineup();
+  lineup.newLineup("4-4-2", "5-3-2");
+  saveGame(3, 2, lineup);
   calcElo();
   Navigator.of(context).pushReplacement(
     FadePageRoute(

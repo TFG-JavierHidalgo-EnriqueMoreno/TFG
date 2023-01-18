@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_app/entities/globals.dart' as globals;
 import 'package:my_app/entities/level.dart';
+import 'package:my_app/entities/lineup.dart';
 import 'package:my_app/entities/user.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
@@ -191,4 +194,49 @@ Future<void> deleteUser() async {
   globals.userLoggedIn.username = "";
   globals.userLoggedIn.phone = "";
   globals.userLoggedIn.password = "";
+}
+
+Future<void> saveGame(int? localGoals, int? awayGoals, Lineup? lineup) async {
+
+  Future<List> users = getUsers();
+
+  User u = globals.userLoggedIn;
+
+  List list = await users;
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+  await db
+      .collection("games")
+      .add({
+        "local_goals": localGoals,
+        "away_goals": awayGoals,
+        "score": localGoals! > awayGoals! ? 1 : 2,
+      })
+      .then((value) => value.collection("lineup").add({
+            "local_lineup": lineup?.getLocalLineup,
+            "away_lineup": lineup?.getAwayLineup
+          }))
+      .then((value) => db.collection("user_game").add({
+            "game_id": value.parent.parent?.id,
+            "user_id": us["uid"],
+          }));
+}
+
+//TODO: Obtener el usuario logueado
+
+userLoggedIn() async {
+
+  // Future<List> users = getUsers();
+
+  // User u = globals.userLoggedIn;
+
+  // List list = await users;
+  // var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+
+  // final userLogged = {
+  //   "uid": us["uid"],
+  //   "data": us["data"],
+  //   "level": us["level"]
+  // };
+
+  // return userLogged;
 }
