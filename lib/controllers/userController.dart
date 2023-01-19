@@ -9,6 +9,7 @@ import 'package:my_app/entities/EditData.dart';
 import 'package:my_app/routes/custom_route.dart';
 import 'package:my_app/screens/home_page.dart';
 import 'package:my_app/screens/login_page.dart';
+import 'package:my_app/services/api_service.dart';
 import 'package:my_app/services/firebase_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
@@ -29,6 +30,9 @@ class userController extends ControllerMVC {
   Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
 
   Future<String?> loginUser(LoginData data) async {
+    // getLeagues();
+    // getPlayers();
+    getClubs();
     Future<List> users = getUsers();
 
     Map<String, String> mapUser = new HashMap();

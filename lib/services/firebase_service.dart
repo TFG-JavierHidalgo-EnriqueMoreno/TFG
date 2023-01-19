@@ -1,9 +1,12 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:my_app/entities/club.dart';
 import 'package:my_app/entities/globals.dart' as globals;
+import 'package:my_app/entities/league.dart';
 import 'package:my_app/entities/level.dart';
 import 'package:my_app/entities/lineup.dart';
+import 'package:my_app/entities/player.dart';
 import 'package:my_app/entities/user.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
@@ -197,7 +200,6 @@ Future<void> deleteUser() async {
 }
 
 Future<void> saveGame(int? localGoals, int? awayGoals, Lineup? lineup) async {
-
   Future<List> users = getUsers();
 
   User u = globals.userLoggedIn;
@@ -224,7 +226,6 @@ Future<void> saveGame(int? localGoals, int? awayGoals, Lineup? lineup) async {
 //TODO: Obtener el usuario logueado
 
 userLoggedIn() async {
-
   // Future<List> users = getUsers();
 
   // User u = globals.userLoggedIn;
@@ -239,4 +240,30 @@ userLoggedIn() async {
   // };
 
   // return userLogged;
+}
+
+Future<void> savePlayer(Player? p) async {
+  await db.collection("players").add({
+    "name": p?.getName,
+    "position": p?.getPosition,
+    "rating": p?.getRating,
+    "defense": p?.getDefense,
+    "dribbling": p?.getDribbling,
+    "passing": p?.getPassing,
+    "shooting": p?.getShooting,
+    "speed": p?.getSpeed,
+    "strength": p?.getStrength,
+  });
+}
+
+Future<void> saveLeague(League? l) async {
+  await db.collection("leagues").add({
+    "name": l?.getName,
+  });
+}
+
+Future<void> saveClub(Club? c) async {
+  await db.collection("clubs").add({
+    "name": c?.getName,
+  });
 }
