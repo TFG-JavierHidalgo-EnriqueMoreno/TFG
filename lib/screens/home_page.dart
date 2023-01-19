@@ -43,7 +43,7 @@ Widget _page(BuildContext context) {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Icon(Icons.person), Text('Liga: Oro'), Text("Puntos de liga: ${globals.userLoggedIn.elo}")],
+                  children: [Icon(Icons.person), Text('Liga: ${globals.userLevel.name}'), Text("Puntos de liga: ${globals.userLoggedIn.elo}")],
                 ),
               ),
               Column(

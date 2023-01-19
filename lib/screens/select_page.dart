@@ -4,8 +4,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:my_app/entities/lineup.dart';
 import 'package:my_app/screens/result_page.dart';
 import 'package:my_app/routes/custom_route.dart';
+import 'package:my_app/services/firebase_service.dart';
 import 'home_page.dart';
 
 import 'package:my_app/entities/globals.dart' as globals;
@@ -51,6 +53,7 @@ class SelectPageFormState extends State<SelectPageForm> {
   String _password = "";
   List<String> list = <String>['4-4-2', '4-3-3', '5-3-2', '5-4-1'];
   String dropdownValue = '4-4-2';
+  bool _allSelected = false;
   final Map<int, bool> _selected = {
     0: false,
     1: false,
@@ -62,8 +65,7 @@ class SelectPageFormState extends State<SelectPageForm> {
     7: false,
     8: false,
     9: false,
-    10: false,
-    11: false
+    10: false
   };
 
   void _toggle() {
@@ -77,6 +79,7 @@ class SelectPageFormState extends State<SelectPageForm> {
     if (changed == true) {
       setState(() {
         _selected.update(key, (value) => !value);
+        _allSelected = !(_selected.values.any((element) => element == false));
       });
     }
   }
@@ -435,9 +438,24 @@ class SelectPageFormState extends State<SelectPageForm> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(left: 260.0),
-                                child: ElevatedButton(
-                                    onPressed: () => confirm(context),
-                                    child: Text('Confirmar')),
+                                child: _allSelected == true
+                                    ? ElevatedButton(
+                                        onPressed: () {
+                                          confirm(context);
+                                          setState(() {});
+                                        },
+                                        child: Text('Confirmar'))
+                                    : Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 49.0),
+                                        child: Visibility(
+                                          child: ElevatedButton(
+                                            onPressed: () {},
+                                            child: Text(''),
+                                          ),
+                                          visible: false,
+                                        ),
+                                      ),
                               ),
                             ],
                           ),
@@ -486,6 +504,10 @@ Widget _getDrawer(BuildContext context) {
 }
 
 confirm(BuildContext context) {
+  Lineup lineup = Lineup();
+  lineup.newLineup("4-4-2", "5-3-2");
+  saveGame(3, 2, lineup);
+  calcElo();
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const ResultPage(),
