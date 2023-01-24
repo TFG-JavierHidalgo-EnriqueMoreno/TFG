@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_app/entities/club.dart';
@@ -242,28 +243,55 @@ userLoggedIn() async {
   // return userLogged;
 }
 
-Future<void> savePlayer(Player? p) async {
-  await db.collection("players").add({
-    "name": p?.getName,
-    "position": p?.getPosition,
-    "rating": p?.getRating,
-    "defense": p?.getDefense,
-    "dribbling": p?.getDribbling,
-    "passing": p?.getPassing,
-    "shooting": p?.getShooting,
-    "speed": p?.getSpeed,
-    "strength": p?.getStrength,
+ Future<void> savePlayer(Map<String, dynamic> p) async {
+  Player player = p["player"] as Player;
+    var player_db = await db.collection("players").add({
+    "name": player.getName,
+    "position": player.getPosition,
+    "rating": player.getRating,
+    "defense": player.getDefense,
+    "dribbling": player.getDribbling,
+    "passing": player.getPassing,
+    "shooting": player.getShooting,
+    "speed": player.getSpeed,
+    "strength": player.getStrength,
+  });
+  var leagueId = await getLeagueByApiId(p["league"]);
+  var clubId = await getClubByApiId(p["club"]);
+  await db.collection("player_league").add({
+    "player_id": player_db.id,
+    "league_id": leagueId,
+  });
+  await db.collection("player_club").add({
+    "player_id": player_db.id,
+    "club_id": clubId,
   });
 }
 
 Future<void> saveLeague(League? l) async {
   await db.collection("leagues").add({
     "name": l?.getName,
+    "api_id": l?.getApiId,
   });
 }
 
 Future<void> saveClub(Club? c) async {
   await db.collection("clubs").add({
     "name": c?.getName,
+    "api_id": c?.getApiId,
   });
+}
+
+Future<String?> getLeagueByApiId(int? apiId) async {
+  QuerySnapshot q =
+      await db.collection("leagues").where('api_id', isEqualTo: apiId).get();
+  var l = q.docs[0].id;
+  return l;
+}
+
+Future<String?> getClubByApiId(int? apiId) async {
+  QuerySnapshot q =
+      await db.collection("clubs").where('api_id', isEqualTo: apiId).get();
+  var c = q.docs[0].id;
+  return c;
 }

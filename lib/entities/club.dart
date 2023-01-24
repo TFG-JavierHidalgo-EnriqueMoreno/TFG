@@ -6,9 +6,11 @@ class Club extends ModelMVC {
   static Club? _this;
 
   String name = "";
+  int apiId = 0;
 
-  Club? newClub(String name) {
+  Club? newClub(String name, int apiId) {
     this.name = name;
+    this.apiId = apiId;
   }
 
   String get getName {
@@ -17,5 +19,13 @@ class Club extends ModelMVC {
 
   set setName(String newName) {
     name = newName;
+  }
+
+  int get getApiId {
+    return apiId;
+  }
+
+  set setApiId(int newApiId) {
+    apiId = newApiId;
   }
 }

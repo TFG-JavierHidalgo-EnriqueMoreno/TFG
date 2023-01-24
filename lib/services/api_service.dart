@@ -10,7 +10,7 @@ import 'package:my_app/services/firebase_service.dart';
 const String apiKey = "b7745036-86bb-4216-907a-b2f4e50f2f76";
 const String urlPlayers = "https://futdb.app/api/players?page=20";
 const String urlLeagues = "https://futdb.app/api/leagues";
-const String urlClubs = "https://futdb.app/api/clubs?page=1";
+const String urlClubs = "https://futdb.app/api/clubs?page=";
 
 void getLeagues() async {
   final response = await http.get(
@@ -32,7 +32,7 @@ void getLeagues() async {
           e["id"] == 31 ||
           e["id"] == 53) {
         League? l = League();
-        l.newLeague(e["name"]);
+        l.newLeague(e["name"], e["id"]);
         saveLeague(l);
       }
     });
@@ -40,8 +40,9 @@ void getLeagues() async {
 }
 
 void getClubs() async {
+  int totalPages = 0;
   final response = await http.get(
-    Uri.parse(urlClubs),
+    Uri.parse('${urlClubs}1'),
     // Send authorization headers to the backend.
     headers: {
       "X-AUTH-TOKEN": apiKey,
@@ -58,11 +59,39 @@ void getClubs() async {
           e["league"] == 19 ||
           e["league"] == 31 ||
           e["league"] == 53) {
-        Club? c = Club();
-        c.newClub(e["name"]);
-        saveClub(c);
+        if (e["name"] != 'HERO') {
+          Club? c = Club();
+          c.newClub(e["name"], e["id"]);
+          saveClub(c);
+        }
       }
     });
+    totalPages = jsonResponse["pagination"]["pageTotal"];
+    for (var i = 2; i <= totalPages; i++) {
+      var r = await http.get(
+        Uri.parse('$urlClubs$i'),
+        // Send authorization headers to the backend.
+        headers: {
+          "X-AUTH-TOKEN": apiKey,
+        },
+      );
+      if (response.statusCode == 200) {
+        var jr = convert.jsonDecode(r.body) as Map<String, dynamic>;
+        jr["items"].forEach((e) {
+          if (e["league"] == 13 ||
+              e["league"] == 16 ||
+              e["league"] == 19 ||
+              e["league"] == 31 ||
+              e["league"] == 53) {
+            if (e["name"] != 'HERO') {
+              Club? c = Club();
+              c.newClub(e["name"], e["id"]);
+              saveClub(c);
+            }
+          }
+        });
+      }
+    }
   }
 }
 
@@ -91,7 +120,7 @@ void getPlayers() async {
               e["league"] == 19 ||
               e["league"] == 31 ||
               e["league"] == 53) &&
-          !addPlayers.contains(e["name"]) &&
+          !(addPlayers.contains(e["name"])) &&
           e["club"] != 114605) {
         Player p = Player();
         p.newPlayer(
@@ -105,7 +134,8 @@ void getPlayers() async {
             e["pace"],
             e["physicality"]);
         addPlayers.add(e["name"]);
-        savePlayer(p);
+        final player = {"player": p, "league": e["league"], "club": e["club"]};
+        savePlayer(player);
       }
     });
   } else {

@@ -6,9 +6,11 @@ class League extends ModelMVC {
   static League? _this;
 
   String name = "";
+  int apiId = 0;
 
-  League? newLeague(String name) {
+  League? newLeague(String name, int apiId) {
     this.name = name;
+    this.apiId = apiId;
   }
 
   String get getName {
@@ -17,5 +19,13 @@ class League extends ModelMVC {
 
   set setName(String newName) {
     name = newName;
+  }
+
+  int get getApiId {
+    return apiId;
+  }
+
+  set setApiId(int newApiId) {
+    apiId = newApiId;
   }
 }

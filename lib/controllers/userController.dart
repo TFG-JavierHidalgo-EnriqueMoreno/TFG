@@ -31,8 +31,8 @@ class userController extends ControllerMVC {
 
   Future<String?> loginUser(LoginData data) async {
     // getLeagues();
+    // getClubs();
     // getPlayers();
-    getClubs();
     Future<List> users = getUsers();
 
     Map<String, String> mapUser = new HashMap();
