@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:ffi';
+
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_app/entities/club.dart';
@@ -243,29 +246,72 @@ userLoggedIn() async {
   // return userLogged;
 }
 
- Future<void> savePlayer(Map<String, dynamic> p) async {
+Future<void> savePlayer(Map<String, dynamic> p) async {
   Player player = p["player"] as Player;
+  var category = "Bronze";
+  var position = "";
+  if (player.getRating >= 70 && player.getRating < 85) {
+    category = "Silver";
+  } else if (player.getRating >= 85) {
+    category = "Gold";
+  }
+  switch (player.getPosition) {
+    case "ST":
+    case "CF":
+    case "RW":
+    case "LW":
+      position = "DL";
+      break;
+    case "CAM":
+    case "CM":
+    case "CDM":
+    case "RM":
+    case "LM":
+      position = "MC";
+      break;
+    case "CB":
+    case "LB":
+    case "RWB":
+    case "LWB":
+    case "RB":
+      position = "DF";
+      break;
+    case "GK":
+      position = "PT";
+      break;
+    default:
+  }
+  if (player.getDefense != 0 &&
+      player.getDribbling != 0 &&
+      player.getPassing != 0 &&
+      player.getShooting != 0 &&
+      player.getSpeed != 0 &&
+      player.getStrength != 0) {
     var player_db = await db.collection("players").add({
-    "name": player.getName,
-    "position": player.getPosition,
-    "rating": player.getRating,
-    "defense": player.getDefense,
-    "dribbling": player.getDribbling,
-    "passing": player.getPassing,
-    "shooting": player.getShooting,
-    "speed": player.getSpeed,
-    "strength": player.getStrength,
-  });
-  var leagueId = await getLeagueByApiId(p["league"]);
-  var clubId = await getClubByApiId(p["club"]);
-  await db.collection("player_league").add({
-    "player_id": player_db.id,
-    "league_id": leagueId,
-  });
-  await db.collection("player_club").add({
-    "player_id": player_db.id,
-    "club_id": clubId,
-  });
+      "name": player.getName,
+      "position": position == "" ? player.getPosition : position,
+      "rating": player.getRating,
+      "defense": player.getDefense,
+      "dribbling": player.getDribbling,
+      "passing": player.getPassing,
+      "shooting": player.getShooting,
+      "speed": player.getSpeed,
+      "strength": player.getStrength,
+      "category": category
+    });
+    var leagueId = await getLeagueByApiId(p["league"]);
+    var clubId = await getClubByApiId(p["club"]);
+    await db.collection("player_league").add({
+      "player_id": player_db.id,
+      "league_id": leagueId,
+    });
+    if (clubId != "") {
+      await db.collection("player_club").add({
+        "player_id": player_db.id,
+        "club_id": clubId,
+      });
+    }
+  }
 }
 
 Future<void> saveLeague(League? l) async {
@@ -292,6 +338,69 @@ Future<String?> getLeagueByApiId(int? apiId) async {
 Future<String?> getClubByApiId(int? apiId) async {
   QuerySnapshot q =
       await db.collection("clubs").where('api_id', isEqualTo: apiId).get();
-  var c = q.docs[0].id;
+  var c = "";
+  if (q.docs.length != 0) {
+    c = q.docs[0].id;
+  }
   return c;
+}
+
+Future<Map<String, List<dynamic>>> getRandomPlayers() async {
+  Map<String, List<dynamic>> res = {};
+  QuerySnapshot pt =
+      await db.collection("players").where("position", isEqualTo: "PT").get();
+  QuerySnapshot df =
+      await db.collection("players").where("position", isEqualTo: "DF").get();
+  QuerySnapshot mc =
+      await db.collection("players").where("position", isEqualTo: "MC").get();
+  QuerySnapshot dl =
+      await db.collection("players").where("position", isEqualTo: "DL").get();
+  var npt = 0;
+  var ndf = 0;
+  var nmc = 0;
+  var ndl = 0;
+  List<dynamic> lpt = [];
+  List<dynamic> ldf = [];
+  List<dynamic> lmc = [];
+  List<dynamic> ldl = [];
+
+  while (npt < 3) {
+    Random r = new Random();
+    int rn = r.nextInt(pt.docs.length);
+    var player = pt.docs[rn].data();
+    lpt.add(player);
+    npt++;
+  }
+  res.putIfAbsent("PT", () => lpt);
+
+  while (ndf < 12) {
+    Random r = new Random();
+    int rn = r.nextInt(df.docs.length);
+    var player = df.docs[rn].data();
+    ldf.add(player);
+    ndf++;
+  }
+  res.putIfAbsent("DF", () => ldf);
+
+  while (nmc < 15) {
+    Random r = new Random();
+    int rn = r.nextInt(mc.docs.length);
+    var player = mc.docs[rn].data();
+    lmc.add(player);
+    nmc++;
+  }
+  res.putIfAbsent("MC", () => lmc);
+
+  while (ndl < 10) {
+    Random r = new Random();
+    int rn = r.nextInt(dl.docs.length);
+    var player = dl.docs[rn].data();
+    ldl.add(player);
+    ndl++;
+  }
+  res.putIfAbsent("DL", () => ldl);
+  print("-------------------------------");
+  inspect(res);
+
+  return res;
 }
