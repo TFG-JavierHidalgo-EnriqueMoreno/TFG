@@ -399,8 +399,6 @@ Future<Map<String, List<dynamic>>> getRandomPlayers() async {
     ndl++;
   }
   res.putIfAbsent("DL", () => ldl);
-  print("-------------------------------");
-  inspect(res);
 
   return res;
 }
