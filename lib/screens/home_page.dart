@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_app/screens/login_page.dart';
 import 'package:my_app/screens/select_page.dart';
 import 'package:my_app/screens/user_profile.dart';
+import 'package:my_app/services/firebase_service.dart';
 import '../routes/custom_route.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:my_app/entities/globals.dart' as globals;
@@ -43,7 +44,11 @@ Widget _page(BuildContext context) {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Icon(Icons.person), Text('Liga: ${globals.userLevel.name}'), Text("Puntos de liga: ${globals.userLoggedIn.elo}")],
+                  children: [
+                    Icon(Icons.person),
+                    Text('Liga: ${globals.userLevel.name}'),
+                    Text("Puntos de liga: ${globals.userLoggedIn.elo}")
+                  ],
                 ),
               ),
               Column(
@@ -142,6 +147,7 @@ showProfile(BuildContext context) {
 }
 
 playGame(BuildContext context) {
+  getRandomPlayers();
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const SelectPage(),
