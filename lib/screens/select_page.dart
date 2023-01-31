@@ -910,7 +910,7 @@ confirm(BuildContext context) {
   Lineup lineup = Lineup();
   lineup.newLineup("4-4-2", "5-3-2");
   saveGame(3, 2, lineup);
-  calcElo();
+  calcElo(false);
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const ResultPage(),

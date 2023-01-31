@@ -218,7 +218,11 @@ class ResultPageFormState extends State<ResultPageForm> {
                         child: Text("Volver a jugar")),
                   ),
                   ElevatedButton(
-                      onPressed: () => goToHome(context), child: Text("Inicio"))
+                      onPressed: () {
+                        setState(() {});
+                        goToHome(context);
+                      },
+                      child: Text("Inicio"))
                 ]),
           )
         ]);

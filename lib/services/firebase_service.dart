@@ -46,10 +46,18 @@ Future<void> saveUser(String? email, String? password, String? phone,
     "name": "$name $surname",
     "username": username,
     "elo": 0,
-  }).then((value) => value.collection("level").add({"name": "Plata"}));
+  }).then((value) => value.collection("level").add({
+        "name": "Bronce",
+        "min": 0,
+        "max": 10,
+        "next": "Plata",
+        "previous": null,
+        "victory": 3,
+        "lose": 0
+      }));
 }
 
-Future<void> calcElo() async {
+Future<void> calcElo(bool gameResult) async {
   Future<List> users = getUsers();
 
   User u = globals.userLoggedIn;
@@ -57,14 +65,17 @@ Future<void> calcElo() async {
   List list = await users;
 
   var us = list.firstWhere((element) => element["data"]["email"] == u.email);
-
-  switch (us["level"]["name"]) {
-    case "Bronce":
-      if (us["data"]["elo"] + 3 >= 10) {
+  if (gameResult) {
+    if (us["level"]["name"] != "Maestro") {
+      if (us["data"]["elo"] + us["level"]["victory"] > us["level"]["max"]) {
         QuerySnapshot level = await db
             .collection("users")
             .doc(us["uid"])
             .collection("level")
+            .get();
+        QuerySnapshot<Map<String, dynamic>> nextLevel = await db
+            .collection("levels")
+            .where("name", isEqualTo: us["level"]["next"])
             .get();
         String levelId = level.docs[0].id;
         await db
@@ -72,26 +83,62 @@ Future<void> calcElo() async {
             .doc(us["uid"])
             .collection("level")
             .doc(levelId)
-            .set({"name": "Plata"});
+            .set({
+          "name": us["level"]["next"],
+          "min": nextLevel.docs[0].data()["min"],
+          "max": nextLevel.docs[0].data()["max"],
+          "next": nextLevel.docs[0].data()["next"],
+          "previous": nextLevel.docs[0].data()["previous"],
+          "victory": nextLevel.docs[0].data()["victory"],
+          "lose": nextLevel.docs[0].data()["lose"],
+        });
+        globals.userLevel.name = us["level"]["next"];
       }
       await db.collection("users").doc(us["uid"]).set({
         "email": us["data"]["email"],
-        "elo": us["data"]["elo"] + 3,
+        "elo": us["data"]["elo"] + us["level"]["victory"],
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
         "phone": us["data"]["phone"]
       });
 
-      globals.userLoggedIn.elo = us["data"]["elo"] + 3;
-      globals.userLevel.name = us["data"]["elo"] + 3 >= 10 ? "Plata" : "Bronce";
-      break;
-    case "Plata":
-      if (us["data"]["elo"] + 3 >= 15) {
+      globals.userLoggedIn.elo = us["data"]["elo"] + us["level"]["victory"];
+    } else if (us["data"]["elo"] + us["level"]["victory"] >
+        us["level"]["max"]) {
+      await db.collection("users").doc(us["uid"]).set({
+        "email": us["data"]["email"],
+        "elo": 250,
+        "name": us["data"]["name"],
+        "password": us["data"]["password"],
+        "username": us["data"]["username"],
+        "phone": us["data"]["phone"]
+      });
+
+      globals.userLoggedIn.elo = 250;
+    } else {
+      await db.collection("users").doc(us["uid"]).set({
+        "email": us["data"]["email"],
+        "elo": us["data"]["elo"] + us["level"]["victory"],
+        "name": us["data"]["name"],
+        "password": us["data"]["password"],
+        "username": us["data"]["username"],
+        "phone": us["data"]["phone"]
+      });
+
+      globals.userLoggedIn.elo = us["data"]["elo"] + us["level"]["victory"];
+    }
+  } else {
+    if (us["level"]["name"] != "Bronce") {
+      if (us["data"]["elo"] - us["level"]["lose"] <= us["level"]["min"]) {
         QuerySnapshot level = await db
             .collection("users")
             .doc(us["uid"])
             .collection("level")
+            .get();
+        QuerySnapshot<Map<String, dynamic>> previousLevel = await db
+            .collection("levels")
+            .where("name", isEqualTo: us["level"]["previous"])
             .get();
         String levelId = level.docs[0].id;
         await db
@@ -99,64 +146,51 @@ Future<void> calcElo() async {
             .doc(us["uid"])
             .collection("level")
             .doc(levelId)
-            .set({"name": "Oro"});
+            .set({
+          "name": us["level"]["next"],
+          "min": previousLevel.docs[0].data()["min"],
+          "max": previousLevel.docs[0].data()["max"],
+          "next": previousLevel.docs[0].data()["next"],
+          "previous": previousLevel.docs[0].data()["previous"],
+          "victory": previousLevel.docs[0].data()["victory"],
+          "lose": previousLevel.docs[0].data()["lose"],
+        });
+        globals.userLevel.name = us["level"]["previous"];
       }
       await db.collection("users").doc(us["uid"]).set({
         "email": us["data"]["email"],
-        "elo": us["data"]["elo"] + 3,
+        "elo": us["data"]["elo"] - us["level"]["lose"],
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
         "phone": us["data"]["phone"]
       });
-      globals.userLoggedIn.elo = us["data"]["elo"] + 3;
-      globals.userLevel.name = us["data"]["elo"] + 3 >= 15 ? "Oro" : "Plata";
-      break;
-    case "Oro":
+
+      globals.userLoggedIn.elo = us["data"]["elo"] - us["level"]["lose"];
+    } else if (us["data"]["elo"] - us["level"]["lose"] <=
+        us["level"]["min"]) {
       await db.collection("users").doc(us["uid"]).set({
         "email": us["data"]["email"],
-        "elo": us["data"]["elo"] + 3,
+        "elo": 0,
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
         "phone": us["data"]["phone"]
       });
-      globals.userLoggedIn.elo = us["data"]["elo"] + 3;
-      break;
-    case "Platino":
+
+      globals.userLoggedIn.elo = 0;
+    } else {
       await db.collection("users").doc(us["uid"]).set({
         "email": us["data"]["email"],
-        "elo": us["data"]["elo"] + 3,
+        "elo": us["data"]["elo"] - us["level"]["lose"],
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
         "phone": us["data"]["phone"]
       });
-      globals.userLoggedIn.elo = us["data"]["elo"] + 3;
-      break;
-    case "Diamante":
-      await db.collection("users").doc(us["uid"]).set({
-        "email": us["data"]["email"],
-        "elo": us["data"]["elo"] + 3,
-        "name": us["data"]["name"],
-        "password": us["data"]["password"],
-        "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
-      });
-      globals.userLoggedIn.elo = us["data"]["elo"] + 3;
-      break;
-    case "Maestro":
-      await db.collection("users").doc(us["uid"]).set({
-        "email": us["data"]["email"],
-        "elo": us["data"]["elo"] + 3,
-        "name": us["data"]["name"],
-        "password": us["data"]["password"],
-        "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
-      });
-      globals.userLoggedIn.elo = us["data"]["elo"] + 3;
-      break;
-    default:
+
+      globals.userLoggedIn.elo = us["data"]["elo"] - us["level"]["lose"];
+    }
   }
 }
 
