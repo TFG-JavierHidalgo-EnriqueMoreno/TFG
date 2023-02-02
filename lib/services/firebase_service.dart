@@ -6,6 +6,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_app/entities/club.dart';
+import 'package:my_app/entities/country.dart';
 import 'package:my_app/entities/globals.dart' as globals;
 import 'package:my_app/entities/league.dart';
 import 'package:my_app/entities/level.dart';
@@ -167,8 +168,7 @@ Future<void> calcElo(bool gameResult) async {
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] - us["level"]["lose"];
-    } else if (us["data"]["elo"] - us["level"]["lose"] <=
-        us["level"]["min"]) {
+    } else if (us["data"]["elo"] - us["level"]["lose"] <= us["level"]["min"]) {
       await db.collection("users").doc(us["uid"]).set({
         "email": us["data"]["email"],
         "elo": 0,
@@ -331,20 +331,22 @@ Future<void> savePlayer(Map<String, dynamic> p) async {
       "shooting": player.getShooting,
       "speed": player.getSpeed,
       "strength": player.getStrength,
+      "club_id": player.getClubId,
+      "country_id": player.getCountryId,
       "category": category
     });
-    var leagueId = await getLeagueByApiId(p["league"]);
-    var clubId = await getClubByApiId(p["club"]);
-    await db.collection("player_league").add({
-      "player_id": player_db.id,
-      "league_id": leagueId,
-    });
-    if (clubId != "") {
-      await db.collection("player_club").add({
-        "player_id": player_db.id,
-        "club_id": clubId,
-      });
-    }
+    // var leagueId = await getLeagueByApiId(p["league"]);
+    // var clubId = await getClubByApiId(p["club"]);
+    // await db.collection("player_league").add({
+    //   "player_id": player_db.id,
+    //   "league_id": leagueId,
+    // });
+    // if (clubId != "") {
+    //   await db.collection("player_club").add({
+    //     "player_id": player_db.id,
+    //     "club_id": clubId,
+    //   });
+    // }
   }
 }
 
@@ -352,6 +354,7 @@ Future<void> saveLeague(League? l) async {
   await db.collection("leagues").add({
     "name": l?.getName,
     "api_id": l?.getApiId,
+    "country_id": l?.getCountryId
   });
 }
 
@@ -359,6 +362,7 @@ Future<void> saveClub(Club? c) async {
   await db.collection("clubs").add({
     "name": c?.getName,
     "api_id": c?.getApiId,
+    "league_id": c?.getleagueId,
   });
 }
 
@@ -435,4 +439,11 @@ Future<Map<String, List<dynamic>>> getRandomPlayers() async {
   res.putIfAbsent("DL", () => ldl);
 
   return res;
+}
+
+Future<void> saveCountry(Country? c) async {
+  await db.collection("countries").add({
+    "name": c?.getName,
+    "api_id": c?.getApiId,
+  });
 }

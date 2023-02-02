@@ -30,9 +30,10 @@ class userController extends ControllerMVC {
   Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
 
   Future<String?> loginUser(LoginData data) async {
-    // getLeagues();
-    // getClubs();
-    // getPlayers();
+    //getCountries();
+    //getLeagues();
+    //getClubs();
+    //getPlayers();
     Future<List> users = getUsers();
 
     Map<String, String> mapUser = new HashMap();

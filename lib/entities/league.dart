@@ -7,10 +7,12 @@ class League extends ModelMVC {
 
   String name = "";
   int apiId = 0;
+  int countryId = 0;
 
-  League? newLeague(String name, int apiId) {
+  League? newLeague(String name, int apiId, int countryId) {
     this.name = name;
     this.apiId = apiId;
+    this.countryId = countryId;
   }
 
   String get getName {
@@ -27,5 +29,13 @@ class League extends ModelMVC {
 
   set setApiId(int newApiId) {
     apiId = newApiId;
+  }
+
+  int get getCountryId {
+    return countryId;
+  }
+
+  set setcountryId(int newcountryId) {
+    countryId = newcountryId;
   }
 }
