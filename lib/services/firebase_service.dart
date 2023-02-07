@@ -54,7 +54,11 @@ Future<void> saveUser(String? email, String? password, String? phone,
         "next": "Plata",
         "previous": null,
         "victory": 3,
-        "lose": 0
+        "lose": 0,
+        "num_bronzes": 20,
+        "num_golds": 2,
+        "num_silvers": 13,
+        "team_value": 350
       }));
 }
 
@@ -92,6 +96,10 @@ Future<void> calcElo(bool gameResult) async {
           "previous": nextLevel.docs[0].data()["previous"],
           "victory": nextLevel.docs[0].data()["victory"],
           "lose": nextLevel.docs[0].data()["lose"],
+          "num_bronzes": nextLevel.docs[0].data()["num_bronzes"],
+          "num_golds": nextLevel.docs[0].data()["num_golds"],
+          "num_silvers": nextLevel.docs[0].data()["num_silvers"],
+          "team_value": nextLevel.docs[0].data()["team_value"]
         });
         globals.userLevel.name = us["level"]["next"];
       }
@@ -155,6 +163,10 @@ Future<void> calcElo(bool gameResult) async {
           "previous": previousLevel.docs[0].data()["previous"],
           "victory": previousLevel.docs[0].data()["victory"],
           "lose": previousLevel.docs[0].data()["lose"],
+          "num_bronzes": previousLevel.docs[0].data()["num_bronzes"],
+          "num_golds": previousLevel.docs[0].data()["num_golds"],
+          "num_silvers": previousLevel.docs[0].data()["num_silvers"],
+          "team_value": previousLevel.docs[0].data()["team_value"]
         });
         globals.userLevel.name = us["level"]["previous"];
       }
@@ -282,12 +294,21 @@ userLoggedIn() async {
 
 Future<void> savePlayer(Map<String, dynamic> p) async {
   Player player = p["player"] as Player;
-  var category = "Bronze";
+  var category = "";
   var position = "";
-  if (player.getRating >= 70 && player.getRating < 85) {
+  var price = 0;
+  if (player.getRating < 70) {
+    //MAX: 24
+    category = "Bronze";
+    price = (player.getRating * 0.35).round();
+  } else if (player.getRating >= 70 && player.getRating < 85) {
+    //MIN: 35 MAX: 42
     category = "Silver";
-  } else if (player.getRating >= 85) {
+    price = (player.getRating * 0.5).round();
+  } else {
+    //MIN:52  MAX: 59
     category = "Gold";
+    price = (player.getRating * 0.6).round();
   }
   switch (player.getPosition) {
     case "ST":
@@ -333,7 +354,8 @@ Future<void> savePlayer(Map<String, dynamic> p) async {
       "strength": player.getStrength,
       "club_id": player.getClubId,
       "country_id": player.getCountryId,
-      "category": category
+      "category": category,
+      "price": price
     });
     // var leagueId = await getLeagueByApiId(p["league"]);
     // var clubId = await getClubByApiId(p["club"]);
@@ -411,7 +433,7 @@ Future<Map<String, List<dynamic>>> getRandomPlayers() async {
   }
   res.putIfAbsent("PT", () => lpt);
 
-  while (ndf < 12) {
+  while (ndf < 11) {
     Random r = new Random();
     int rn = r.nextInt(df.docs.length);
     var player = df.docs[rn].data();
@@ -420,7 +442,7 @@ Future<Map<String, List<dynamic>>> getRandomPlayers() async {
   }
   res.putIfAbsent("DF", () => ldf);
 
-  while (nmc < 15) {
+  while (nmc < 12) {
     Random r = new Random();
     int rn = r.nextInt(mc.docs.length);
     var player = mc.docs[rn].data();
@@ -429,7 +451,7 @@ Future<Map<String, List<dynamic>>> getRandomPlayers() async {
   }
   res.putIfAbsent("MC", () => lmc);
 
-  while (ndl < 10) {
+  while (ndl < 9) {
     Random r = new Random();
     int rn = r.nextInt(dl.docs.length);
     var player = dl.docs[rn].data();

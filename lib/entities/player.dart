@@ -17,6 +17,7 @@ class Player extends ModelMVC {
   int clubId = 0;
   int countryId = 0;
   String category = "";
+  int price = 0;
 
   Player? newPlayer(
     String name,
@@ -88,6 +89,14 @@ class Player extends ModelMVC {
     return countryId;
   }
 
+  int get getPrice {
+    return price;
+  }
+
+  String get getCategory {
+    return category;
+  }
+
   set setClubId(int newClubId) {
     clubId = newClubId;
   }
@@ -130,5 +139,13 @@ class Player extends ModelMVC {
 
   set setStrength(int newStrength) {
     strength = newStrength;
+  }
+
+  set setCategory(String newCategory) {
+    category = newCategory;
+  }
+
+  set setPrice(int newPrice) {
+    price = newPrice;
   }
 }
