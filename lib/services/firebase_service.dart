@@ -89,7 +89,7 @@ Future<void> calcElo(bool gameResult) async {
             .collection("level")
             .doc(levelId)
             .set({
-          "name": us["level"]["next"],
+          "name": nextLevel.docs[0].data()["name"],
           "min": nextLevel.docs[0].data()["min"],
           "max": nextLevel.docs[0].data()["max"],
           "next": nextLevel.docs[0].data()["next"],
@@ -156,7 +156,7 @@ Future<void> calcElo(bool gameResult) async {
             .collection("level")
             .doc(levelId)
             .set({
-          "name": us["level"]["next"],
+          "name": previousLevel.docs[0].data()["name"],
           "min": previousLevel.docs[0].data()["min"],
           "max": previousLevel.docs[0].data()["max"],
           "next": previousLevel.docs[0].data()["next"],
