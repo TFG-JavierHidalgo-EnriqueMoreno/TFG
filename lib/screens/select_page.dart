@@ -93,7 +93,7 @@ class SelectPageFormState extends State<SelectPageForm> {
 
   void _changeButton(BuildContext context, bool changed, int key) {
     Navigator.pop(context, 'Confirmar');
-    if (changed == true) {
+    if (changed == true && _selected[key] == false) {
       setState(() {
         _selected.update(key, (value) => !value);
         _allSelected = !(_selected.values.any((element) => element == false));
@@ -137,10 +137,6 @@ class SelectPageFormState extends State<SelectPageForm> {
                   ],
                 ),
               )),
-          TextButton(
-            onPressed: () => _changeButton(context, true, key),
-            child: const Text('Confirmar'),
-          ),
         ],
       ),
     );
@@ -910,11 +906,10 @@ confirm(BuildContext context) {
   Lineup lineup = Lineup();
   lineup.newLineup("4-4-2", "5-3-2");
   saveGame(3, 2, lineup);
-  calcElo(false);
+  calcElo(true);
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const ResultPage(),
     ),
   );
 }
-
