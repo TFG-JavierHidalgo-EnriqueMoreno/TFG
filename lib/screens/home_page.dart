@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/screens/login_page.dart';
+import 'package:my_app/screens/player_page.dart';
 import 'package:my_app/screens/select_page.dart';
 import 'package:my_app/screens/user_profile.dart';
 import 'package:my_app/services/firebase_service.dart';
@@ -150,7 +151,7 @@ playGame(BuildContext context) {
   getRandomPlayers();
   Navigator.of(context).pushReplacement(
     FadePageRoute(
-      builder: (context) => const SelectPage(),
+      builder: (context) => const PlayerPage(),
     ),
   );
 }
