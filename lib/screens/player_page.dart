@@ -85,67 +85,63 @@ class PlayerPageFormState extends State<PlayerPageForm> {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 16.0, left: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    const Text("Porteros"),
-                    Card(
-                        child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: players["PT"]!.length,
-                      itemBuilder: ((context, index) {
-                        return Container(
-                          child: Text('${players["PT"]![index]["name"]}'),
-                        );
-                      }),
-                    ))
-                  ],
-                ),
+                child: Container(
+                    child: Card(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: players["PT"]!.length,
+                    itemBuilder: ((context, index) {
+                      return Container(
+                        child: Text('${players["PT"]![index]["name"]}'),
+                      );
+                    }),
+                  ),
+                )),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 16.0, left: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    const Text("Defensas"),
-
-                    //Lista
-                    //ListView.builder(itemBuilder: itemBuilder),
-                  ],
-                ),
+                child: Container(
+                    child: Card(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: players["DF"]!.length,
+                    itemBuilder: ((context, index) {
+                      return Container(
+                        child: Text('${players["DF"]![index]["name"]}'),
+                      );
+                    }),
+                  ),
+                )),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 16.0, left: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    const Text("Centrocampista"),
-
-                    //Lista
-                    //ListView.builder(itemBuilder: itemBuilder),
-                  ],
-                ),
+                child: Container(
+                    child: Card(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: players["MC"]!.length,
+                    itemBuilder: ((context, index) {
+                      return Container(
+                        child: Text('${players["MC"]![index]["name"]}'),
+                      );
+                    }),
+                  ),
+                )),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 16.0, left: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    const Text("Delanteros"),
-
-                    //Lista
-                    //ListView.builder(itemBuilder: itemBuilder),
-                  ],
-                ),
+                child: Container(
+                    child: Card(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: players["DL"]!.length,
+                    itemBuilder: ((context, index) {
+                      return Container(
+                        child: Text('${players["DL"]![index]["name"]}'),
+                      );
+                    }),
+                  ),
+                )),
               ),
             ];
           } else if (snapshot.hasError) {
@@ -174,11 +170,13 @@ class PlayerPageFormState extends State<PlayerPageForm> {
             ];
           }
 
-          return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: children);
+          return SingleChildScrollView(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: children),
+          );
         },
       ),
     );
