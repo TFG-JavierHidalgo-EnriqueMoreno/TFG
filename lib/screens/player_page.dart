@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:my_app/screens/select_page.dart';
@@ -16,6 +17,7 @@ class PlayerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const appTitle = 'Jugadores';
+    const floatingbutton = null;
 
     return MaterialApp(
       title: appTitle,
@@ -25,13 +27,6 @@ class PlayerPage extends StatelessWidget {
           title: const Text(appTitle),
         ),
         body: const PlayerPageForm(),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            // Add your onPressed code here!
-          },
-          backgroundColor: const Color(0xFF4CAF50),
-          label: const Text("Continuar"),
-        ),
       ),
     );
   }
@@ -65,8 +60,8 @@ class PlayerPageFormState extends State<PlayerPageForm> {
             AsyncSnapshot<Map<String, List<dynamic>>> snapshot) {
           List<Widget> children;
           if (snapshot.hasData) {
+            loaded = true;
             players = snapshot.data!;
-            inspect(players);
             children = <Widget>[
               Container(
                 height: 50.0,
@@ -143,6 +138,30 @@ class PlayerPageFormState extends State<PlayerPageForm> {
                   ),
                 )),
               ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    FloatingActionButton.extended(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SelectPage(),
+                              // Pass the arguments as part of the RouteSettings. The
+                              // DetailScreen reads the arguments from these settings.
+                              settings: RouteSettings(
+                                arguments: players,
+                              ),
+                            ));
+                      },
+                      backgroundColor: const Color(0xFF4CAF50),
+                      label: const Text("Continuar"),
+                    ),
+                  ],
+                ),
+              )
             ];
           } else if (snapshot.hasError) {
             children = <Widget>[
@@ -157,15 +176,13 @@ class PlayerPageFormState extends State<PlayerPageForm> {
               ),
             ];
           } else {
-            children = const <Widget>[
-              SizedBox(
-                width: 60,
-                height: 60,
-                child: CircularProgressIndicator(),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 16),
-                child: Text('Awaiting result...'),
+            children = <Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
               ),
             ];
           }
@@ -223,14 +240,6 @@ goToHome(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const HomePage(),
-    ),
-  );
-}
-
-playAgain(BuildContext context) {
-  Navigator.of(context).pushReplacement(
-    FadePageRoute(
-      builder: (context) => const SelectPage(),
     ),
   );
 }
