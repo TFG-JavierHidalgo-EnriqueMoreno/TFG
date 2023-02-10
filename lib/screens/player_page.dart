@@ -145,16 +145,7 @@ class PlayerPageFormState extends State<PlayerPageForm> {
                   children: [
                     FloatingActionButton.extended(
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SelectPage(),
-                              // Pass the arguments as part of the RouteSettings. The
-                              // DetailScreen reads the arguments from these settings.
-                              settings: RouteSettings(
-                                arguments: players,
-                              ),
-                            ));
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SelectPage(p: players)));
                       },
                       backgroundColor: const Color(0xFF4CAF50),
                       label: const Text("Continuar"),
