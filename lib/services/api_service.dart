@@ -168,8 +168,15 @@ void getPlayers() async {
           !(addPlayers.contains(e["name"])) &&
           e["club"] != 114605) {
         Player p = Player();
+        List<String> splitName = e["name"].toString().split(" ");
+        String playerName = "";
+        if (splitName.length == 1) {
+          playerName = e["name"];
+        } else {
+          playerName = splitName[1];
+        }
         p.newPlayer(
-            e["name"],
+            playerName,
             e["position"],
             e["rating"],
             e["defending"],
@@ -206,8 +213,15 @@ void getPlayers() async {
               !(addPlayers.contains(e["name"])) &&
               e["club"] != 114605) {
             Player p = Player();
+            List<String> splitName = e["name"].toString().split(" ");
+            String playerName = "";
+            if (splitName.length == 1) {
+              playerName = e["name"];
+            } else {
+              playerName = splitName[1];
+            }
             p.newPlayer(
-                e["name"],
+                playerName,
                 e["position"],
                 e["rating"],
                 e["defending"],

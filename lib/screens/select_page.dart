@@ -14,7 +14,6 @@ import 'home_page.dart';
 
 import 'package:my_app/entities/globals.dart' as globals;
 
-
 class SelectPage extends StatefulWidget {
   final Map<String, List<dynamic>> p;
 
@@ -33,10 +32,12 @@ class SelectPageState extends State<SelectPage> {
   // Note: This is a `GlobalKey<FormState>`,
   // not a GlobalKey<MyCustomFormState>.
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    cp = widget.p;
+    _assignPlayers(cp);
+  }
 
   late Map<String, List<dynamic>> cp;
 
@@ -68,6 +69,15 @@ class SelectPageState extends State<SelectPage> {
 
   bool loaded = false;
 
+  void _assignPlayers(Map<String, List<dynamic>> cp) {
+    inspect(cp);
+    g = cp["PT"];
+    d = cp["DF"];
+    m = cp["MC"];
+    f = cp["DL"];
+    inspect(g);
+  }
+
   void _toggle() {
     setState(() {
       _obscureText = !_obscureText;
@@ -84,7 +94,8 @@ class SelectPageState extends State<SelectPage> {
     }
   }
 
-  select(int key, Map<int, bool> selected, BuildContext context) {
+  select(int key, Map<int, bool> selected, BuildContext context,
+      List<dynamic>? l) {
     showDialog<String>(
       context: context,
       barrierColor: Colors.transparent,
@@ -92,34 +103,232 @@ class SelectPageState extends State<SelectPage> {
         title: const Text('Selecciona jugador'),
         //content: const Text('Usuario eliminado'),
         actions: <Widget>[
-          TextButton(
-              style: TextButton.styleFrom(primary: Colors.black),
-              onPressed: () => _changeButton(context, true, key),
-              child: Container(
-                height: 75,
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black, width: 1.0)),
-                child: Row(
-                  children: const <Widget>[
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text("DL", style: TextStyle(fontSize: 24)),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Icon(Icons.account_circle, size: 24),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text("En-Nesyri", style: TextStyle(fontSize: 24)),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text("99", style: TextStyle(fontSize: 24)),
-                    ),
-                  ],
-                ),
-              )),
+          SingleChildScrollView(
+            child: Container(
+              height: 300,
+              width: 300,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: l!.length,
+                itemBuilder: ((context, index) {
+                  return Container(
+                    child: TextButton(
+                        style: TextButton.styleFrom(primary: Colors.black),
+                        onPressed: () => _changeButton(context, true, key),
+                        child: Container(
+                          constraints: BoxConstraints(
+                            maxHeight: double.infinity,
+                          ),
+                          decoration: BoxDecoration(
+                              color: Colors.amber,
+                              border:
+                                  Border.all(color: Colors.black, width: 1.0)),
+                          child: Column(
+                            children: <Widget>[
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Icon(Icons.account_circle, size: 20),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text(l[index]["name"],
+                                        style: TextStyle(fontSize: 20)),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text(
+                                        l[index]["price"].toString() + "M",
+                                        style: TextStyle(fontSize: 20)),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: CircleAvatar(
+                                      radius: 11.5,
+                                      backgroundColor: l[index]["shooting"] < 35
+                                          ? Colors.red
+                                          : l[index]["shooting"] < 70
+                                              ? Colors.yellow
+                                              : Colors.green,
+                                      child: Center(
+                                        child: Text(
+                                            l[index]["shooting"].toString(),
+                                            style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black)),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: CircleAvatar(
+                                      radius: 11.5,
+                                      backgroundColor: l[index]["speed"] < 35
+                                          ? Colors.red
+                                          : l[index]["speed"] < 70
+                                              ? Colors.yellow
+                                              : Colors.green,
+                                      child: Center(
+                                        child: Text(
+                                            l[index]["speed"].toString(),
+                                            style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black)),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: CircleAvatar(
+                                      radius: 11.5,
+                                      backgroundColor: l[index]["strength"] < 35
+                                          ? Colors.red
+                                          : l[index]["strength"] < 70
+                                              ? Colors.yellow
+                                              : Colors.green,
+                                      child: Center(
+                                        child: Text(
+                                            l[index]["strength"].toString(),
+                                            style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black)),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: CircleAvatar(
+                                      radius: 11.5,
+                                      backgroundColor: l[index]["passing"] < 35
+                                          ? Colors.red
+                                          : l[index]["passing"] < 70
+                                              ? Colors.yellow
+                                              : Colors.green,
+                                      child: Center(
+                                        child: Text(
+                                            l[index]["passing"].toString(),
+                                            style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black)),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: CircleAvatar(
+                                      radius: 11.5,
+                                      backgroundColor:
+                                          l[index]["dribbling"] < 35
+                                              ? Colors.red
+                                              : l[index]["dribbling"] < 70
+                                                  ? Colors.yellow
+                                                  : Colors.green,
+                                      child: Center(
+                                        child: Text(
+                                            l[index]["dribbling"].toString(),
+                                            style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black)),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: CircleAvatar(
+                                      radius: 11.5,
+                                      backgroundColor: l[index]["defense"] < 35
+                                          ? Colors.red
+                                          : l[index]["defense"] < 70
+                                              ? Colors.yellow
+                                              : Colors.green,
+                                      child: Center(
+                                        child: Text(
+                                            l[index]["defense"].toString(),
+                                            style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black)),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: CircleAvatar(
+                                      radius: 11.5,
+                                      backgroundColor: l[index]["rating"] < 35
+                                          ? Colors.red
+                                          : l[index]["rating"] < 70
+                                              ? Colors.yellow
+                                              : Colors.green,
+                                      child: Center(
+                                        child: Text(
+                                            l[index]["rating"].toString(),
+                                            style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black)),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: const [
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text("SHO",
+                                        style: TextStyle(
+                                            fontSize: 12, color: Colors.black)),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text("PAC",
+                                        style: TextStyle(
+                                            fontSize: 12, color: Colors.black)),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text("PHY",
+                                        style: TextStyle(
+                                            fontSize: 12, color: Colors.black)),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text("PAS",
+                                        style: TextStyle(
+                                            fontSize: 12, color: Colors.black)),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text("DRI",
+                                        style: TextStyle(
+                                            fontSize: 12, color: Colors.black)),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text("DEF",
+                                        style: TextStyle(
+                                            fontSize: 12, color: Colors.black)),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text("TOT",
+                                        style: TextStyle(
+                                            fontSize: 12, color: Colors.black)),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )),
+                  );
+                }),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -127,11 +336,6 @@ class SelectPageState extends State<SelectPage> {
 
   @override
   Widget build(BuildContext context) {
-    // List<dynamic>? goalkeepers = List.from(players["PT"]!);
-    // List<dynamic>? defenders = List.from(players["DF"]!);
-    // List<dynamic>? midfielders = List.from(players["MC"]!);
-    // List<dynamic>? forwards = List.from(players["DL"]!);
-    cp = widget.p;
     const appTitle = 'Seleccion de jugadores';
     return MaterialApp(
       title: appTitle,
@@ -207,7 +411,7 @@ class SelectPageState extends State<SelectPage> {
                             children: <Widget>[
                               ElevatedButton(
                                   onPressed: () => {
-                                        select(0, _selected, context),
+                                        select(0, _selected, context, f),
                                       },
                                   style: ElevatedButton.styleFrom(
                                       side: const BorderSide(
@@ -226,7 +430,7 @@ class SelectPageState extends State<SelectPage> {
                             children: <Widget>[
                               ElevatedButton(
                                   onPressed: () => {
-                                        select(1, _selected, context),
+                                        select(1, _selected, context, f),
                                       },
                                   style: ElevatedButton.styleFrom(
                                       side: const BorderSide(
@@ -254,7 +458,7 @@ class SelectPageState extends State<SelectPage> {
                               children: <Widget>[
                                 ElevatedButton(
                                     onPressed: () => {
-                                          select(2, _selected, context),
+                                          select(2, _selected, context, m),
                                         },
                                     style: ElevatedButton.styleFrom(
                                         side: const BorderSide(
@@ -274,7 +478,7 @@ class SelectPageState extends State<SelectPage> {
                             children: <Widget>[
                               ElevatedButton(
                                   onPressed: () => {
-                                        select(3, _selected, context),
+                                        select(3, _selected, context, m),
                                       },
                                   style: ElevatedButton.styleFrom(
                                       side: const BorderSide(
@@ -293,7 +497,7 @@ class SelectPageState extends State<SelectPage> {
                             children: <Widget>[
                               ElevatedButton(
                                   onPressed: () => {
-                                        select(4, _selected, context),
+                                        select(4, _selected, context, m),
                                       },
                                   style: ElevatedButton.styleFrom(
                                       side: const BorderSide(
@@ -314,7 +518,7 @@ class SelectPageState extends State<SelectPage> {
                               children: <Widget>[
                                 ElevatedButton(
                                     onPressed: () => {
-                                          select(5, _selected, context),
+                                          select(5, _selected, context, m),
                                         },
                                     style: ElevatedButton.styleFrom(
                                         side: const BorderSide(
@@ -343,7 +547,7 @@ class SelectPageState extends State<SelectPage> {
                               children: <Widget>[
                                 ElevatedButton(
                                     onPressed: () => {
-                                          select(6, _selected, context),
+                                          select(6, _selected, context, d),
                                         },
                                     style: ElevatedButton.styleFrom(
                                         side: const BorderSide(
@@ -363,7 +567,7 @@ class SelectPageState extends State<SelectPage> {
                             children: <Widget>[
                               ElevatedButton(
                                   onPressed: () => {
-                                        select(7, _selected, context),
+                                        select(7, _selected, context, d),
                                       },
                                   style: ElevatedButton.styleFrom(
                                       side: const BorderSide(
@@ -382,7 +586,7 @@ class SelectPageState extends State<SelectPage> {
                             children: <Widget>[
                               ElevatedButton(
                                   onPressed: () => {
-                                        select(8, _selected, context),
+                                        select(8, _selected, context, d),
                                       },
                                   style: ElevatedButton.styleFrom(
                                       side: const BorderSide(
@@ -403,7 +607,7 @@ class SelectPageState extends State<SelectPage> {
                               children: <Widget>[
                                 ElevatedButton(
                                     onPressed: () => {
-                                          select(9, _selected, context),
+                                          select(9, _selected, context, d),
                                         },
                                     style: ElevatedButton.styleFrom(
                                         side: const BorderSide(
@@ -431,7 +635,7 @@ class SelectPageState extends State<SelectPage> {
                             children: <Widget>[
                               ElevatedButton(
                                   onPressed: () => {
-                                        select(10, _selected, context),
+                                        select(10, _selected, context, g),
                                       },
                                   style: ElevatedButton.styleFrom(
                                       side: const BorderSide(
