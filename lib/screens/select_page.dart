@@ -45,6 +45,10 @@ class SelectPageState extends State<SelectPage> {
   List<dynamic>? d = [];
   List<dynamic>? m = [];
   List<dynamic>? f = [];
+  List<dynamic>? gc = [];
+  List<dynamic>? dc = [];
+  List<dynamic>? mc = [];
+  List<dynamic>? fc = [];
 
   final _formKey = GlobalKey<FormState>();
 
@@ -67,15 +71,31 @@ class SelectPageState extends State<SelectPage> {
     10: false
   };
 
+  Map<int, dynamic> _selectedPlayers = {
+    0: {},
+    1: {},
+    2: {},
+    3: {},
+    4: {},
+    5: {},
+    6: {},
+    7: {},
+    8: {},
+    9: {},
+    10: {},
+  };
+
   bool loaded = false;
 
   void _assignPlayers(Map<String, List<dynamic>> cp) {
-    inspect(cp);
     g = cp["PT"];
     d = cp["DF"];
     m = cp["MC"];
     f = cp["DL"];
-    inspect(g);
+    gc = [...?g];
+    dc = [...?d];
+    mc = [...?m];
+    fc = [...?f];
   }
 
   void _toggle() {
@@ -84,18 +104,56 @@ class SelectPageState extends State<SelectPage> {
     });
   }
 
-  void _changeButton(BuildContext context, bool changed, int key) {
+  void _changeButton(BuildContext context, bool changed, int key,
+      List<dynamic> lp, List<dynamic> lpc, int index) {
     Navigator.pop(context, 'Confirmar');
-    if (changed == true && _selected[key] == false) {
+    if (changed == true) {
       setState(() {
-        _selected.update(key, (value) => !value);
+        dynamic player = lpc[index];
+        _selectedPlayers.update(key, (value) => player);
+        lpc = [...lp];
+        List<int> indexSelected = [];
+        _selectedPlayers.forEach((key, value) {
+          if (lpc.contains(value)) {
+            indexSelected.add(lpc.indexOf(value));
+          }
+        });
         _allSelected = !(_selected.values.any((element) => element == false));
+        if (_selected[key] == false) {
+          _selected.update(key, (value) => !value);
+        }
+        for (var element in indexSelected) {
+          indexSelected.sort((b, a) => a.compareTo(b));
+          lpc.removeAt(element);
+        }
+        switch (key) {
+          case 10:
+            gc = lpc;
+            break;
+          case 6:
+          case 7:
+          case 8:
+          case 9:
+            dc = lpc;
+            break;
+          case 2:
+          case 3:
+          case 4:
+          case 5:
+            mc = lpc;
+            break;
+          case 0:
+          case 1:
+            fc = lpc;
+            break;
+          default:
+        }
       });
     }
   }
 
   select(int key, Map<int, bool> selected, BuildContext context,
-      List<dynamic>? l) {
+      List<dynamic>? l, List<dynamic>? lc) {
     showDialog<String>(
       context: context,
       barrierColor: Colors.transparent,
@@ -109,18 +167,23 @@ class SelectPageState extends State<SelectPage> {
               width: 300,
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: l!.length,
+                itemCount: lc!.length,
                 itemBuilder: ((context, index) {
                   return Container(
                     child: TextButton(
                         style: TextButton.styleFrom(primary: Colors.black),
-                        onPressed: () => _changeButton(context, true, key),
+                        onPressed: () =>
+                            _changeButton(context, true, key, l!, lc, index),
                         child: Container(
                           constraints: BoxConstraints(
                             maxHeight: double.infinity,
                           ),
                           decoration: BoxDecoration(
-                              color: Colors.amber,
+                              color: lc[index]["category"] == 'Gold'
+                                  ? Color.fromARGB(255, 240, 203, 82)
+                                  : lc[index]["category"] == 'Silver'
+                                      ? const Color(0xffc0c0c0)
+                                      : Color.fromARGB(255, 179, 107, 36),
                               border:
                                   Border.all(color: Colors.black, width: 1.0)),
                           child: Column(
@@ -133,13 +196,13 @@ class SelectPageState extends State<SelectPage> {
                                   ),
                                   Padding(
                                     padding: EdgeInsets.all(8.0),
-                                    child: Text(l[index]["name"],
+                                    child: Text(lc[index]["name"],
                                         style: TextStyle(fontSize: 20)),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: Text(
-                                        l[index]["price"].toString() + "M",
+                                        lc[index]["price"].toString() + "M",
                                         style: TextStyle(fontSize: 20)),
                                   ),
                                 ],
@@ -150,14 +213,15 @@ class SelectPageState extends State<SelectPage> {
                                     padding: EdgeInsets.all(8.0),
                                     child: CircleAvatar(
                                       radius: 11.5,
-                                      backgroundColor: l[index]["shooting"] < 35
-                                          ? Colors.red
-                                          : l[index]["shooting"] < 70
-                                              ? Colors.yellow
-                                              : Colors.green,
+                                      backgroundColor:
+                                          lc[index]["shooting"] < 35
+                                              ? Colors.red
+                                              : lc[index]["shooting"] < 70
+                                                  ? Colors.yellow
+                                                  : Colors.green,
                                       child: Center(
                                         child: Text(
-                                            l[index]["shooting"].toString(),
+                                            lc[index]["shooting"].toString(),
                                             style: const TextStyle(
                                                 fontSize: 13,
                                                 color: Colors.black)),
@@ -168,50 +232,14 @@ class SelectPageState extends State<SelectPage> {
                                     padding: EdgeInsets.all(8.0),
                                     child: CircleAvatar(
                                       radius: 11.5,
-                                      backgroundColor: l[index]["speed"] < 35
+                                      backgroundColor: lc[index]["speed"] < 35
                                           ? Colors.red
-                                          : l[index]["speed"] < 70
+                                          : lc[index]["speed"] < 70
                                               ? Colors.yellow
                                               : Colors.green,
                                       child: Center(
                                         child: Text(
-                                            l[index]["speed"].toString(),
-                                            style: const TextStyle(
-                                                fontSize: 13,
-                                                color: Colors.black)),
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: CircleAvatar(
-                                      radius: 11.5,
-                                      backgroundColor: l[index]["strength"] < 35
-                                          ? Colors.red
-                                          : l[index]["strength"] < 70
-                                              ? Colors.yellow
-                                              : Colors.green,
-                                      child: Center(
-                                        child: Text(
-                                            l[index]["strength"].toString(),
-                                            style: const TextStyle(
-                                                fontSize: 13,
-                                                color: Colors.black)),
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: CircleAvatar(
-                                      radius: 11.5,
-                                      backgroundColor: l[index]["passing"] < 35
-                                          ? Colors.red
-                                          : l[index]["passing"] < 70
-                                              ? Colors.yellow
-                                              : Colors.green,
-                                      child: Center(
-                                        child: Text(
-                                            l[index]["passing"].toString(),
+                                            lc[index]["speed"].toString(),
                                             style: const TextStyle(
                                                 fontSize: 13,
                                                 color: Colors.black)),
@@ -223,14 +251,14 @@ class SelectPageState extends State<SelectPage> {
                                     child: CircleAvatar(
                                       radius: 11.5,
                                       backgroundColor:
-                                          l[index]["dribbling"] < 35
+                                          lc[index]["strength"] < 35
                                               ? Colors.red
-                                              : l[index]["dribbling"] < 70
+                                              : lc[index]["strength"] < 70
                                                   ? Colors.yellow
                                                   : Colors.green,
                                       child: Center(
                                         child: Text(
-                                            l[index]["dribbling"].toString(),
+                                            lc[index]["strength"].toString(),
                                             style: const TextStyle(
                                                 fontSize: 13,
                                                 color: Colors.black)),
@@ -241,14 +269,14 @@ class SelectPageState extends State<SelectPage> {
                                     padding: EdgeInsets.all(8.0),
                                     child: CircleAvatar(
                                       radius: 11.5,
-                                      backgroundColor: l[index]["defense"] < 35
+                                      backgroundColor: lc[index]["passing"] < 35
                                           ? Colors.red
-                                          : l[index]["defense"] < 70
+                                          : lc[index]["passing"] < 70
                                               ? Colors.yellow
                                               : Colors.green,
                                       child: Center(
                                         child: Text(
-                                            l[index]["defense"].toString(),
+                                            lc[index]["passing"].toString(),
                                             style: const TextStyle(
                                                 fontSize: 13,
                                                 color: Colors.black)),
@@ -259,14 +287,51 @@ class SelectPageState extends State<SelectPage> {
                                     padding: EdgeInsets.all(8.0),
                                     child: CircleAvatar(
                                       radius: 11.5,
-                                      backgroundColor: l[index]["rating"] < 35
+                                      backgroundColor:
+                                          lc[index]["dribbling"] < 35
+                                              ? Colors.red
+                                              : lc[index]["dribbling"] < 70
+                                                  ? Colors.yellow
+                                                  : Colors.green,
+                                      child: Center(
+                                        child: Text(
+                                            lc[index]["dribbling"].toString(),
+                                            style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black)),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: CircleAvatar(
+                                      radius: 11.5,
+                                      backgroundColor: lc[index]["defense"] < 35
                                           ? Colors.red
-                                          : l[index]["rating"] < 70
+                                          : lc[index]["defense"] < 70
                                               ? Colors.yellow
                                               : Colors.green,
                                       child: Center(
                                         child: Text(
-                                            l[index]["rating"].toString(),
+                                            lc[index]["defense"].toString(),
+                                            style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black)),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: CircleAvatar(
+                                      radius: 11.5,
+                                      backgroundColor: lc[index]["rating"] < 35
+                                          ? Colors.red
+                                          : lc[index]["rating"] < 70
+                                              ? Colors.yellow
+                                              : Colors.green,
+                                      child: Center(
+                                        child: Text(
+                                            lc[index]["rating"].toString(),
                                             style: const TextStyle(
                                                 fontSize: 13,
                                                 color: Colors.black)),
@@ -397,286 +462,431 @@ class SelectPageState extends State<SelectPage> {
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 75.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Positioned(
+              bottom: MediaQuery.of(context).size.height - 260,
+              left: (MediaQuery.of(context).size.width) - 335,
+              child: Stack(
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              ElevatedButton(
-                                  onPressed: () => {
-                                        select(0, _selected, context, f),
-                                      },
-                                  style: ElevatedButton.styleFrom(
-                                      side: const BorderSide(
-                                        width: 2.5,
-                                        color: Colors.white,
-                                      ),
-                                      shape: const CircleBorder(),
-                                      padding: const EdgeInsets.all(20),
-                                      backgroundColor: Colors.transparent),
-                                  child: _selected[0] == true
-                                      ? Icon(Icons.person)
-                                      : Icon(Icons.add))
-                            ],
+                  SizedBox(
+                    width: 150,
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () => {
+                                  select(0, _selected, context, f, fc),
+                                },
+                            style: ElevatedButton.styleFrom(
+                                side: const BorderSide(
+                                  width: 2.5,
+                                  color: Colors.white,
+                                ),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(20),
+                                backgroundColor: Colors.transparent),
+                            child: _selected[0] == true
+                                ? Icon(Icons.person)
+                                : Icon(Icons.add)),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(_selectedPlayers[0]["name"] ?? "",
+                                style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.bold)),
                           ),
-                          Column(
-                            children: <Widget>[
-                              ElevatedButton(
-                                  onPressed: () => {
-                                        select(1, _selected, context, f),
-                                      },
-                                  style: ElevatedButton.styleFrom(
-                                      side: const BorderSide(
-                                        width: 2.5,
-                                        color: Colors.white,
-                                      ),
-                                      shape: const CircleBorder(),
-                                      padding: const EdgeInsets.all(20),
-                                      backgroundColor: Colors.transparent),
-                                  child: _selected[1] == true
-                                      ? Icon(Icons.person)
-                                      : Icon(Icons.add))
-                            ],
-                          ),
-                        ]),
+                        ),
+                      ],
+                    ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 60.0),
-                            child: Column(
-                              children: <Widget>[
-                                ElevatedButton(
-                                    onPressed: () => {
-                                          select(2, _selected, context, m),
-                                        },
-                                    style: ElevatedButton.styleFrom(
-                                        side: const BorderSide(
-                                          width: 2.5,
-                                          color: Colors.white,
-                                        ),
-                                        shape: const CircleBorder(),
-                                        padding: const EdgeInsets.all(20),
-                                        backgroundColor: Colors.transparent),
-                                    child: _selected[2] == true
-                                        ? Icon(Icons.person)
-                                        : Icon(Icons.add))
-                              ],
-                            ),
+                ],
+              ),
+            ),
+            Positioned(
+              bottom: MediaQuery.of(context).size.height - 260,
+              left: (MediaQuery.of(context).size.width) - 210,
+              child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    width: 150,
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () => {
+                                  select(1, _selected, context, f, fc),
+                                },
+                            style: ElevatedButton.styleFrom(
+                                side: const BorderSide(
+                                  width: 2.5,
+                                  color: Colors.white,
+                                ),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(20),
+                                backgroundColor: Colors.transparent),
+                            child: _selected[1] == true
+                                ? Icon(Icons.person)
+                                : Icon(Icons.add)),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(_selectedPlayers[1]["name"] ?? "",
+                                style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.bold)),
                           ),
-                          Column(
-                            children: <Widget>[
-                              ElevatedButton(
-                                  onPressed: () => {
-                                        select(3, _selected, context, m),
-                                      },
-                                  style: ElevatedButton.styleFrom(
-                                      side: const BorderSide(
-                                        width: 2.5,
-                                        color: Colors.white,
-                                      ),
-                                      shape: const CircleBorder(),
-                                      padding: const EdgeInsets.all(20),
-                                      backgroundColor: Colors.transparent),
-                                  child: _selected[3] == true
-                                      ? Icon(Icons.person)
-                                      : Icon(Icons.add))
-                            ],
-                          ),
-                          Column(
-                            children: <Widget>[
-                              ElevatedButton(
-                                  onPressed: () => {
-                                        select(4, _selected, context, m),
-                                      },
-                                  style: ElevatedButton.styleFrom(
-                                      side: const BorderSide(
-                                        width: 2.5,
-                                        color: Colors.white,
-                                      ),
-                                      shape: const CircleBorder(),
-                                      padding: const EdgeInsets.all(20),
-                                      backgroundColor: Colors.transparent),
-                                  child: _selected[4] == true
-                                      ? Icon(Icons.person)
-                                      : Icon(Icons.add))
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 60.0),
-                            child: Column(
-                              children: <Widget>[
-                                ElevatedButton(
-                                    onPressed: () => {
-                                          select(5, _selected, context, m),
-                                        },
-                                    style: ElevatedButton.styleFrom(
-                                        side: const BorderSide(
-                                          width: 2.5,
-                                          color: Colors.white,
-                                        ),
-                                        shape: const CircleBorder(),
-                                        padding: const EdgeInsets.all(20),
-                                        backgroundColor: Colors.transparent),
-                                    child: _selected[5] == true
-                                        ? Icon(Icons.person)
-                                        : Icon(Icons.add))
-                              ],
-                            ),
-                          ),
-                        ]),
+                        ),
+                      ],
+                    ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 60.0),
-                            child: Column(
-                              children: <Widget>[
-                                ElevatedButton(
-                                    onPressed: () => {
-                                          select(6, _selected, context, d),
-                                        },
-                                    style: ElevatedButton.styleFrom(
-                                        side: const BorderSide(
-                                          width: 2.5,
-                                          color: Colors.white,
-                                        ),
-                                        shape: const CircleBorder(),
-                                        padding: const EdgeInsets.all(20),
-                                        backgroundColor: Colors.transparent),
-                                    child: _selected[6] == true
-                                        ? Icon(Icons.person)
-                                        : Icon(Icons.add))
-                              ],
-                            ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).size.height - 560,
+              left: (MediaQuery.of(context).size.width) - 420,
+              child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    width: 150,
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () => {
+                                  select(2, _selected, context, m, mc),
+                                },
+                            style: ElevatedButton.styleFrom(
+                                side: const BorderSide(
+                                  width: 2.5,
+                                  color: Colors.white,
+                                ),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(20),
+                                backgroundColor: Colors.transparent),
+                            child: _selected[2] == true
+                                ? Icon(Icons.person)
+                                : Icon(Icons.add)),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(_selectedPlayers[2]["name"] ?? "",
+                                style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.bold)),
                           ),
-                          Column(
-                            children: <Widget>[
-                              ElevatedButton(
-                                  onPressed: () => {
-                                        select(7, _selected, context, d),
-                                      },
-                                  style: ElevatedButton.styleFrom(
-                                      side: const BorderSide(
-                                        width: 2.5,
-                                        color: Colors.white,
-                                      ),
-                                      shape: const CircleBorder(),
-                                      padding: const EdgeInsets.all(20),
-                                      backgroundColor: Colors.transparent),
-                                  child: _selected[7] == true
-                                      ? Icon(Icons.person)
-                                      : Icon(Icons.add))
-                            ],
-                          ),
-                          Column(
-                            children: <Widget>[
-                              ElevatedButton(
-                                  onPressed: () => {
-                                        select(8, _selected, context, d),
-                                      },
-                                  style: ElevatedButton.styleFrom(
-                                      side: const BorderSide(
-                                        width: 2.5,
-                                        color: Colors.white,
-                                      ),
-                                      shape: const CircleBorder(),
-                                      padding: const EdgeInsets.all(20),
-                                      backgroundColor: Colors.transparent),
-                                  child: _selected[8] == true
-                                      ? Icon(Icons.person)
-                                      : Icon(Icons.add))
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 60.0),
-                            child: Column(
-                              children: <Widget>[
-                                ElevatedButton(
-                                    onPressed: () => {
-                                          select(9, _selected, context, d),
-                                        },
-                                    style: ElevatedButton.styleFrom(
-                                        side: const BorderSide(
-                                          width: 2.5,
-                                          color: Colors.white,
-                                        ),
-                                        shape: const CircleBorder(),
-                                        padding: const EdgeInsets.all(20),
-                                        backgroundColor: Colors.transparent),
-                                    child: _selected[9] == true
-                                        ? Icon(Icons.person)
-                                        : Icon(Icons.add))
-                              ],
-                            ),
-                          ),
-                        ]),
+                        ),
+                      ],
+                    ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 30.0),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              ElevatedButton(
-                                  onPressed: () => {
-                                        select(10, _selected, context, g),
-                                      },
-                                  style: ElevatedButton.styleFrom(
-                                      side: const BorderSide(
-                                        width: 2.5,
-                                        color: Colors.white,
-                                      ),
-                                      shape: const CircleBorder(),
-                                      padding: const EdgeInsets.all(20),
-                                      backgroundColor: Colors.transparent),
-                                  child: _selected[10] == true
-                                      ? Icon(Icons.person)
-                                      : Icon(Icons.add)),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 260.0),
-                                    child: _allSelected == true
-                                        ? ElevatedButton(
-                                            onPressed: () {
-                                              confirm(context);
-                                              setState(() {});
-                                            },
-                                            child: Text('Confirmar'))
-                                        : Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 49.0),
-                                            child: Visibility(
-                                              child: ElevatedButton(
-                                                onPressed: () {},
-                                                child: Text(''),
-                                              ),
-                                              visible: false,
-                                            ),
-                                          ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                ],
+              ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).size.height - 490,
+              left: (MediaQuery.of(context).size.width) - 335,
+              child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    width: 150,
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () => {
+                                  select(3, _selected, context, m, mc),
+                                },
+                            style: ElevatedButton.styleFrom(
+                                side: const BorderSide(
+                                  width: 2.5,
+                                  color: Colors.white,
+                                ),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(20),
+                                backgroundColor: Colors.transparent),
+                            child: _selected[3] == true
+                                ? Icon(Icons.person)
+                                : Icon(Icons.add)),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(_selectedPlayers[3]["name"] ?? "",
+                                style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.bold)),
                           ),
-                        ]),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).size.height - 490,
+              left: (MediaQuery.of(context).size.width) - 210,
+              child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    width: 150,
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () => {
+                                  select(4, _selected, context, m, mc),
+                                },
+                            style: ElevatedButton.styleFrom(
+                                side: const BorderSide(
+                                  width: 2.5,
+                                  color: Colors.white,
+                                ),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(20),
+                                backgroundColor: Colors.transparent),
+                            child: _selected[4] == true
+                                ? Icon(Icons.person)
+                                : Icon(Icons.add)),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(_selectedPlayers[4]["name"] ?? "",
+                                style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).size.height - 560,
+              left: (MediaQuery.of(context).size.width) - 125,
+              child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    width: 150,
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () => {
+                                  select(5, _selected, context, m, mc),
+                                },
+                            style: ElevatedButton.styleFrom(
+                                side: const BorderSide(
+                                  width: 2.5,
+                                  color: Colors.white,
+                                ),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(20),
+                                backgroundColor: Colors.transparent),
+                            child: _selected[5] == true
+                                ? Icon(Icons.person)
+                                : Icon(Icons.add)),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(_selectedPlayers[5]["name"] ?? "",
+                                style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).size.height - 370,
+              left: (MediaQuery.of(context).size.width) - 420,
+              child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    width: 150,
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () => {
+                                  select(6, _selected, context, d, dc),
+                                },
+                            style: ElevatedButton.styleFrom(
+                                side: const BorderSide(
+                                  width: 2.5,
+                                  color: Colors.white,
+                                ),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(20),
+                                backgroundColor: Colors.transparent),
+                            child: _selected[6] == true
+                                ? Icon(Icons.person)
+                                : Icon(Icons.add)),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(_selectedPlayers[6]["name"] ?? "",
+                                style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).size.height - 300,
+              left: (MediaQuery.of(context).size.width) - 335,
+              child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    width: 150,
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () => {
+                                  select(7, _selected, context, d, dc),
+                                },
+                            style: ElevatedButton.styleFrom(
+                                side: const BorderSide(
+                                  width: 2.5,
+                                  color: Colors.white,
+                                ),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(20),
+                                backgroundColor: Colors.transparent),
+                            child: _selected[7] == true
+                                ? Icon(Icons.person)
+                                : Icon(Icons.add)),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(_selectedPlayers[7]["name"] ?? "",
+                                style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).size.height - 300,
+              left: (MediaQuery.of(context).size.width) - 210,
+              child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    width: 150,
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () => {
+                                  select(8, _selected, context, d, dc),
+                                },
+                            style: ElevatedButton.styleFrom(
+                                side: const BorderSide(
+                                  width: 2.5,
+                                  color: Colors.white,
+                                ),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(20),
+                                backgroundColor: Colors.transparent),
+                            child: _selected[8] == true
+                                ? Icon(Icons.person)
+                                : Icon(Icons.add)),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(_selectedPlayers[8]["name"] ?? "",
+                                style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).size.height - 370,
+              left: (MediaQuery.of(context).size.width) - 125,
+              child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    width: 150,
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () => {
+                                  select(9, _selected, context, d, dc),
+                                },
+                            style: ElevatedButton.styleFrom(
+                                side: const BorderSide(
+                                  width: 2.5,
+                                  color: Colors.white,
+                                ),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(20),
+                                backgroundColor: Colors.transparent),
+                            child: _selected[9] == true
+                                ? Icon(Icons.person)
+                                : Icon(Icons.add)),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(_selectedPlayers[9]["name"] ?? "",
+                                style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).size.height - 200,
+              left: (MediaQuery.of(context).size.width / 2) - 75,
+              child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    width: 150,
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () => {
+                                  select(10, _selected, context, g, gc),
+                                },
+                            style: ElevatedButton.styleFrom(
+                                side: const BorderSide(
+                                  width: 2.5,
+                                  color: Colors.white,
+                                ),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(20),
+                                backgroundColor: Colors.transparent),
+                            child: _selected[10] == true
+                                ? Icon(Icons.person)
+                                : Icon(Icons.add)),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(_selectedPlayers[10]["name"] ?? "",
+                                style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -688,11 +898,29 @@ class SelectPageState extends State<SelectPage> {
   }
 }
 
-// getPlayersByPosition() {
-//   Future<Map<String, List>> randomPlayers = getRandomPlayers();
-//   randomPlayers.then((value) {
-//   })
-// }
+// TODO: BOTON DE CONFIRMAR
+// Row(
+//   mainAxisAlignment: MainAxisAlignment.end,
+//   children: [
+//     Padding(
+//       padding: const EdgeInsets.only(left: 260.0),
+//       child: _allSelected == true
+//           ? ElevatedButton(
+//               onPressed: () {
+//                 confirm(context);
+//                 setState(() {});
+//               },
+//               child: Text('Confirmar'))
+//           : Visibility(
+//               child: ElevatedButton(
+//                 onPressed: () {},
+//                 child: Text(''),
+//               ),
+//               visible: false,
+//             ),
+//     ),
+//   ],
+// ),
 
 Widget _getDrawer(BuildContext context) {
   var accountEmail = Text(globals.userLoggedIn.email);
