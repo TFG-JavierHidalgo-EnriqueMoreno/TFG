@@ -118,12 +118,12 @@ class SelectPageState extends State<SelectPage> {
             indexSelected.add(lpc.indexOf(value));
           }
         });
-        _allSelected = !(_selected.values.any((element) => element == false));
         if (_selected[key] == false) {
           _selected.update(key, (value) => !value);
         }
+        _allSelected = !(_selected.values.any((element) => element == false));
+        indexSelected.sort((b, a) => a.compareTo(b));
         for (var element in indexSelected) {
-          indexSelected.sort((b, a) => a.compareTo(b));
           lpc.removeAt(element);
         }
         switch (key) {
@@ -890,6 +890,24 @@ class SelectPageState extends State<SelectPage> {
                   ),
                 ],
               ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).size.height - 150,
+              left: (MediaQuery.of(context).size.width) - 110,
+              child: _allSelected == true
+                  ? ElevatedButton(
+                      onPressed: () {
+                        confirm(context);
+                        setState(() {});
+                      },
+                      child: Text('Confirmar'))
+                  : Visibility(
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        child: Text(''),
+                      ),
+                      visible: false,
+                    ),
             ),
           ],
         )),
