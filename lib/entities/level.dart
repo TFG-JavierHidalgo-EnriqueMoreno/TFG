@@ -6,17 +6,26 @@ class Level extends ModelMVC {
   static Level? _this;
 
   String name = "";
+  int teamValue = 0;
 
-  Level? newLevel(String name) {
+  Level? newLevel(String name, int teamValue) {
     this.name = name;
+    this.teamValue = teamValue;
   }
 
   String get getName {
     return name;
   }
 
+  int get getTeamValue {
+    return teamValue;
+  }
+
   set setName(String newName) {
     name = newName;
   }
 
+  set setTeamValue(int newTeamValue) {
+    teamValue = teamValue;
+  }
 }

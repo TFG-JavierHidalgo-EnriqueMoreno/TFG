@@ -49,6 +49,7 @@ class SelectPageState extends State<SelectPage> {
   List<dynamic>? dc = [];
   List<dynamic>? mc = [];
   List<dynamic>? fc = [];
+  int teamValue = globals.userLevel.getTeamValue;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -110,6 +111,16 @@ class SelectPageState extends State<SelectPage> {
     if (changed == true) {
       setState(() {
         dynamic player = lpc[index];
+        if (_selected[key] == false) {
+          _selected.update(key, (value) => !value);
+          teamValue = teamValue - player["price"] as int;
+        } else {
+          //inspect(_selectedPlayers[key]["price"] as int);
+          teamValue = teamValue + _selectedPlayers[key]["price"] as int;
+          inspect(teamValue);
+          teamValue = teamValue - player["price"] as int;
+          inspect(teamValue);
+        }
         _selectedPlayers.update(key, (value) => player);
         lpc = [...lp];
         List<int> indexSelected = [];
@@ -118,9 +129,7 @@ class SelectPageState extends State<SelectPage> {
             indexSelected.add(lpc.indexOf(value));
           }
         });
-        if (_selected[key] == false) {
-          _selected.update(key, (value) => !value);
-        }
+
         _allSelected = !(_selected.values.any((element) => element == false));
         indexSelected.sort((b, a) => a.compareTo(b));
         for (var element in indexSelected) {
@@ -461,6 +470,40 @@ class SelectPageState extends State<SelectPage> {
                   ],
                 ),
               ],
+            ),
+            Positioned(
+              top: 30,
+              left: 10,
+              child: Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black,
+                      offset: Offset(0.0, 1.0), //(x,y)
+                      blurRadius: 6.0,
+                    ),
+                  ],
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                height: 40,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                  child: Center(
+                    child: Text(
+                      "Presupuesto: " + teamValue.toString() + " M",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: teamValue < 0
+                              ? Colors.red
+                              : teamValue < 100
+                                  ? Colors.orange
+                                  : Colors.green.shade800),
+                    ),
+                  ),
+                ),
+              ),
             ),
             Positioned(
               bottom: MediaQuery.of(context).size.height - 260,
@@ -894,7 +937,7 @@ class SelectPageState extends State<SelectPage> {
             Positioned(
               top: MediaQuery.of(context).size.height - 150,
               left: (MediaQuery.of(context).size.width) - 110,
-              child: _allSelected == true
+              child: _allSelected == true && teamValue >= 0
                   ? ElevatedButton(
                       onPressed: () {
                         confirm(context, _selectedPlayers);
