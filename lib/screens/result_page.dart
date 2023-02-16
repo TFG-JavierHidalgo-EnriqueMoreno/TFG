@@ -14,7 +14,11 @@ class ResultPage extends StatefulWidget {
   final Map<String, int?> player1Points;
   final Map<String, int?> player2Points;
   final Map<String, int> gameResult;
-  const ResultPage({super.key, required this.player1Points, required this.player2Points,required this.gameResult});
+  const ResultPage(
+      {super.key,
+      required this.player1Points,
+      required this.player2Points,
+      required this.gameResult});
 
   @override
   ResultPageState createState() {
@@ -34,8 +38,6 @@ class ResultPageState extends State<ResultPage> {
     _player1Points = widget.player1Points;
     _player2Points = widget.player2Points;
     _gameResult = widget.gameResult;
-    inspect(_player2Points);
-    inspect(_gameResult);
   }
 
   Map<String, int?> _player1Points = {};
@@ -77,7 +79,7 @@ class ResultPageState extends State<ResultPage> {
                             size: 48.0,
                           ),
                         ),
-                         Text(
+                        Text(
                           _gameResult["player1Goals"].toString(),
                           style: TextStyle(
                             fontSize: 50.0,
@@ -129,7 +131,7 @@ class ResultPageState extends State<ResultPage> {
                           margin: const EdgeInsets.symmetric(horizontal: 110.0),
                           child: const Text("Tiro"),
                         ),
-                         Text(_player2Points["shooting"].toString())
+                        Text(_player2Points["shooting"].toString())
                       ]),
                 ),
                 Padding(
@@ -146,7 +148,7 @@ class ResultPageState extends State<ResultPage> {
                           margin: const EdgeInsets.symmetric(horizontal: 92.0),
                           child: const Text("Velocidad"),
                         ),
-                         Text(_player2Points["speed"].toString())
+                        Text(_player2Points["speed"].toString())
                       ]),
                 ),
                 Padding(
@@ -163,7 +165,7 @@ class ResultPageState extends State<ResultPage> {
                           margin: const EdgeInsets.symmetric(horizontal: 102.0),
                           child: const Text("Fuerza"),
                         ),
-                         Text(_player2Points["strength"].toString())
+                        Text(_player2Points["strength"].toString())
                       ]),
                 ),
                 Padding(
@@ -180,7 +182,7 @@ class ResultPageState extends State<ResultPage> {
                           margin: const EdgeInsets.symmetric(horizontal: 97.0),
                           child: const Text("Defensa"),
                         ),
-                         Text(_player2Points["defense"].toString())
+                        Text(_player2Points["defense"].toString())
                       ]),
                 ),
                 Padding(
@@ -197,7 +199,7 @@ class ResultPageState extends State<ResultPage> {
                           margin: const EdgeInsets.symmetric(horizontal: 97.0),
                           child: const Text("Regates"),
                         ),
-                         Text(_player2Points["dribbling"].toString())
+                        Text(_player2Points["dribbling"].toString())
                       ]),
                 ),
                 Padding(
@@ -214,7 +216,7 @@ class ResultPageState extends State<ResultPage> {
                           margin: const EdgeInsets.symmetric(horizontal: 103.0),
                           child: const Text("Pases"),
                         ),
-                         Text(_player2Points["passing"].toString())
+                        Text(_player2Points["passing"].toString())
                       ]),
                 ),
                 Padding(
@@ -231,7 +233,7 @@ class ResultPageState extends State<ResultPage> {
                           margin: const EdgeInsets.symmetric(horizontal: 103.0),
                           child: const Text("Media"),
                         ),
-                         Text(_player2Points["rating"].toString())
+                        Text(_player2Points["rating"].toString())
                       ]),
                 ),
                 const Padding(

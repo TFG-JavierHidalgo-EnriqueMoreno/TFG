@@ -248,9 +248,9 @@ Future<void> deleteUser() async {
   globals.userLoggedIn.password = "";
 }
 
-Future<void> saveGame(int? localGoals, int? awayGoals, Lineup? lineup) async {
+Future<void> saveGame(int? localGoals, int? awayGoals, Lineup? lineup,
+    Map<int, dynamic> selectedPlayers) async {
   Future<List> users = getUsers();
-
   User u = globals.userLoggedIn;
 
   List list = await users;
@@ -269,6 +269,20 @@ Future<void> saveGame(int? localGoals, int? awayGoals, Lineup? lineup) async {
       .then((value) => db.collection("user_game").add({
             "game_id": value.parent.parent?.id,
             "user_id": us["uid"],
+          }).then((value) {
+            value.collection("players").add({
+              "player0": selectedPlayers[0]["bd_id"],
+              "player1": selectedPlayers[1]["bd_id"],
+              "player2": selectedPlayers[2]["bd_id"],
+              "player3": selectedPlayers[3]["bd_id"],
+              "player4": selectedPlayers[4]["bd_id"],
+              "player5": selectedPlayers[5]["bd_id"],
+              "player6": selectedPlayers[6]["bd_id"],
+              "player7": selectedPlayers[7]["bd_id"],
+              "player8": selectedPlayers[8]["bd_id"],
+              "player9": selectedPlayers[9]["bd_id"],
+              "player10": selectedPlayers[10]["bd_id"],
+            });
           }));
 }
 
@@ -426,7 +440,9 @@ Future<Map<String, List<dynamic>>> getRandomPlayers() async {
   while (npt < 3) {
     Random r = new Random();
     int rn = r.nextInt(pt.docs.length);
-    var player = pt.docs[rn].data();
+    var player = pt.docs[rn].data() as Map;
+    var idPlayer = pt.docs[rn].id.toString();
+    player["bd_id"] = idPlayer;
     lpt.add(player);
     npt++;
   }
@@ -435,7 +451,9 @@ Future<Map<String, List<dynamic>>> getRandomPlayers() async {
   while (ndf < 11) {
     Random r = new Random();
     int rn = r.nextInt(df.docs.length);
-    var player = df.docs[rn].data();
+    var player = df.docs[rn].data() as Map;
+    var idPlayer = df.docs[rn].id.toString();
+    player["bd_id"] = idPlayer;
     ldf.add(player);
     ndf++;
   }
@@ -444,7 +462,9 @@ Future<Map<String, List<dynamic>>> getRandomPlayers() async {
   while (nmc < 12) {
     Random r = new Random();
     int rn = r.nextInt(mc.docs.length);
-    var player = mc.docs[rn].data();
+    var player = mc.docs[rn].data() as Map;
+    var idPlayer = mc.docs[rn].id.toString();
+    player["bd_id"] = idPlayer;
     lmc.add(player);
     nmc++;
   }
@@ -453,7 +473,9 @@ Future<Map<String, List<dynamic>>> getRandomPlayers() async {
   while (ndl < 9) {
     Random r = new Random();
     int rn = r.nextInt(dl.docs.length);
-    var player = dl.docs[rn].data();
+    var player = dl.docs[rn].data() as Map;
+    var idPlayer = dl.docs[rn].id.toString();
+    player["bd_id"] = idPlayer;
     ldl.add(player);
     ndl++;
   }
