@@ -437,27 +437,112 @@ Future<Map<String, List<dynamic>>> getRandomPlayers() async {
   List<dynamic> lmc = [];
   List<dynamic> ldl = [];
 
+  int oro = 0;
+  int plata = 0;
+  int bronce = 0;
+  int oroMax = globals.userLevel.getNumGolds;
+  int plataMax = globals.userLevel.getNumSilvers;
+  int bronceMax = globals.userLevel.getNumBronzes;
+
+  // while (npt < 3) {
+  //   Random r = new Random();
+  //   int rn = r.nextInt(pt.docs.length);
+  //   var player = pt.docs[rn].data() as Map;
+  //   var idPlayer = pt.docs[rn].id.toString();
+  //   player["bd_id"] = idPlayer;
+  //   lpt.add(player);
+  //   npt++;
+  // }
+
   while (npt < 3) {
     Random r = new Random();
     int rn = r.nextInt(pt.docs.length);
     var player = pt.docs[rn].data() as Map;
     var idPlayer = pt.docs[rn].id.toString();
     player["bd_id"] = idPlayer;
-    lpt.add(player);
-    npt++;
+
+    switch (player["category"]) {
+      case "Gold":
+        if (oro < oroMax) {
+          lpt.add(player);
+          oro++;
+          npt++;
+        }
+        break;
+      case "Silver":
+        if (plata < plataMax) {
+          lpt.add(player);
+          plata++;
+          npt++;
+        }
+        break;
+      case "Bronze":
+        if (bronce < bronceMax) {
+          lpt.add(player);
+          bronce++;
+          npt++;
+        }
+        break;
+      default:
+        print("HOLA 0");
+    }
   }
+
   res.putIfAbsent("PT", () => lpt);
 
+  // while (ndf < 11) {
+  //   Random r = new Random();
+  //   int rn = r.nextInt(df.docs.length);
+  //   var player = df.docs[rn].data() as Map;
+  //   var idPlayer = df.docs[rn].id.toString();
+  //   player["bd_id"] = idPlayer;
+  //   ldf.add(player);
+  //   ndf++;
+  // }
   while (ndf < 11) {
     Random r = new Random();
     int rn = r.nextInt(df.docs.length);
     var player = df.docs[rn].data() as Map;
     var idPlayer = df.docs[rn].id.toString();
     player["bd_id"] = idPlayer;
-    ldf.add(player);
-    ndf++;
+    switch (player["category"]) {
+      case "Gold":
+        if (oro < oroMax) {
+          ldf.add(player);
+          oro++;
+          ndf++;
+        }
+        break;
+      case "Silver":
+        if (plata < plataMax) {
+          ldf.add(player);
+          plata++;
+          ndf++;
+        }
+        break;
+      case "Bronze":
+        if (bronce < bronceMax) {
+          ldf.add(player);
+          bronce++;
+          ndf++;
+        }
+        break;
+      default:
+        print("HOLA 1");
+    }
   }
+
   res.putIfAbsent("DF", () => ldf);
+
+  // while (nmc < 12) {
+  //   Random r = new Random();
+  //   int rn = r.nextInt(mc.docs.length);
+  //   var player = mc.docs[rn].data() as Map;
+  //   var idPlayer = mc.docs[rn].id.toString();
+  //   player["bd_id"] = idPlayer;
+  //   lmc.add(player);
+  //   nmc++;
+  // }
 
   while (nmc < 12) {
     Random r = new Random();
@@ -465,10 +550,45 @@ Future<Map<String, List<dynamic>>> getRandomPlayers() async {
     var player = mc.docs[rn].data() as Map;
     var idPlayer = mc.docs[rn].id.toString();
     player["bd_id"] = idPlayer;
-    lmc.add(player);
-    nmc++;
+
+    switch (player["category"]) {
+      case "Gold":
+        if (oro < oroMax) {
+          lmc.add(player);
+          oro++;
+          nmc++;
+        }
+        break;
+      case "Silver":
+        if (plata < plataMax) {
+          lmc.add(player);
+          plata++;
+          nmc++;
+        }
+        break;
+      case "Bronze":
+        if (bronce < bronceMax) {
+          lmc.add(player);
+          bronce++;
+          nmc++;
+        }
+        break;
+      default:
+        print("HOLA 2");
+    }
   }
+
   res.putIfAbsent("MC", () => lmc);
+
+  // while (ndl < 9) {
+  //   Random r = new Random();
+  //   int rn = r.nextInt(dl.docs.length);
+  //   var player = dl.docs[rn].data() as Map;
+  //   var idPlayer = dl.docs[rn].id.toString();
+  //   player["bd_id"] = idPlayer;
+  //   ldl.add(player);
+  //   ndl++;
+  // }
 
   while (ndl < 9) {
     Random r = new Random();
@@ -476,9 +596,33 @@ Future<Map<String, List<dynamic>>> getRandomPlayers() async {
     var player = dl.docs[rn].data() as Map;
     var idPlayer = dl.docs[rn].id.toString();
     player["bd_id"] = idPlayer;
-    ldl.add(player);
-    ndl++;
+    switch (player["category"]) {
+      case "Gold":
+        if (oro < oroMax) {
+          ldl.add(player);
+          oro++;
+          ndl++;
+        }
+        break;
+      case "Silver":
+        if (plata < plataMax) {
+          ldl.add(player);
+          plata++;
+          ndl++;
+        }
+        break;
+      case "Bronze":
+        if (bronce < bronceMax) {
+          ldl.add(player);
+          bronce++;
+          ndl++;
+        }
+        break;
+      default:
+        print("HOLA 3");
+    }
   }
+
   res.putIfAbsent("DL", () => ldl);
 
   return res;
