@@ -115,11 +115,8 @@ class SelectPageState extends State<SelectPage> {
           _selected.update(key, (value) => !value);
           teamValue = teamValue - player["price"] as int;
         } else {
-          //inspect(_selectedPlayers[key]["price"] as int);
           teamValue = teamValue + _selectedPlayers[key]["price"] as int;
-          inspect(teamValue);
           teamValue = teamValue - player["price"] as int;
-          inspect(teamValue);
         }
         _selectedPlayers.update(key, (value) => player);
         lpc = [...lp];
