@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:ffi';
 
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_app/entities/club.dart';
+import 'package:my_app/entities/country.dart';
 import 'package:my_app/entities/globals.dart' as globals;
 import 'package:my_app/entities/league.dart';
 import 'package:my_app/entities/level.dart';
@@ -46,10 +46,22 @@ Future<void> saveUser(String? email, String? password, String? phone,
     "name": "$name $surname",
     "username": username,
     "elo": 0,
-  }).then((value) => value.collection("level").add({"name": "Plata"}));
+  }).then((value) => value.collection("level").add({
+        "name": "Bronce",
+        "min": 0,
+        "max": 10,
+        "next": "Plata",
+        "previous": null,
+        "victory": 3,
+        "lose": 0,
+        "num_bronzes": 20,
+        "num_golds": 2,
+        "num_silvers": 13,
+        "team_value": 350
+      }));
 }
 
-Future<void> calcElo() async {
+Future<void> calcElo(bool gameResult) async {
   Future<List> users = getUsers();
 
   User u = globals.userLoggedIn;
@@ -57,14 +69,17 @@ Future<void> calcElo() async {
   List list = await users;
 
   var us = list.firstWhere((element) => element["data"]["email"] == u.email);
-
-  switch (us["level"]["name"]) {
-    case "Bronce":
-      if (us["data"]["elo"] + 3 >= 10) {
+  if (gameResult) {
+    if (us["level"]["name"] != "Maestro") {
+      if (us["data"]["elo"] + us["level"]["victory"] > us["level"]["max"]) {
         QuerySnapshot level = await db
             .collection("users")
             .doc(us["uid"])
             .collection("level")
+            .get();
+        QuerySnapshot<Map<String, dynamic>> nextLevel = await db
+            .collection("levels")
+            .where("name", isEqualTo: us["level"]["next"])
             .get();
         String levelId = level.docs[0].id;
         await db
@@ -72,26 +87,70 @@ Future<void> calcElo() async {
             .doc(us["uid"])
             .collection("level")
             .doc(levelId)
-            .set({"name": "Plata"});
+            .set({
+          "name": nextLevel.docs[0].data()["name"],
+          "min": nextLevel.docs[0].data()["min"],
+          "max": nextLevel.docs[0].data()["max"],
+          "next": nextLevel.docs[0].data()["next"],
+          "previous": nextLevel.docs[0].data()["previous"],
+          "victory": nextLevel.docs[0].data()["victory"],
+          "lose": nextLevel.docs[0].data()["lose"],
+          "num_bronzes": nextLevel.docs[0].data()["num_bronzes"],
+          "num_golds": nextLevel.docs[0].data()["num_golds"],
+          "num_silvers": nextLevel.docs[0].data()["num_silvers"],
+          "team_value": nextLevel.docs[0].data()["team_value"]
+        });
+        globals.userLevel.name = us["level"]["next"];
+        globals.userLevel.teamValue = nextLevel.docs[0].data()["team_value"];
+        globals.userLevel.numBronzes = nextLevel.docs[0].data()["num_bronzes"];
+        globals.userLevel.numSilvers = nextLevel.docs[0].data()["num_silvers"];
+        globals.userLevel.numGolds = nextLevel.docs[0].data()["num_golds"];
       }
       await db.collection("users").doc(us["uid"]).set({
         "email": us["data"]["email"],
-        "elo": us["data"]["elo"] + 3,
+        "elo": us["data"]["elo"] + us["level"]["victory"],
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
         "phone": us["data"]["phone"]
       });
 
-      globals.userLoggedIn.elo = us["data"]["elo"] + 3;
-      globals.userLevel.name = us["data"]["elo"] + 3 >= 10 ? "Plata" : "Bronce";
-      break;
-    case "Plata":
-      if (us["data"]["elo"] + 3 >= 15) {
+      globals.userLoggedIn.elo = us["data"]["elo"] + us["level"]["victory"];
+    } else if (us["data"]["elo"] + us["level"]["victory"] >
+        us["level"]["max"]) {
+      await db.collection("users").doc(us["uid"]).set({
+        "email": us["data"]["email"],
+        "elo": 250,
+        "name": us["data"]["name"],
+        "password": us["data"]["password"],
+        "username": us["data"]["username"],
+        "phone": us["data"]["phone"]
+      });
+
+      globals.userLoggedIn.elo = 250;
+    } else {
+      await db.collection("users").doc(us["uid"]).set({
+        "email": us["data"]["email"],
+        "elo": us["data"]["elo"] + us["level"]["victory"],
+        "name": us["data"]["name"],
+        "password": us["data"]["password"],
+        "username": us["data"]["username"],
+        "phone": us["data"]["phone"]
+      });
+
+      globals.userLoggedIn.elo = us["data"]["elo"] + us["level"]["victory"];
+    }
+  } else {
+    if (us["level"]["name"] != "Bronce") {
+      if (us["data"]["elo"] - us["level"]["lose"] <= us["level"]["min"]) {
         QuerySnapshot level = await db
             .collection("users")
             .doc(us["uid"])
             .collection("level")
+            .get();
+        QuerySnapshot<Map<String, dynamic>> previousLevel = await db
+            .collection("levels")
+            .where("name", isEqualTo: us["level"]["previous"])
             .get();
         String levelId = level.docs[0].id;
         await db
@@ -99,64 +158,58 @@ Future<void> calcElo() async {
             .doc(us["uid"])
             .collection("level")
             .doc(levelId)
-            .set({"name": "Oro"});
+            .set({
+          "name": previousLevel.docs[0].data()["name"],
+          "min": previousLevel.docs[0].data()["min"],
+          "max": previousLevel.docs[0].data()["max"],
+          "next": previousLevel.docs[0].data()["next"],
+          "previous": previousLevel.docs[0].data()["previous"],
+          "victory": previousLevel.docs[0].data()["victory"],
+          "lose": previousLevel.docs[0].data()["lose"],
+          "num_bronzes": previousLevel.docs[0].data()["num_bronzes"],
+          "num_golds": previousLevel.docs[0].data()["num_golds"],
+          "num_silvers": previousLevel.docs[0].data()["num_silvers"],
+          "team_value": previousLevel.docs[0].data()["team_value"]
+        });
+        globals.userLevel.name = us["level"]["previous"];
+        globals.userLevel.teamValue = previousLevel.docs[0].data()["team_value"];
+        globals.userLevel.numBronzes = previousLevel.docs[0].data()["num_bronzes"];
+        globals.userLevel.numSilvers = previousLevel.docs[0].data()["num_silvers"];
+        globals.userLevel.numGolds = previousLevel.docs[0].data()["num_golds"];
       }
       await db.collection("users").doc(us["uid"]).set({
         "email": us["data"]["email"],
-        "elo": us["data"]["elo"] + 3,
+        "elo": us["data"]["elo"] - us["level"]["lose"],
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
         "phone": us["data"]["phone"]
       });
-      globals.userLoggedIn.elo = us["data"]["elo"] + 3;
-      globals.userLevel.name = us["data"]["elo"] + 3 >= 15 ? "Oro" : "Plata";
-      break;
-    case "Oro":
+
+      globals.userLoggedIn.elo = us["data"]["elo"] - us["level"]["lose"];
+    } else if (us["data"]["elo"] - us["level"]["lose"] <= us["level"]["min"]) {
       await db.collection("users").doc(us["uid"]).set({
         "email": us["data"]["email"],
-        "elo": us["data"]["elo"] + 3,
+        "elo": 0,
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
         "phone": us["data"]["phone"]
       });
-      globals.userLoggedIn.elo = us["data"]["elo"] + 3;
-      break;
-    case "Platino":
+
+      globals.userLoggedIn.elo = 0;
+    } else {
       await db.collection("users").doc(us["uid"]).set({
         "email": us["data"]["email"],
-        "elo": us["data"]["elo"] + 3,
+        "elo": us["data"]["elo"] - us["level"]["lose"],
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
         "phone": us["data"]["phone"]
       });
-      globals.userLoggedIn.elo = us["data"]["elo"] + 3;
-      break;
-    case "Diamante":
-      await db.collection("users").doc(us["uid"]).set({
-        "email": us["data"]["email"],
-        "elo": us["data"]["elo"] + 3,
-        "name": us["data"]["name"],
-        "password": us["data"]["password"],
-        "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
-      });
-      globals.userLoggedIn.elo = us["data"]["elo"] + 3;
-      break;
-    case "Maestro":
-      await db.collection("users").doc(us["uid"]).set({
-        "email": us["data"]["email"],
-        "elo": us["data"]["elo"] + 3,
-        "name": us["data"]["name"],
-        "password": us["data"]["password"],
-        "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
-      });
-      globals.userLoggedIn.elo = us["data"]["elo"] + 3;
-      break;
-    default:
+
+      globals.userLoggedIn.elo = us["data"]["elo"] - us["level"]["lose"];
+    }
   }
 }
 
@@ -203,9 +256,9 @@ Future<void> deleteUser() async {
   globals.userLoggedIn.password = "";
 }
 
-Future<void> saveGame(int? localGoals, int? awayGoals, Lineup? lineup) async {
+Future<void> saveGame(int? localGoals, int? awayGoals, Lineup? lineup,
+    Map<int, dynamic> selectedPlayers) async {
   Future<List> users = getUsers();
-
   User u = globals.userLoggedIn;
 
   List list = await users;
@@ -224,6 +277,20 @@ Future<void> saveGame(int? localGoals, int? awayGoals, Lineup? lineup) async {
       .then((value) => db.collection("user_game").add({
             "game_id": value.parent.parent?.id,
             "user_id": us["uid"],
+          }).then((value) {
+            value.collection("players").add({
+              "player0": selectedPlayers[0]["bd_id"],
+              "player1": selectedPlayers[1]["bd_id"],
+              "player2": selectedPlayers[2]["bd_id"],
+              "player3": selectedPlayers[3]["bd_id"],
+              "player4": selectedPlayers[4]["bd_id"],
+              "player5": selectedPlayers[5]["bd_id"],
+              "player6": selectedPlayers[6]["bd_id"],
+              "player7": selectedPlayers[7]["bd_id"],
+              "player8": selectedPlayers[8]["bd_id"],
+              "player9": selectedPlayers[9]["bd_id"],
+              "player10": selectedPlayers[10]["bd_id"],
+            });
           }));
 }
 
@@ -248,12 +315,21 @@ userLoggedIn() async {
 
 Future<void> savePlayer(Map<String, dynamic> p) async {
   Player player = p["player"] as Player;
-  var category = "Bronze";
+  var category = "";
   var position = "";
-  if (player.getRating >= 70 && player.getRating < 85) {
+  var price = 0;
+  if (player.getRating < 70) {
+    //MAX: 24
+    category = "Bronze";
+    price = (player.getRating * 0.35).round();
+  } else if (player.getRating >= 70 && player.getRating < 85) {
+    //MIN: 35 MAX: 42
     category = "Silver";
-  } else if (player.getRating >= 85) {
+    price = (player.getRating * 0.5).round();
+  } else {
+    //MIN:52  MAX: 59
     category = "Gold";
+    price = (player.getRating * 0.6).round();
   }
   switch (player.getPosition) {
     case "ST":
@@ -297,20 +373,23 @@ Future<void> savePlayer(Map<String, dynamic> p) async {
       "shooting": player.getShooting,
       "speed": player.getSpeed,
       "strength": player.getStrength,
-      "category": category
+      "club_id": player.getClubId,
+      "country_id": player.getCountryId,
+      "category": category,
+      "price": price
     });
-    var leagueId = await getLeagueByApiId(p["league"]);
-    var clubId = await getClubByApiId(p["club"]);
-    await db.collection("player_league").add({
-      "player_id": player_db.id,
-      "league_id": leagueId,
-    });
-    if (clubId != "") {
-      await db.collection("player_club").add({
-        "player_id": player_db.id,
-        "club_id": clubId,
-      });
-    }
+    // var leagueId = await getLeagueByApiId(p["league"]);
+    // var clubId = await getClubByApiId(p["club"]);
+    // await db.collection("player_league").add({
+    //   "player_id": player_db.id,
+    //   "league_id": leagueId,
+    // });
+    // if (clubId != "") {
+    //   await db.collection("player_club").add({
+    //     "player_id": player_db.id,
+    //     "club_id": clubId,
+    //   });
+    // }
   }
 }
 
@@ -318,6 +397,7 @@ Future<void> saveLeague(League? l) async {
   await db.collection("leagues").add({
     "name": l?.getName,
     "api_id": l?.getApiId,
+    "country_id": l?.getCountryId
   });
 }
 
@@ -325,6 +405,7 @@ Future<void> saveClub(Club? c) async {
   await db.collection("clubs").add({
     "name": c?.getName,
     "api_id": c?.getApiId,
+    "league_id": c?.getleagueId,
   });
 }
 
@@ -347,14 +428,9 @@ Future<String?> getClubByApiId(int? apiId) async {
 
 Future<Map<String, List<dynamic>>> getRandomPlayers() async {
   Map<String, List<dynamic>> res = {};
-  QuerySnapshot pt =
-      await db.collection("players").where("position", isEqualTo: "PT").get();
-  QuerySnapshot df =
-      await db.collection("players").where("position", isEqualTo: "DF").get();
-  QuerySnapshot mc =
-      await db.collection("players").where("position", isEqualTo: "MC").get();
-  QuerySnapshot dl =
-      await db.collection("players").where("position", isEqualTo: "DL").get();
+
+  QuerySnapshot players = await db.collection('players').get();
+
   var npt = 0;
   var ndf = 0;
   var nmc = 0;
@@ -363,42 +439,146 @@ Future<Map<String, List<dynamic>>> getRandomPlayers() async {
   List<dynamic> ldf = [];
   List<dynamic> lmc = [];
   List<dynamic> ldl = [];
+  int oro = 0;
+  int plata = 0;
+  int bronce = 0;
+  int oroMax = globals.userLevel.getNumGolds;
+  int plataMax = globals.userLevel.getNumSilvers;
+  int bronceMax = globals.userLevel.getNumBronzes;
 
-  while (npt < 3) {
+  while (npt < 3 || ndf < 11 || nmc < 12 || ndl < 9) {
     Random r = new Random();
-    int rn = r.nextInt(pt.docs.length);
-    var player = pt.docs[rn].data();
-    lpt.add(player);
-    npt++;
+    int rn = r.nextInt(players.docs.length);
+    var player = players.docs[rn].data() as Map;
+    var idPlayer = players.docs[rn].id.toString();
+    player["bd_id"] = idPlayer;
+
+    switch (player["category"]) {
+      case "Gold":
+        if (oro < oroMax) {
+          switch (player["position"]) {
+            case "DL":
+              if (ndl < 9) {
+                ldl.add(player);
+                ndl++;
+                oro++;
+              }
+              break;
+            case "MC":
+              if (nmc < 12) {
+                lmc.add(player);
+                nmc++;
+                oro++;
+              }
+              break;
+            case "DF":
+              if (ndf < 11) {
+                ldf.add(player);
+                ndf++;
+                oro++;
+              }
+              break;
+            case "PT":
+              if (npt < 3) {
+                lpt.add(player);
+                npt++;
+                oro++;
+              }
+              break;
+            default:
+          }
+        }
+        break;
+      case "Silver":
+        if (plata < plataMax) {
+          switch (player["position"]) {
+            case "DL":
+              if (ndl < 9) {
+                ldl.add(player);
+                ndl++;
+                plata++;
+              }
+              break;
+            case "MC":
+              if (nmc < 12) {
+                lmc.add(player);
+                nmc++;
+                plata++;
+              }
+              break;
+            case "DF":
+              if (ndf < 11) {
+                ldf.add(player);
+                ndf++;
+                plata++;
+              }
+              break;
+            case "PT":
+              if (npt < 3) {
+                lpt.add(player);
+                npt++;
+                plata++;
+              }
+              break;
+            default:
+          }
+        }
+        break;
+      case "Bronze":
+        if (bronce < bronceMax) {
+          switch (player["position"]) {
+            case "DL":
+              if (ndl < 9) {
+                ldl.add(player);
+                ndl++;
+                bronce++;
+              }
+              break;
+            case "MC":
+              if (nmc < 12) {
+                lmc.add(player);
+                nmc++;
+                bronce++;
+              }
+              break;
+            case "DF":
+              if (ndf < 11) {
+                ldf.add(player);
+                ndf++;
+                bronce++;
+              }
+              break;
+            case "PT":
+              if (npt < 3) {
+                lpt.add(player);
+                npt++;
+                bronce++;
+              }
+              break;
+            default:
+          }
+        }
+        break;
+      default:
+    }
   }
+
+  lpt.sort((b, a) => a['price'].compareTo(b['price']));
+  ldf.sort((b, a) => a['price'].compareTo(b['price']));
+  lmc.sort((b, a) => a['price'].compareTo(b['price']));
+  ldl.sort((b, a) => a['price'].compareTo(b['price']));
+
   res.putIfAbsent("PT", () => lpt);
-
-  while (ndf < 12) {
-    Random r = new Random();
-    int rn = r.nextInt(df.docs.length);
-    var player = df.docs[rn].data();
-    ldf.add(player);
-    ndf++;
-  }
   res.putIfAbsent("DF", () => ldf);
-
-  while (nmc < 15) {
-    Random r = new Random();
-    int rn = r.nextInt(mc.docs.length);
-    var player = mc.docs[rn].data();
-    lmc.add(player);
-    nmc++;
-  }
   res.putIfAbsent("MC", () => lmc);
-
-  while (ndl < 10) {
-    Random r = new Random();
-    int rn = r.nextInt(dl.docs.length);
-    var player = dl.docs[rn].data();
-    ldl.add(player);
-    ndl++;
-  }
   res.putIfAbsent("DL", () => ldl);
 
   return res;
+}
+
+Future<void> saveCountry(Country? c) async {
+  await db.collection("countries").add({
+    "name": c?.getName,
+    "api_id": c?.getApiId,
+  });
 }

@@ -14,9 +14,24 @@ class Player extends ModelMVC {
   int shooting = 0;
   int speed = 0;
   int strength = 0;
+  int clubId = 0;
+  int countryId = 0;
+  String category = "";
+  int price = 0;
 
-  Player? newPlayer(String name, String position, int rating, int defense,
-      int dribbling, int passing, int shooting, int speed, int strength) {
+  Player? newPlayer(
+    String name,
+    String position,
+    int rating,
+    int defense,
+    int dribbling,
+    int passing,
+    int shooting,
+    int speed,
+    int strength,
+    int clubId,
+    int countryId,
+  ) {
     this.name = name;
     this.position = position;
     this.rating = rating;
@@ -26,6 +41,8 @@ class Player extends ModelMVC {
     this.shooting = shooting;
     this.speed = speed;
     this.strength = strength;
+    this.clubId = clubId;
+    this.countryId = countryId;
   }
 
   String get getName {
@@ -64,6 +81,30 @@ class Player extends ModelMVC {
     return strength;
   }
 
+  int get getClubId {
+    return clubId;
+  }
+
+  int get getCountryId {
+    return countryId;
+  }
+
+  int get getPrice {
+    return price;
+  }
+
+  String get getCategory {
+    return category;
+  }
+
+  set setClubId(int newClubId) {
+    clubId = newClubId;
+  }
+
+  set setCountryId(int newCountryId) {
+    countryId = newCountryId;
+  }
+
   set setName(String newName) {
     name = newName;
   }
@@ -98,5 +139,13 @@ class Player extends ModelMVC {
 
   set setStrength(int newStrength) {
     strength = newStrength;
+  }
+
+  set setCategory(String newCategory) {
+    category = newCategory;
+  }
+
+  set setPrice(int newPrice) {
+    price = newPrice;
   }
 }

@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -30,9 +29,10 @@ class userController extends ControllerMVC {
   Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
 
   Future<String?> loginUser(LoginData data) async {
-    // getLeagues();
-    // getClubs();
-    // getPlayers();
+    //getCountries();
+    //getLeagues();
+    //getClubs();
+    //getPlayers();
     Future<List> users = getUsers();
 
     Map<String, String> mapUser = new HashMap();
@@ -64,7 +64,12 @@ class userController extends ControllerMVC {
           u["data"]["email"],
           u["data"]["elo"]);
 
-      globals.userLevel.newLevel(u["level"]["name"]);
+      globals.userLevel.newLevel(
+          u["level"]["name"],
+          u["level"]["team_value"] as int,
+          u["level"]["num_golds"] as int,
+          u["level"]["num_silvers"] as int,
+          u["level"]["num_bronzes"] as int);
       return null;
     });
   }
