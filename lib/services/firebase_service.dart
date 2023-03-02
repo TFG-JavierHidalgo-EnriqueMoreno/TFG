@@ -112,7 +112,8 @@ Future<void> calcElo(bool gameResult) async {
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
+        "phone": us["data"]["phone"],
+        "status": us["data"]["status"],
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] + us["level"]["victory"];
@@ -124,7 +125,8 @@ Future<void> calcElo(bool gameResult) async {
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
+        "phone": us["data"]["phone"],
+        "status": us["data"]["status"],
       });
 
       globals.userLoggedIn.elo = 250;
@@ -135,7 +137,8 @@ Future<void> calcElo(bool gameResult) async {
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
+        "phone": us["data"]["phone"],
+        "status": us["data"]["status"],
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] + us["level"]["victory"];
@@ -172,9 +175,12 @@ Future<void> calcElo(bool gameResult) async {
           "team_value": previousLevel.docs[0].data()["team_value"]
         });
         globals.userLevel.name = us["level"]["previous"];
-        globals.userLevel.teamValue = previousLevel.docs[0].data()["team_value"];
-        globals.userLevel.numBronzes = previousLevel.docs[0].data()["num_bronzes"];
-        globals.userLevel.numSilvers = previousLevel.docs[0].data()["num_silvers"];
+        globals.userLevel.teamValue =
+            previousLevel.docs[0].data()["team_value"];
+        globals.userLevel.numBronzes =
+            previousLevel.docs[0].data()["num_bronzes"];
+        globals.userLevel.numSilvers =
+            previousLevel.docs[0].data()["num_silvers"];
         globals.userLevel.numGolds = previousLevel.docs[0].data()["num_golds"];
       }
       await db.collection("users").doc(us["uid"]).set({
@@ -183,7 +189,8 @@ Future<void> calcElo(bool gameResult) async {
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
+        "phone": us["data"]["phone"],
+        "status": us["data"]["status"],
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] - us["level"]["lose"];
@@ -194,7 +201,8 @@ Future<void> calcElo(bool gameResult) async {
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
+        "phone": us["data"]["phone"],
+        "status": us["data"]["status"],
       });
 
       globals.userLoggedIn.elo = 0;
@@ -205,7 +213,8 @@ Future<void> calcElo(bool gameResult) async {
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
+        "phone": us["data"]["phone"],
+        "status": us["data"]["status"],
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] - us["level"]["lose"];
@@ -229,7 +238,8 @@ Future<void> editUser(
     "name": name,
     "password": password,
     "username": username,
-    "phone": phone
+    "phone": phone,
+    "status": "not_playing",
   });
 
   globals.userLoggedIn.name = name;
@@ -581,4 +591,53 @@ Future<void> saveCountry(Country? c) async {
     "name": c?.getName,
     "api_id": c?.getApiId,
   });
+}
+
+Future<dynamic> searchGame() async {
+  var player1 = await db
+      .collection('users')
+      .where('email', isEqualTo: globals.userLoggedIn.email)
+      .get();
+
+  db
+      .collection("users")
+      .doc(player1.docs[0].id)
+      .update({"status": "searching"});
+
+  int max = player1.docs[0].data()["elo"] + 20;
+  int min = player1.docs[0].data()["elo"] - 20;
+
+  var allPlayers = await db
+      .collection('users')
+      .where('status', isEqualTo: "searching")
+      .where('elo', isLessThanOrEqualTo: max)
+      .where('elo', isGreaterThanOrEqualTo: min)
+      .get();
+  var player2;
+  if (allPlayers.docs.length > 1) {
+    player2 = allPlayers.docs.firstWhere(
+        (element) => element.data()["email"] != globals.userLoggedIn.email);
+    await db
+        .collection("users")
+        .doc(player1.docs[0].id)
+        .update({"status": "playing"});
+
+    await db.collection("users").doc(player2.id).update({"status": "playing"});
+
+    await db
+        .collection("games")
+        .add({"away_goals": 0, "local_goals": 0, "score": 0}).then((value) {
+      db.collection("user_game").add({
+        "game_id": value.id,
+        "user_id": player1.docs[0].id,
+      });
+
+      db.collection("user_game").add({
+        "game_id": value.id,
+        "user_id": player2.id,
+      });
+    });
+    return player2;
+  }
+  return null;
 }

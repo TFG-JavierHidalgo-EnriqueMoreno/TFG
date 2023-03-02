@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:my_app/screens/login_page.dart';
 import 'package:my_app/screens/player_page.dart';
@@ -6,6 +9,7 @@ import 'package:my_app/screens/user_profile.dart';
 import 'package:my_app/services/firebase_service.dart';
 import '../routes/custom_route.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:my_app/entities/globals.dart' as globals;
 
 class HomePage extends StatefulWidget {
@@ -89,11 +93,19 @@ Widget _page(BuildContext context) {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                  onPressed: () => playGame(context),
+                  onPressed: () {
+                    searchGame();
+                  },
                   child: Text('Jugar partido'))
             ],
           ),
-        )
+        ),
+        // StreamBuilder(
+        //   stream: _channel.stream,
+        //   builder: (context, snapshot) {
+        //     return Text(snapshot.hasData ? '${snapshot.data}' : '');
+        //   },
+        // )
       ],
     ),
   );

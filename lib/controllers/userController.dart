@@ -57,12 +57,14 @@ class userController extends ControllerMVC {
       var u =
           list.firstWhere((element) => element["data"]["email"] == data.name);
       globals.userLoggedIn.newUser(
-          u["data"]["username"],
-          u["data"]["password"],
-          u["data"]["name"],
-          u["data"]["phone"],
-          u["data"]["email"],
-          u["data"]["elo"]);
+        u["data"]["username"],
+        u["data"]["password"],
+        u["data"]["name"],
+        u["data"]["phone"],
+        u["data"]["email"],
+        u["data"]["elo"],
+        u["data"]["status"],
+      );
 
       globals.userLevel.newLevel(
           u["level"]["name"],
