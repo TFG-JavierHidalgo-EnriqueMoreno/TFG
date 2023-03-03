@@ -169,10 +169,13 @@ class PlayerPageFormState extends State<PlayerPageForm> {
             ];
           } else {
             children = <Widget>[
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Center(
+              Padding(
+                padding: const EdgeInsets.only(top: 36.0),
+                child: Center(child: Text('Cargando partido...')),
+              ),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
                   child: CircularProgressIndicator(),
                 ),
               ),

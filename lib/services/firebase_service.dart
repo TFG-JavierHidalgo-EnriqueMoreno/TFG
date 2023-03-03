@@ -593,7 +593,8 @@ Future<void> saveCountry(Country? c) async {
   });
 }
 
-Future<dynamic> searchGame() async {
+Future<Map<String, List<dynamic>>> searchGame() async {
+  Map<String, List<dynamic>> res = {};
   var player1 = await db
       .collection('users')
       .where('email', isEqualTo: globals.userLoggedIn.email)
@@ -630,14 +631,55 @@ Future<dynamic> searchGame() async {
       db.collection("user_game").add({
         "game_id": value.id,
         "user_id": player1.docs[0].id,
+        "created_at": Timestamp.now()
       });
 
       db.collection("user_game").add({
         "game_id": value.id,
         "user_id": player2.id,
+        "created_at": Timestamp.now()
       });
     });
-    return player2;
+    res.putIfAbsent("player1", () => [player1.docs[0].data()]);
+    res.putIfAbsent("player2", () => [player2]);
+    return res;
   }
-  return null;
+  return {};
+}
+
+resetPlayerState() async {
+  var player = await db
+      .collection('users')
+      .where('email', isEqualTo: globals.userLoggedIn.email)
+      .get();
+  await db
+      .collection("users")
+      .doc(player.docs[0].id)
+      .update({"status": "not_playing"});
+}
+
+checkPlayerStatus() async {
+  var player = await db
+      .collection('users')
+      .where('email', isEqualTo: globals.userLoggedIn.email)
+      .get();
+  if (player.docs[0].data()["status"] == "playing") {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+getLatestGame() async {
+  var player = await db
+      .collection('users')
+      .where('email', isEqualTo: globals.userLoggedIn.email)
+      .get();
+  var game = await db
+      .collection('user_game')
+      .where('user_id', isEqualTo: player.docs[0].id)
+      .orderBy('created_at')
+      .limit(1)
+      .get();
+  inspect(game.docs[0].data());
 }

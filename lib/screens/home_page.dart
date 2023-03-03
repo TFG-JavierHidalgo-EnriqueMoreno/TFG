@@ -4,12 +4,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:my_app/screens/login_page.dart';
 import 'package:my_app/screens/player_page.dart';
+import 'package:my_app/screens/searching_page.dart';
 import 'package:my_app/screens/select_page.dart';
 import 'package:my_app/screens/user_profile.dart';
 import 'package:my_app/services/firebase_service.dart';
 import '../routes/custom_route.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:my_app/entities/globals.dart' as globals;
 
 class HomePage extends StatefulWidget {
@@ -94,7 +94,7 @@ Widget _page(BuildContext context) {
             children: [
               ElevatedButton(
                   onPressed: () {
-                    searchGame();
+                    playGame(context);
                   },
                   child: Text('Jugar partido'))
             ],
@@ -144,6 +144,7 @@ Widget _getDrawer(BuildContext context) {
 }
 
 showHome(BuildContext context) {
+  resetPlayerState();
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const HomePage(),
@@ -152,6 +153,7 @@ showHome(BuildContext context) {
 }
 
 showProfile(BuildContext context) {
+  resetPlayerState();
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const UserProfile(),
@@ -160,15 +162,15 @@ showProfile(BuildContext context) {
 }
 
 playGame(BuildContext context) {
-  getRandomPlayers();
   Navigator.of(context).pushReplacement(
     FadePageRoute(
-      builder: (context) => const PlayerPage(),
+      builder: (context) => const SearchingPage(),
     ),
   );
 }
 
 logout(BuildContext context) {
+  resetPlayerState();
   globals.isLoggedIn = false;
   Navigator.of(context).pushReplacement(
     FadePageRoute(
