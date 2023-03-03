@@ -658,7 +658,7 @@ resetPlayerState() async {
       .update({"status": "not_playing"});
 }
 
-checkPlayerStatus() async {
+Future<bool> checkPlayerStatus() async {
   var player = await db
       .collection('users')
       .where('email', isEqualTo: globals.userLoggedIn.email)
@@ -670,7 +670,7 @@ checkPlayerStatus() async {
   }
 }
 
-getLatestGame() async {
+getPlayer2() async {
   var player = await db
       .collection('users')
       .where('email', isEqualTo: globals.userLoggedIn.email)
@@ -678,8 +678,17 @@ getLatestGame() async {
   var game = await db
       .collection('user_game')
       .where('user_id', isEqualTo: player.docs[0].id)
-      .orderBy('created_at')
+      .orderBy('created_at', descending: true)
       .limit(1)
       .get();
-  inspect(game.docs[0].data());
+  var otherPlayer = await db
+      .collection('user_game')
+      .where('game_id', isEqualTo: game.docs[0].data()["game_id"])
+      .where('user_id', isNotEqualTo: player.docs[0].id)
+      .get();
+  var player2 = await db
+      .collection('users')
+      .doc(otherPlayer.docs[0].data()["user_id"])
+      .get();
+  return player2.data();
 }

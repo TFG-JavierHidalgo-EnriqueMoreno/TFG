@@ -53,7 +53,9 @@ class SearchingPageFormState extends State<SearchingPageForm> {
 
   bool loaded = false;
   late Map<String, List<dynamic>> players;
-  bool isPlaying = false;
+  bool isPlayingz = false;
+  Map<String, dynamic> player2 = {};
+  ValueNotifier<bool> isPlaying = ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +66,7 @@ class SearchingPageFormState extends State<SearchingPageForm> {
             AsyncSnapshot<Map<String, List<dynamic>>> snapshot) {
           List<Widget> children;
           if (snapshot.hasData) {
-            if (isPlaying) {
+            if (isPlaying.value) {
               startTime(context);
               players = snapshot.data!;
               children = <Widget>[
@@ -73,14 +75,14 @@ class SearchingPageFormState extends State<SearchingPageForm> {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
-                        '${players["player1"]![0]["username"]} vs ${players["player2"]![0]["username"]}'),
+                        '${globals.userLoggedIn.username} vs ${player2["username"]}'),
                   ),
                 ),
               ];
             } else {
               if (snapshot.data!.isEmpty) {
-                start15secTime(context);
-                checkForGame(context, isPlaying);
+                start15secTime(context, isPlaying.value);
+                checkForGame(context, isPlaying, player2);
                 children = <Widget>[
                   Center(child: Text('Buscando partido...')),
                   Center(
@@ -203,26 +205,32 @@ startTime(BuildContext context) async {
           context, MaterialPageRoute(builder: (context) => PlayerPage()))));
 }
 
-start15secTime(BuildContext context) async {
+start15secTime(BuildContext context, bool isPlaying) async {
   var duration = Duration(seconds: 15);
   return Timer(duration, (() {
-    resetPlayerState();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          backgroundColor: Color.fromARGB(255, 209, 67, 67),
-          duration: Duration(seconds: 3),
-          content: Text('No ha sido posible encontrar partido')),
-    );
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => HomePage()));
+    if (!isPlaying) {
+      resetPlayerState();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            backgroundColor: Color.fromARGB(255, 209, 67, 67),
+            duration: Duration(seconds: 3),
+            content: Text('No ha sido posible encontrar partido')),
+      );
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => HomePage()));
+    }
   }));
 }
 
-checkForGame(BuildContext context, bool isPlaying) async {
-  Timer.periodic(Duration(seconds: 1), (Timer t) {
-    isPlaying = checkPlayerStatus();
-    if (isPlaying) {
-      var game = getLatestGame();
+checkForGame(BuildContext context, ValueNotifier<bool> isPlaying,
+    Map<String, dynamic> player2) async {
+  Timer? timer;
+  isPlaying.addListener(() => SearchingPage().build(context));
+  timer = Timer.periodic(Duration(seconds: 1), (Timer t) async {
+    isPlaying.value = await checkPlayerStatus();
+    if (isPlaying.value) {
+      player2 = await getPlayer2();
+      timer!.cancel();
     }
   });
 }
