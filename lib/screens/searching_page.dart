@@ -53,9 +53,7 @@ class SearchingPageFormState extends State<SearchingPageForm> {
 
   bool loaded = false;
   late Map<String, List<dynamic>> players;
-  bool isPlayingz = false;
-  Map<String, dynamic> player2 = {};
-  ValueNotifier<bool> isPlaying = ValueNotifier<bool>(false);
+  bool isPlaying = false;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +64,31 @@ class SearchingPageFormState extends State<SearchingPageForm> {
             AsyncSnapshot<Map<String, List<dynamic>>> snapshot) {
           List<Widget> children;
           if (snapshot.hasData) {
-            if (isPlaying.value) {
+            if (snapshot.data!.isEmpty) {
+              start15secTime(context, isPlaying);
+              checkForGame(context, isPlaying);
+              children = <Widget>[
+                Center(child: Text('Buscando partido...')),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 40.0),
+                  child: FloatingActionButton.extended(
+                    onPressed: () {
+                      resetPlayerState();
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => HomePage()));
+                    },
+                    backgroundColor: Color.fromARGB(255, 209, 67, 67),
+                    label: const Text("Cancelar búsqueda"),
+                  ),
+                ),
+              ];
+            } else {
               startTime(context);
               players = snapshot.data!;
               children = <Widget>[
@@ -75,49 +97,10 @@ class SearchingPageFormState extends State<SearchingPageForm> {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
-                        '${globals.userLoggedIn.username} vs ${player2["username"]}'),
+                        '${players["player1"]![0]["username"]} vs ${players["player2"]![0]["username"]}'),
                   ),
                 ),
               ];
-            } else {
-              if (snapshot.data!.isEmpty) {
-                start15secTime(context, isPlaying.value);
-                checkForGame(context, isPlaying, player2);
-                children = <Widget>[
-                  Center(child: Text('Buscando partido...')),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 40.0),
-                    child: FloatingActionButton.extended(
-                      onPressed: () {
-                        resetPlayerState();
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => HomePage()));
-                      },
-                      backgroundColor: Color.fromARGB(255, 209, 67, 67),
-                      label: const Text("Cancelar búsqueda"),
-                    ),
-                  ),
-                ];
-              } else {
-                startTime(context);
-                players = snapshot.data!;
-                children = <Widget>[
-                  Center(child: Text('Partida encontrada')),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                          '${players["player1"]![0]["username"]} vs ${players["player2"]![0]["username"]}'),
-                    ),
-                  ),
-                ];
-              }
             }
           } else if (snapshot.hasError) {
             children = <Widget>[
@@ -222,14 +205,13 @@ start15secTime(BuildContext context, bool isPlaying) async {
   }));
 }
 
-checkForGame(BuildContext context, ValueNotifier<bool> isPlaying,
-    Map<String, dynamic> player2) async {
+checkForGame(
+    BuildContext context, bool isPlaying) async {
   Timer? timer;
-  isPlaying.addListener(() => SearchingPage().build(context));
   timer = Timer.periodic(Duration(seconds: 1), (Timer t) async {
-    isPlaying.value = await checkPlayerStatus();
-    if (isPlaying.value) {
-      player2 = await getPlayer2();
+    isPlaying = await checkPlayerStatus();
+    if (isPlaying) {
+      var player2 = await getPlayer2();
       timer!.cancel();
     }
   });
