@@ -12,9 +12,9 @@ import 'home_page.dart';
 import 'package:my_app/entities/globals.dart' as globals;
 
 class PlayerPage extends StatefulWidget {
-  final String player1 = "";
-  final String player2 = "";
-  const PlayerPage({super.key, required player1, required player2});
+  final String player1;
+  final String player2;
+  const PlayerPage({super.key, required this.player1, required this.player2});
 
   @override
   PlayerPageState createState() {

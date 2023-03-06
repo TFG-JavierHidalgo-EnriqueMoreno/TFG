@@ -51,6 +51,34 @@ class SearchingPageFormState extends State<SearchingPageForm> {
   // Note: This is a `GlobalKey<FormState>`,
   // not a GlobalKey<MyCustomFormState>.
 
+  @override
+  void initState() {
+    super.initState();
+    var duration = Duration(seconds: 20);
+    timer = Timer(duration, (() {
+      if (!isPlaying) {
+        resetPlayerState();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              backgroundColor: Color.fromARGB(255, 209, 67, 67),
+              duration: Duration(seconds: 3),
+              content: Text('No ha sido posible encontrar partido')),
+        );
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => HomePage()));
+      }
+    }));
+
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    timer.cancel();
+  }
+
+  late Timer timer;
   bool loaded = false;
   late Map<String, List<dynamic>> players;
   bool isPlaying = false;
@@ -65,7 +93,7 @@ class SearchingPageFormState extends State<SearchingPageForm> {
           List<Widget> children;
           if (snapshot.hasData) {
             if (snapshot.data!.isEmpty) {
-              start15secTime(context, isPlaying);
+              // start15secTime(context, isPlaying, timer);
               checkForGame(context, isPlaying);
               children = <Widget>[
                 Center(child: Text('Buscando partido...')),
@@ -90,8 +118,9 @@ class SearchingPageFormState extends State<SearchingPageForm> {
               ];
             } else {
               players = snapshot.data!;
-              goToPlayerPage(context, players);
+              isPlaying = true;
               children = <Widget>[];
+              goToPlayerPage(context, players);
             }
           } else if (snapshot.hasError) {
             children = <Widget>[
@@ -172,37 +201,22 @@ goToHome(BuildContext context) {
 }
 
 goToPlayerPage(BuildContext context, Map<String, List<dynamic>> players) {
-  Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => PlayerPage(
-            player1: players["player1"]![0]["username"],
-            player2: players["player2"]![0]["username"],
-          )));
-}
-
-start15secTime(BuildContext context, bool isPlaying) async {
-  var duration = Duration(seconds: 15);
-  return Timer(duration, (() {
-    if (!isPlaying) {
-      resetPlayerState();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            backgroundColor: Color.fromARGB(255, 209, 67, 67),
-            duration: Duration(seconds: 3),
-            content: Text('No ha sido posible encontrar partido')),
-      );
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => HomePage()));
-    }
-  }));
+  SchedulerBinding.instance.addPostFrameCallback((_) {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => PlayerPage(
+              player1: players["player1"]![0]["username"],
+              player2: players["player2"]![0]["username"],
+            )));
+  });
 }
 
 checkForGame(BuildContext context, bool isPlaying) async {
   Timer? timer;
-  timer = Timer.periodic(Duration(seconds: 1), (Timer t) async {
+  timer = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
     isPlaying = await checkPlayerStatus();
     if (isPlaying) {
-      var player2 = await getPlayer2();
       timer!.cancel();
+      var player2 = await getPlayer2();
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => PlayerPage(
                 player1: globals.userLoggedIn.username,

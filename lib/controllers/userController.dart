@@ -72,6 +72,7 @@ class userController extends ControllerMVC {
           u["level"]["num_golds"] as int,
           u["level"]["num_silvers"] as int,
           u["level"]["num_bronzes"] as int);
+      resetPlayerState();
       return null;
     });
   }
