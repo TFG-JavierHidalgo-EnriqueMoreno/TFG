@@ -12,7 +12,7 @@ import 'home_page.dart';
 import 'package:my_app/entities/globals.dart' as globals;
 
 class PlayerPage extends StatelessWidget {
-  const PlayerPage({super.key});
+  const PlayerPage({super.key, required player1, required player2});
 
   @override
   Widget build(BuildContext context) {

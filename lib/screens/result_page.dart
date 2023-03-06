@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:my_app/screens/player_page.dart';
+import 'package:my_app/screens/searching_page.dart';
 import 'package:my_app/screens/select_page.dart';
 import 'package:my_app/routes/custom_route.dart';
 import 'home_page.dart';
@@ -330,7 +331,7 @@ goToHome(BuildContext context) {
 playAgain(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
-      builder: (context) => const PlayerPage(),
+      builder: (context) => const SearchingPage(),
     ),
   );
 }

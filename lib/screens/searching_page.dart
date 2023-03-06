@@ -89,18 +89,9 @@ class SearchingPageFormState extends State<SearchingPageForm> {
                 ),
               ];
             } else {
-              startTime(context);
               players = snapshot.data!;
-              children = <Widget>[
-                Center(child: Text('Partida encontrada')),
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                        '${players["player1"]![0]["username"]} vs ${players["player2"]![0]["username"]}'),
-                  ),
-                ),
-              ];
+              goToPlayerPage(context, players);
+              children = <Widget>[];
             }
           } else if (snapshot.hasError) {
             children = <Widget>[
@@ -180,12 +171,12 @@ goToHome(BuildContext context) {
   );
 }
 
-startTime(BuildContext context) async {
-  var duration = Duration(seconds: 5);
-  return Timer(
-      duration,
-      (() => Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => PlayerPage()))));
+goToPlayerPage(BuildContext context, Map<String, List<dynamic>> players) {
+  Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => PlayerPage(
+            player1: players["player1"]![0]["username"],
+            player2: players["player2"]![0]["username"],
+          )));
 }
 
 start15secTime(BuildContext context, bool isPlaying) async {
@@ -205,8 +196,7 @@ start15secTime(BuildContext context, bool isPlaying) async {
   }));
 }
 
-checkForGame(
-    BuildContext context, bool isPlaying) async {
+checkForGame(BuildContext context, bool isPlaying) async {
   Timer? timer;
   timer = Timer.periodic(Duration(seconds: 1), (Timer t) async {
     isPlaying = await checkPlayerStatus();
