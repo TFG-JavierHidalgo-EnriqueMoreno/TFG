@@ -15,6 +15,7 @@ class ResultPage extends StatefulWidget {
   final Map<String, int?> player1Points;
   final Map<String, int?> player2Points;
   final Map<String, int> gameResult;
+
   const ResultPage(
       {super.key,
       required this.player1Points,

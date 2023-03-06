@@ -203,6 +203,11 @@ checkForGame(BuildContext context, bool isPlaying) async {
     if (isPlaying) {
       var player2 = await getPlayer2();
       timer!.cancel();
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => PlayerPage(
+                player1: globals.userLoggedIn.username,
+                player2: player2["username"],
+              )));
     }
   });
 }
