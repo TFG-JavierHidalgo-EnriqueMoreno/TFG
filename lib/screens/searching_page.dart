@@ -213,14 +213,14 @@ goToPlayerPage(BuildContext context, Map<String, List<dynamic>> players) {
 checkForGame(BuildContext context, bool isPlaying) async {
   Timer? timer;
   timer = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
-    isPlaying = await checkPlayerStatus();
+    isPlaying = await checkPlayerStatus() == "playing";
     if (isPlaying) {
       timer!.cancel();
       var player2 = await getPlayer2();
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => PlayerPage(
                 player1: globals.userLoggedIn.username,
-                player2: player2["username"],
+                player2: player2.data()["username"],
               )));
     }
   });

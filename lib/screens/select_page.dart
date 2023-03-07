@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:core';
 import 'dart:developer';
 import 'dart:ui';
@@ -9,6 +10,7 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:my_app/entities/lineup.dart';
 import 'package:my_app/screens/result_page.dart';
 import 'package:my_app/routes/custom_route.dart';
+import 'package:my_app/services/api_service.dart';
 import 'package:my_app/services/firebase_service.dart';
 import 'home_page.dart';
 
@@ -1013,28 +1015,37 @@ Widget _getDrawer(BuildContext context) {
 }
 
 confirm(BuildContext context, Map<int, dynamic> selectedPlayers) {
+  readyPlayer();
   Lineup lineup = Lineup();
   lineup.newLineup("4-4-2", "5-3-2");
-  Map<String, int> player2Points = {
-    "strength": 600,
-    "shooting": 750,
-    "speed": 770,
-    "dribbling": 610,
-    "defense": 780,
-    "passing": 400,
-    "rating": 80,
-  };
-  Map<String, int?> player1Points = calcPoints(selectedPlayers);
-  Map<String, int> gameResult = calcResult(player1Points, player2Points);
-  saveGame(gameResult["player1Goals"], gameResult["player2Goals"], lineup,
-      selectedPlayers);
-  calcElo(
-      gameResult["player1Goals"]! > gameResult["player2Goals"]! ? true : false);
-  Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => ResultPage(
-          player1Points: player1Points,
-          player2Points: player2Points,
-          gameResult: gameResult)));
+  saveUserPlayer(lineup, selectedPlayers);
+  Timer? t;
+  t = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
+    if (await checkOtherPlayerStatus() == "ready") {
+      var player2Players = getPlayer2Players();
+      inspect(player2Players);
+      t.cancel();
+    }
+  });
+  // Map<String, int> player2Points = {
+  //   "strength": 600,
+  //   "shooting": 750,
+  //   "speed": 770,
+  //   "dribbling": 610,
+  //   "defense": 780,
+  //   "passing": 400,
+  //   "rating": 80,
+  // };
+  // Map<String, int?> player1Points = calcPoints(selectedPlayers);
+  // Map<String, int> gameResult = calcResult(player1Points, player2Points);
+  // saveGame(gameResult["player1Goals"], gameResult["player2Goals"]);
+  // calcElo(
+  //     gameResult["player1Goals"]! > gameResult["player2Goals"]! ? true : false);
+  // Navigator.of(context).push(MaterialPageRoute(
+  //     builder: (context) => ResultPage(
+  //         player1Points: player1Points,
+  //         player2Points: player2Points,
+  //         gameResult: gameResult)));
 }
 
 calcPoints(Map<int, dynamic> selectedPlayers) {

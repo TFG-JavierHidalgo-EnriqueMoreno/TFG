@@ -266,42 +266,20 @@ Future<void> deleteUser() async {
   globals.userLoggedIn.password = "";
 }
 
-Future<void> saveGame(int? localGoals, int? awayGoals, Lineup? lineup,
-    Map<int, dynamic> selectedPlayers) async {
+Future<void> saveGame(int? localGoals, int? awayGoals) async {
   Future<List> users = getUsers();
   User u = globals.userLoggedIn;
 
   List list = await users;
   var us = list.firstWhere((element) => element["data"]["email"] == u.email);
-  await db
-      .collection("games")
-      .add({
-        "local_goals": localGoals,
-        "away_goals": awayGoals,
-        "score": localGoals! > awayGoals! ? 1 : 2,
-      })
-      .then((value) => value.collection("lineup").add({
-            "local_lineup": lineup?.getLocalLineup,
-            "away_lineup": lineup?.getAwayLineup
-          }))
-      .then((value) => db.collection("user_game").add({
-            "game_id": value.parent.parent?.id,
-            "user_id": us["uid"],
-          }).then((value) {
-            value.collection("players").add({
-              "player0": selectedPlayers[0]["bd_id"],
-              "player1": selectedPlayers[1]["bd_id"],
-              "player2": selectedPlayers[2]["bd_id"],
-              "player3": selectedPlayers[3]["bd_id"],
-              "player4": selectedPlayers[4]["bd_id"],
-              "player5": selectedPlayers[5]["bd_id"],
-              "player6": selectedPlayers[6]["bd_id"],
-              "player7": selectedPlayers[7]["bd_id"],
-              "player8": selectedPlayers[8]["bd_id"],
-              "player9": selectedPlayers[9]["bd_id"],
-              "player10": selectedPlayers[10]["bd_id"],
-            });
-          }));
+
+  QuerySnapshot<Map<String, dynamic>> lastGame = await getLastGame();
+
+  await db.collection("games").doc(lastGame.docs[0].id).update({
+    "local_goals": localGoals,
+    "away_goals": awayGoals,
+    "score": localGoals! > awayGoals! ? 1 : 2,
+  });
 }
 
 //TODO: Obtener el usuario logueado
@@ -658,16 +636,19 @@ resetPlayerState() async {
       .update({"status": "not_playing"});
 }
 
-Future<bool> checkPlayerStatus() async {
+Future<String> checkPlayerStatus() async {
   var player = await db
       .collection('users')
       .where('email', isEqualTo: globals.userLoggedIn.email)
       .get();
-  if (player.docs[0].data()["status"] == "playing") {
-    return true;
-  } else {
-    return false;
-  }
+
+  return player.docs[0].data()["status"];
+}
+
+Future<String> checkOtherPlayerStatus() async {
+  var player2 = await getPlayer2();
+
+  return player2.data()["status"];
 }
 
 getPlayer2() async {
@@ -690,5 +671,86 @@ getPlayer2() async {
       .collection('users')
       .doc(otherPlayer.docs[0].data()["user_id"])
       .get();
-  return player2.data();
+  return player2;
+}
+
+Future<QuerySnapshot<Map<String, dynamic>>> getLastGame() async {
+  var player = await db
+      .collection('users')
+      .where('email', isEqualTo: globals.userLoggedIn.email)
+      .get();
+  var game = await db
+      .collection('user_game')
+      .where('user_id', isEqualTo: player.docs[0].id)
+      .orderBy('created_at', descending: true)
+      .limit(1)
+      .get();
+
+  return game;
+}
+
+readyPlayer() async {
+  var player1 = await db
+      .collection('users')
+      .where('email', isEqualTo: globals.userLoggedIn.email)
+      .get();
+
+  db.collection("users").doc(player1.docs[0].id).update({"status": "ready"});
+}
+
+saveUserPlayer(Lineup? lineup, Map<int, dynamic> selectedPlayers) async {
+  Future<List> users = getUsers();
+  User u = globals.userLoggedIn;
+
+  List list = await users;
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+
+  QuerySnapshot<Map<String, dynamic>> lastGame = await getLastGame();
+
+  await db
+      .collection("games")
+      .doc(lastGame.docs[0].id)
+      .collection("lineup")
+      .add({
+    "local_lineup": lineup?.getLocalLineup,
+    "away_lineup": lineup?.getAwayLineup
+  });
+  var gameUser = await db
+      .collection("user_game")
+      .where("game_id", isEqualTo: lastGame.docs[0].id)
+      .where("user_id", isEqualTo: us["id"])
+      .get();
+  await db
+      .collection("user_game")
+      .doc(gameUser.docs[0].id)
+      .collection("players")
+      .add({
+    "player0": selectedPlayers[0]["bd_id"],
+    "player1": selectedPlayers[1]["bd_id"],
+    "player2": selectedPlayers[2]["bd_id"],
+    "player3": selectedPlayers[3]["bd_id"],
+    "player4": selectedPlayers[4]["bd_id"],
+    "player5": selectedPlayers[5]["bd_id"],
+    "player6": selectedPlayers[6]["bd_id"],
+    "player7": selectedPlayers[7]["bd_id"],
+    "player8": selectedPlayers[8]["bd_id"],
+    "player9": selectedPlayers[9]["bd_id"],
+    "player10": selectedPlayers[10]["bd_id"]
+  });
+}
+
+getPlayer2Players() async {
+  var player2 = await getPlayer2();
+  var game = await getLastGame();
+  var res = await db
+      .collection("user_game")
+      .where("game_id", isEqualTo: game.docs[0].id)
+      .where("user_id", isEqualTo: player2.id)
+      .get();
+
+  return await db
+      .collection("user_game")
+      .doc(res.docs[0].id)
+      .collection("players")
+      .get();
 }
