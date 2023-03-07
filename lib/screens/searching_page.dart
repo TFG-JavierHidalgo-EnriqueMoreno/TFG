@@ -74,8 +74,8 @@ class SearchingPageFormState extends State<SearchingPageForm> {
 
   @override
   void dispose() {
-    super.dispose();
     timer.cancel();
+    super.dispose();
   }
 
   late Timer timer;

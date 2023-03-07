@@ -709,7 +709,7 @@ saveUserPlayer(Lineup? lineup, Map<int, dynamic> selectedPlayers) async {
 
   await db
       .collection("games")
-      .doc(lastGame.docs[0].id)
+      .doc(lastGame.docs[0]["game_id"])
       .collection("lineup")
       .add({
     "local_lineup": lineup?.getLocalLineup,
@@ -717,25 +717,31 @@ saveUserPlayer(Lineup? lineup, Map<int, dynamic> selectedPlayers) async {
   });
   var gameUser = await db
       .collection("user_game")
-      .where("game_id", isEqualTo: lastGame.docs[0].id)
-      .where("user_id", isEqualTo: us["id"])
+      .where("game_id", isEqualTo: lastGame.docs[0]["game_id"])
+      .where("user_id", isEqualTo: us["uid"])
       .get();
+
   await db
       .collection("user_game")
-      .doc(gameUser.docs[0].id)
-      .collection("players")
-      .add({
-    "player0": selectedPlayers[0]["bd_id"],
-    "player1": selectedPlayers[1]["bd_id"],
-    "player2": selectedPlayers[2]["bd_id"],
-    "player3": selectedPlayers[3]["bd_id"],
-    "player4": selectedPlayers[4]["bd_id"],
-    "player5": selectedPlayers[5]["bd_id"],
-    "player6": selectedPlayers[6]["bd_id"],
-    "player7": selectedPlayers[7]["bd_id"],
-    "player8": selectedPlayers[8]["bd_id"],
-    "player9": selectedPlayers[9]["bd_id"],
-    "player10": selectedPlayers[10]["bd_id"]
+      .where("game_id", isEqualTo: lastGame.docs[0].data()["game_id"])
+      .where("user_id", isEqualTo: us["uid"])
+      .get()
+      .then((value) {
+    print(value.docs[0].id);
+    inspect(value.docs[0].data());
+    db.collection("user_game").doc(value.docs[0].id).collection("players").add({
+      "player0": selectedPlayers[0]["bd_id"],
+      "player1": selectedPlayers[1]["bd_id"],
+      "player2": selectedPlayers[2]["bd_id"],
+      "player3": selectedPlayers[3]["bd_id"],
+      "player4": selectedPlayers[4]["bd_id"],
+      "player5": selectedPlayers[5]["bd_id"],
+      "player6": selectedPlayers[6]["bd_id"],
+      "player7": selectedPlayers[7]["bd_id"],
+      "player8": selectedPlayers[8]["bd_id"],
+      "player9": selectedPlayers[9]["bd_id"],
+      "player10": selectedPlayers[10]["bd_id"]
+    });
   });
 }
 
