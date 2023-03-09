@@ -57,7 +57,7 @@ class SelectPageState extends State<SelectPage> {
 
   bool _obscureText = true;
   String _password = "";
-  List<String> list = <String>['4-4-2', '4-3-3', '5-3-2', '5-4-1'];
+  List<String> list = <String>['4-4-2', '4-3-3', '5-3-2'];
   String dropdownValue = '4-4-2';
   bool _allSelected = false;
   final Map<int, bool> _selected = {
@@ -506,7 +506,9 @@ class SelectPageState extends State<SelectPage> {
             ),
             Positioned(
               bottom: MediaQuery.of(context).size.height - 260,
-              left: (MediaQuery.of(context).size.width) - 335,
+              left: dropdownValue == "4-3-3"
+                  ? (MediaQuery.of(context).size.width) - 385
+                  : (MediaQuery.of(context).size.width) - 335,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -545,7 +547,9 @@ class SelectPageState extends State<SelectPage> {
             ),
             Positioned(
               bottom: MediaQuery.of(context).size.height - 260,
-              left: (MediaQuery.of(context).size.width) - 210,
+              left: dropdownValue == "4-3-3"
+                  ? (MediaQuery.of(context).size.width) - 270
+                  : (MediaQuery.of(context).size.width) - 210,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -583,8 +587,12 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 560,
-              left: (MediaQuery.of(context).size.width) - 420,
+              top: dropdownValue == "4-3-3"
+                  ? MediaQuery.of(context).size.height - 668
+                  : MediaQuery.of(context).size.height - 560,
+              left: dropdownValue == "4-3-3"
+                  ? (MediaQuery.of(context).size.width) - 155
+                  : (MediaQuery.of(context).size.width) - 420,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -622,8 +630,14 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 490,
-              left: (MediaQuery.of(context).size.width) - 335,
+              top: dropdownValue == "4-3-3"
+                  ? MediaQuery.of(context).size.height - 560
+                  : MediaQuery.of(context).size.height - 490,
+              left: dropdownValue == "4-3-3"
+                  ? (MediaQuery.of(context).size.width) - 420
+                  : dropdownValue == "5-3-2"
+                      ? (MediaQuery.of(context).size.width) - 270
+                      : (MediaQuery.of(context).size.width) - 335,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -661,8 +675,14 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 490,
-              left: (MediaQuery.of(context).size.width) - 210,
+              top: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height - 560
+                  : MediaQuery.of(context).size.height - 490,
+              left: dropdownValue == "4-3-3"
+                  ? (MediaQuery.of(context).size.width) - 270
+                  : dropdownValue == "5-3-2"
+                      ? (MediaQuery.of(context).size.width) - 125
+                      : (MediaQuery.of(context).size.width) - 210,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -700,7 +720,9 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 560,
+              top: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height - 450
+                  : MediaQuery.of(context).size.height - 560,
               left: (MediaQuery.of(context).size.width) - 125,
               child: Stack(
                 children: <Widget>[
@@ -739,7 +761,9 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 370,
+              top: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height - 450
+                  : MediaQuery.of(context).size.height - 370,
               left: (MediaQuery.of(context).size.width) - 420,
               child: Stack(
                 children: <Widget>[
@@ -778,8 +802,12 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 300,
-              left: (MediaQuery.of(context).size.width) - 335,
+              top: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height - 350
+                  : MediaQuery.of(context).size.height - 300,
+              left: dropdownValue == "5-3-2"
+                  ? (MediaQuery.of(context).size.width) - 380
+                  : (MediaQuery.of(context).size.width) - 335,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -818,7 +846,9 @@ class SelectPageState extends State<SelectPage> {
             ),
             Positioned(
               top: MediaQuery.of(context).size.height - 300,
-              left: (MediaQuery.of(context).size.width) - 210,
+              left: dropdownValue == "5-3-2"
+                  ? (MediaQuery.of(context).size.width / 2) - 75
+                  : (MediaQuery.of(context).size.width) - 210,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -856,8 +886,12 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 370,
-              left: (MediaQuery.of(context).size.width) - 125,
+              top: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height - 350
+                  : MediaQuery.of(context).size.height - 370,
+              left: dropdownValue == "5-3-2"
+                  ? (MediaQuery.of(context).size.width) - 165
+                  : (MediaQuery.of(context).size.width) - 125,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
