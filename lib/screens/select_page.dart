@@ -134,27 +134,75 @@ class SelectPageState extends State<SelectPage> {
         for (var element in indexSelected) {
           lpc.removeAt(element);
         }
-        switch (key) {
-          case 10:
-            gc = lpc;
-            break;
-          case 6:
-          case 7:
-          case 8:
-          case 9:
-            dc = lpc;
-            break;
-          case 2:
-          case 3:
-          case 4:
-          case 5:
-            mc = lpc;
-            break;
-          case 0:
-          case 1:
-            fc = lpc;
-            break;
-          default:
+        if (dropdownValue == '4-4-2') {
+          switch (key) {
+            case 10:
+              gc = lpc;
+              break;
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+              dc = lpc;
+              break;
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+              mc = lpc;
+              break;
+            case 0:
+            case 1:
+              fc = lpc;
+              break;
+            default:
+          }
+        } else if (dropdownValue == '4-3-3') {
+          switch (key) {
+            case 10:
+              gc = lpc;
+              break;
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+              dc = lpc;
+              break;
+            case 3:
+            case 4:
+            case 5:
+              mc = lpc;
+              break;
+            case 0:
+            case 1:
+            case 2:
+              fc = lpc;
+              break;
+            default:
+          }
+        } else {
+          switch (key) {
+            case 10:
+              gc = lpc;
+              break;
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+              dc = lpc;
+              break;
+            case 2:
+            case 3:
+            case 4:
+              mc = lpc;
+              break;
+            case 0:
+            case 1:
+              fc = lpc;
+              break;
+            default:
+          }
         }
       });
     }
@@ -407,6 +455,72 @@ class SelectPageState extends State<SelectPage> {
     );
   }
 
+  checkPlayerPositions() {
+    switch (dropdownValue) {
+      case "4-4-2":
+        if (_selected[2] == true) {
+          if (_selectedPlayers[2]['position'] != 'MC') {
+            teamValue = teamValue + _selectedPlayers[2]["price"] as int;
+            fc?.add(_selectedPlayers[2]);
+            fc?.sort((b, a) => a['price'].compareTo(b['price']));
+            _selectedPlayers[2] = {};
+            _selected[2] = false;
+          }
+        }
+        if (_selected[5] == true) {
+          if (_selectedPlayers[5]['position'] != 'MC') {
+            teamValue = teamValue + _selectedPlayers[5]["price"] as int;
+            dc?.add(_selectedPlayers[5]);
+            dc?.sort((b, a) => a['price'].compareTo(b['price']));
+            _selectedPlayers[5] = {};
+            _selected[5] = false;
+          }
+        }
+        break;
+      case "4-3-3":
+        if (_selected[2] == true) {
+          if (_selectedPlayers[2]['position'] != 'DL') {
+            teamValue = teamValue + _selectedPlayers[2]["price"] as int;
+            mc?.add(_selectedPlayers[2]);
+            mc?.sort((b, a) => a['price'].compareTo(b['price']));
+            _selectedPlayers[2] = {};
+            _selected[2] = false;
+          }
+        }
+        if (_selected[5] == true) {
+          if (_selectedPlayers[5]['position'] != 'MC') {
+            teamValue = teamValue + _selectedPlayers[5]["price"] as int;
+            dc?.add(_selectedPlayers[5]);
+            dc?.sort((b, a) => a['price'].compareTo(b['price']));
+            _selectedPlayers[5] = {};
+            _selected[5] = false;
+          }
+        }
+        break;
+      case "5-3-2":
+        if (_selected[2] == true) {
+          if (_selectedPlayers[2]['position'] != 'MC') {
+            teamValue = teamValue + _selectedPlayers[2]["price"] as int;
+            fc?.add(_selectedPlayers[2]);
+            fc?.sort((b, a) => a['price'].compareTo(b['price']));
+            _selectedPlayers[2] = {};
+            _selected[2] = false;
+          }
+        }
+        if (_selected[5] == true) {
+          if (_selectedPlayers[5]['position'] != 'DF') {
+            teamValue = teamValue + _selectedPlayers[5]["price"] as int;
+            mc?.add(_selectedPlayers[5]);
+            mc?.sort((b, a) => a['price'].compareTo(b['price']));
+            _selectedPlayers[5] = {};
+            _selected[5] = false;
+          }
+        }
+        break;
+      default:
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     const appTitle = 'Seleccion de jugadores';
@@ -453,6 +567,7 @@ class SelectPageState extends State<SelectPage> {
                           // This is called when the user selects an item.
                           setState(() {
                             dropdownValue = value!;
+                            checkPlayerPositions();
                           });
                         },
                         items:
@@ -588,7 +703,7 @@ class SelectPageState extends State<SelectPage> {
             ),
             Positioned(
               top: dropdownValue == "4-3-3"
-                  ? MediaQuery.of(context).size.height - 668
+                  ? MediaQuery.of(context).size.height - 667
                   : MediaQuery.of(context).size.height - 560,
               left: dropdownValue == "4-3-3"
                   ? (MediaQuery.of(context).size.width) - 155
@@ -601,7 +716,9 @@ class SelectPageState extends State<SelectPage> {
                       children: [
                         ElevatedButton(
                             onPressed: () => {
-                                  select(2, _selected, context, m, mc),
+                                  dropdownValue == "4-3-3"
+                                      ? select(2, _selected, context, f, fc)
+                                      : select(2, _selected, context, m, mc),
                                 },
                             style: ElevatedButton.styleFrom(
                                 side: const BorderSide(
@@ -732,7 +849,9 @@ class SelectPageState extends State<SelectPage> {
                       children: [
                         ElevatedButton(
                             onPressed: () => {
-                                  select(5, _selected, context, m, mc),
+                                  dropdownValue == '5-3-2'
+                                      ? select(5, _selected, context, d, dc)
+                                      : select(5, _selected, context, m, mc),
                                 },
                             style: ElevatedButton.styleFrom(
                                 side: const BorderSide(
