@@ -455,6 +455,308 @@ class SelectPageState extends State<SelectPage> {
     );
   }
 
+  select_captain(BuildContext context) {
+    showDialog<String>(
+      context: context,
+      barrierColor: Colors.transparent,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Selecciona Capitán'),
+        //content: const Text('Usuario eliminado'),
+        actions: <Widget>[
+          SingleChildScrollView(
+            child: Container(
+              height: 300,
+              width: 300,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _selectedPlayers.length,
+                itemBuilder: ((context, index) {
+                  if (_selectedPlayers[index]["name"] != null) {
+                    return Container(
+                      child: TextButton(
+                          style: TextButton.styleFrom(primary: Colors.black),
+                          onPressed: () => _changeCaptain(context, index),
+                          child: Container(
+                            constraints: BoxConstraints(
+                              maxHeight: double.infinity,
+                            ),
+                            decoration: BoxDecoration(
+                                color: _selectedPlayers[index]["category"] ==
+                                        'Gold'
+                                    ? Color.fromARGB(255, 240, 203, 82)
+                                    : _selectedPlayers[index]["category"] ==
+                                            'Silver'
+                                        ? const Color(0xffc0c0c0)
+                                        : Color.fromARGB(255, 179, 107, 36),
+                                border: Border.all(
+                                    color: Colors.black, width: 1.0)),
+                            child: Column(
+                              children: <Widget>[
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child:
+                                          Icon(Icons.account_circle, size: 20),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                          _selectedPlayers[index]["name"],
+                                          style: TextStyle(fontSize: 20)),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                          _selectedPlayers[index]["price"]
+                                                  .toString() +
+                                              "M",
+                                          style: TextStyle(fontSize: 20)),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircleAvatar(
+                                        radius: 11.5,
+                                        backgroundColor: _selectedPlayers[index]
+                                                    ["shooting"] <
+                                                35
+                                            ? Colors.red
+                                            : _selectedPlayers[index]
+                                                        ["shooting"] <
+                                                    70
+                                                ? Colors.yellow
+                                                : Colors.green,
+                                        child: Center(
+                                          child: Text(
+                                              _selectedPlayers[index]
+                                                      ["shooting"]
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black)),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircleAvatar(
+                                        radius: 11.5,
+                                        backgroundColor: _selectedPlayers[index]
+                                                    ["speed"] <
+                                                35
+                                            ? Colors.red
+                                            : _selectedPlayers[index]["speed"] <
+                                                    70
+                                                ? Colors.yellow
+                                                : Colors.green,
+                                        child: Center(
+                                          child: Text(
+                                              _selectedPlayers[index]["speed"]
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black)),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircleAvatar(
+                                        radius: 11.5,
+                                        backgroundColor: _selectedPlayers[index]
+                                                    ["strength"] <
+                                                35
+                                            ? Colors.red
+                                            : _selectedPlayers[index]
+                                                        ["strength"] <
+                                                    70
+                                                ? Colors.yellow
+                                                : Colors.green,
+                                        child: Center(
+                                          child: Text(
+                                              _selectedPlayers[index]
+                                                      ["strength"]
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black)),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircleAvatar(
+                                        radius: 11.5,
+                                        backgroundColor: _selectedPlayers[index]
+                                                    ["passing"] <
+                                                35
+                                            ? Colors.red
+                                            : _selectedPlayers[index]
+                                                        ["passing"] <
+                                                    70
+                                                ? Colors.yellow
+                                                : Colors.green,
+                                        child: Center(
+                                          child: Text(
+                                              _selectedPlayers[index]["passing"]
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black)),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircleAvatar(
+                                        radius: 11.5,
+                                        backgroundColor: _selectedPlayers[index]
+                                                    ["dribbling"] <
+                                                35
+                                            ? Colors.red
+                                            : _selectedPlayers[index]
+                                                        ["dribbling"] <
+                                                    70
+                                                ? Colors.yellow
+                                                : Colors.green,
+                                        child: Center(
+                                          child: Text(
+                                              _selectedPlayers[index]
+                                                      ["dribbling"]
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black)),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircleAvatar(
+                                        radius: 11.5,
+                                        backgroundColor: _selectedPlayers[index]
+                                                    ["defense"] <
+                                                35
+                                            ? Colors.red
+                                            : _selectedPlayers[index]
+                                                        ["defense"] <
+                                                    70
+                                                ? Colors.yellow
+                                                : Colors.green,
+                                        child: Center(
+                                          child: Text(
+                                              _selectedPlayers[index]["defense"]
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black)),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircleAvatar(
+                                        radius: 11.5,
+                                        backgroundColor: _selectedPlayers[index]
+                                                    ["rating"] <
+                                                35
+                                            ? Colors.red
+                                            : _selectedPlayers[index]
+                                                        ["rating"] <
+                                                    70
+                                                ? Colors.yellow
+                                                : Colors.green,
+                                        child: Center(
+                                          child: Text(
+                                              _selectedPlayers[index]["rating"]
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black)),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: const [
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text("SHO",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black)),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text("PAC",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black)),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text("PHY",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black)),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text("PAS",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black)),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text("DRI",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black)),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text("DEF",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black)),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text("TOT",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black)),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          )),
+                    );
+                  } else {
+                    return Visibility(
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        child: Text(''),
+                      ),
+                      visible: false,
+                    );
+                  }
+                }),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   checkPlayerPositions() {
     switch (dropdownValue) {
       case "4-4-2":
@@ -465,6 +767,7 @@ class SelectPageState extends State<SelectPage> {
             fc?.sort((b, a) => a['price'].compareTo(b['price']));
             _selectedPlayers[2] = {};
             _selected[2] = false;
+            _allSelected = false;
           }
         }
         if (_selected[5] == true) {
@@ -474,6 +777,7 @@ class SelectPageState extends State<SelectPage> {
             dc?.sort((b, a) => a['price'].compareTo(b['price']));
             _selectedPlayers[5] = {};
             _selected[5] = false;
+            _allSelected = false;
           }
         }
         break;
@@ -485,6 +789,7 @@ class SelectPageState extends State<SelectPage> {
             mc?.sort((b, a) => a['price'].compareTo(b['price']));
             _selectedPlayers[2] = {};
             _selected[2] = false;
+            _allSelected = false;
           }
         }
         if (_selected[5] == true) {
@@ -494,6 +799,7 @@ class SelectPageState extends State<SelectPage> {
             dc?.sort((b, a) => a['price'].compareTo(b['price']));
             _selectedPlayers[5] = {};
             _selected[5] = false;
+            _allSelected = false;
           }
         }
         break;
@@ -505,6 +811,7 @@ class SelectPageState extends State<SelectPage> {
             fc?.sort((b, a) => a['price'].compareTo(b['price']));
             _selectedPlayers[2] = {};
             _selected[2] = false;
+            _allSelected = false;
           }
         }
         if (_selected[5] == true) {
@@ -514,6 +821,7 @@ class SelectPageState extends State<SelectPage> {
             mc?.sort((b, a) => a['price'].compareTo(b['price']));
             _selectedPlayers[5] = {};
             _selected[5] = false;
+            _allSelected = false;
           }
         }
         break;
@@ -648,7 +956,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[0]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[0]["name"] != null &&
+                                        _selectedPlayers[0]["captain"] == true
+                                    ? "${_selectedPlayers[0]["name"]} (C)"
+                                    : _selectedPlayers[0]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -689,7 +1001,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[1]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[1]["name"] != null &&
+                                        _selectedPlayers[1]["captain"] == true
+                                    ? "${_selectedPlayers[1]["name"]} (C)"
+                                    : _selectedPlayers[1]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -734,7 +1050,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[2]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[2]["name"] != null &&
+                                        _selectedPlayers[2]["captain"] == true
+                                    ? "${_selectedPlayers[2]["name"]} (C)"
+                                    : _selectedPlayers[2]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -779,7 +1099,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[3]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[3]["name"] != null &&
+                                        _selectedPlayers[3]["captain"] == true
+                                    ? "${_selectedPlayers[3]["name"]} (C)"
+                                    : _selectedPlayers[3]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -824,7 +1148,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[4]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[4]["name"] != null &&
+                                        _selectedPlayers[4]["captain"] == true
+                                    ? "${_selectedPlayers[4]["name"]} (C)"
+                                    : _selectedPlayers[4]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -867,7 +1195,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[5]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[5]["name"] != null &&
+                                        _selectedPlayers[5]["captain"] == true
+                                    ? "${_selectedPlayers[5]["name"]} (C)"
+                                    : _selectedPlayers[5]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -908,7 +1240,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[6]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[6]["name"] != null &&
+                                        _selectedPlayers[6]["captain"] == true
+                                    ? "${_selectedPlayers[6]["name"]} (C)"
+                                    : _selectedPlayers[6]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -951,7 +1287,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[7]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[7]["name"] != null &&
+                                        _selectedPlayers[7]["captain"] == true
+                                    ? "${_selectedPlayers[7]["name"]} (C)"
+                                    : _selectedPlayers[7]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -992,7 +1332,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[8]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[8]["name"] != null &&
+                                        _selectedPlayers[8]["captain"] == true
+                                    ? "${_selectedPlayers[8]["name"]} (C)"
+                                    : _selectedPlayers[8]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -1035,7 +1379,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[9]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[9]["name"] != null &&
+                                        _selectedPlayers[9]["captain"] == true
+                                    ? "${_selectedPlayers[9]["name"]} (C)"
+                                    : _selectedPlayers[9]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -1074,7 +1422,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[10]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[10]["name"] != null &&
+                                        _selectedPlayers[10]["captain"] == true
+                                    ? "${_selectedPlayers[10]["name"]} (C)"
+                                    : _selectedPlayers[10]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -1104,10 +1456,38 @@ class SelectPageState extends State<SelectPage> {
                       visible: false,
                     ),
             ),
+            Positioned(
+              top: MediaQuery.of(context).size.height - 150,
+              right: (MediaQuery.of(context).size.width) - 130,
+              child: _selected.entries.any((element) => element.value == true)
+                  ? ElevatedButton(
+                      onPressed: () {
+                        select_captain(context);
+                        setState(() {});
+                      },
+                      child: Text('Elegir capitán'))
+                  : Visibility(
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        child: Text(''),
+                      ),
+                      visible: false,
+                    ),
+            ),
           ],
         )),
       ),
     );
+  }
+
+  _changeCaptain(BuildContext context, int index) {
+    Navigator.pop(context, 'Confirmar');
+    setState(() {
+      _selectedPlayers.forEach((key, value) {
+        _selectedPlayers[key]["captain"] = false;
+      });
+      _selectedPlayers[index]["captain"] = true;
+    });
   }
 }
 

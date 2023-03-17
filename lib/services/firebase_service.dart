@@ -438,9 +438,9 @@ Future<Map<String, List<dynamic>>> getRandomPlayers() async {
     Random r = new Random();
     int rn = r.nextInt(players.docs.length);
     var player = players.docs[rn].data() as Map;
+    player["captain"] = "false";
     var idPlayer = players.docs[rn].id.toString();
     player["bd_id"] = idPlayer;
-
     switch (player["category"]) {
       case "Gold":
         if (oro < oroMax) {
