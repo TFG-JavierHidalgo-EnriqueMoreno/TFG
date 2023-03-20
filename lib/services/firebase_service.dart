@@ -698,7 +698,7 @@ readyPlayer() async {
   db.collection("users").doc(player1.docs[0].id).update({"status": "ready"});
 }
 
-saveUserPlayer(Lineup? lineup, Map<int, dynamic> selectedPlayers) async {
+saveUserPlayer(Map<int, dynamic> selectedPlayers) async {
   Future<List> users = getUsers();
   User u = globals.userLoggedIn;
 
@@ -707,19 +707,14 @@ saveUserPlayer(Lineup? lineup, Map<int, dynamic> selectedPlayers) async {
 
   QuerySnapshot<Map<String, dynamic>> lastGame = await getLastGame();
 
-  await db
-      .collection("games")
-      .doc(lastGame.docs[0]["game_id"])
-      .collection("lineup")
-      .add({
-    "local_lineup": lineup?.getLocalLineup,
-    "away_lineup": lineup?.getAwayLineup
-  });
-  var gameUser = await db
-      .collection("user_game")
-      .where("game_id", isEqualTo: lastGame.docs[0]["game_id"])
-      .where("user_id", isEqualTo: us["uid"])
-      .get();
+  // await db
+  //     .collection("games")
+  //     .doc(lastGame.docs[0]["game_id"])
+  //     .collection("lineup")
+  //     .add({
+  //   "local_lineup": lineup?.getLocalLineup,
+  //   "away_lineup": lineup?.getAwayLineup
+  // });
 
   await db
       .collection("user_game")
@@ -727,8 +722,6 @@ saveUserPlayer(Lineup? lineup, Map<int, dynamic> selectedPlayers) async {
       .where("user_id", isEqualTo: us["uid"])
       .get()
       .then((value) {
-    print(value.docs[0].id);
-    inspect(value.docs[0].data());
     db.collection("user_game").doc(value.docs[0].id).collection("players").add({
       "player0": selectedPlayers[0]["bd_id"],
       "player1": selectedPlayers[1]["bd_id"],
@@ -748,15 +741,27 @@ saveUserPlayer(Lineup? lineup, Map<int, dynamic> selectedPlayers) async {
 getPlayer2Players() async {
   var player2 = await getPlayer2();
   var game = await getLastGame();
+
   var res = await db
       .collection("user_game")
-      .where("game_id", isEqualTo: game.docs[0].id)
+      .where("game_id", isEqualTo: game.docs[0].data()["game_id"])
       .where("user_id", isEqualTo: player2.id)
       .get();
 
-  return await db
+  var id_players = await db
       .collection("user_game")
       .doc(res.docs[0].id)
       .collection("players")
       .get();
+
+  var players = [];
+
+  var data_players = id_players.docs[0].data();
+
+  data_players.forEach((key, value) async {
+    var player = await db.collection("players").doc(value).get();
+    players.add(player.data());
+  });
+
+  return players;
 }

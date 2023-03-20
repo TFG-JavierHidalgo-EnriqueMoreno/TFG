@@ -81,7 +81,7 @@ class SearchingPageFormState extends State<SearchingPageForm> {
   late Timer timer;
   bool loaded = false;
   late Map<String, List<dynamic>> players;
-  bool isPlaying = false;
+  static bool isPlaying = false;
 
   @override
   Widget build(BuildContext context) {
@@ -215,6 +215,7 @@ checkForGame(BuildContext context, bool isPlaying) async {
   timer = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
     isPlaying = await checkPlayerStatus() == "playing";
     if (isPlaying) {
+      SearchingPageFormState.isPlaying = true;
       timer!.cancel();
       var player2 = await getPlayer2();
       Navigator.of(context).push(MaterialPageRoute(

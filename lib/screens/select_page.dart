@@ -1548,15 +1548,21 @@ Widget _getDrawer(BuildContext context) {
 }
 
 confirm(BuildContext context, Map<int, dynamic> selectedPlayers) {
+  saveUserPlayer(selectedPlayers);
   readyPlayer();
-  Lineup lineup = Lineup();
-  lineup.newLineup("4-4-2", "5-3-2");
-  saveUserPlayer(lineup, selectedPlayers);
+  // Lineup lineup = Lineup();
+  // lineup.newLineup("4-4-2", "5-3-2");
   Timer? t;
+  var player2Players = [];
   t = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
     if (await checkOtherPlayerStatus() == "ready") {
-      var player2Players = getPlayer2Players();
-      inspect(player2Players);
+      Timer(Duration(seconds: 3), (() async {
+        player2Players = await getPlayer2Players();
+      }));
+      Timer(Duration(seconds: 4), (() async {
+        var otherPlayerLineup = getOtherPlayerLineup(player2Players);
+        // TODO: Pasar a la vista de selección de oponente pasándole los jugadores y la alineación. Guardar las dos alineaciones en el partido.
+      }));
       t.cancel();
     }
   });
@@ -1579,6 +1585,25 @@ confirm(BuildContext context, Map<int, dynamic> selectedPlayers) {
   //         player1Points: player1Points,
   //         player2Points: player2Points,
   //         gameResult: gameResult)));
+}
+
+getOtherPlayerLineup(dynamic player2Players) {
+  var lineup = "4-4-2";
+  var df = 0;
+  var dl = 0;
+  for (var element in player2Players) {
+    if(element["position"] == "DF"){
+      df++;
+    } else if(element["position"] == "DL"){
+      dl++;
+    }
+  }
+  if(df == 5){
+    lineup = "5-3-2";
+  } else if(dl == 3){
+    lineup = "4-3-3";
+  }
+  return lineup;
 }
 
 calcPoints(Map<int, dynamic> selectedPlayers) {
