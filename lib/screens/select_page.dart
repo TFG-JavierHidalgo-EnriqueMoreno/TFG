@@ -10,6 +10,7 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:my_app/entities/lineup.dart';
 import 'package:my_app/screens/result_page.dart';
 import 'package:my_app/routes/custom_route.dart';
+import 'package:my_app/screens/selectRival_page.dart';
 import 'package:my_app/services/api_service.dart';
 import 'package:my_app/services/firebase_service.dart';
 import 'home_page.dart';
@@ -1554,15 +1555,23 @@ confirm(BuildContext context, Map<int, dynamic> selectedPlayers) {
   // lineup.newLineup("4-4-2", "5-3-2");
   Timer? t;
   var player2Players = [];
+  var otherPlayerLineup = "";
   t = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
     if (await checkOtherPlayerStatus() == "ready") {
       Timer(Duration(seconds: 3), (() async {
         player2Players = await getPlayer2Players();
       }));
       Timer(Duration(seconds: 4), (() async {
-        var otherPlayerLineup = getOtherPlayerLineup(player2Players);
-        // TODO: Pasar a la vista de selección de oponente pasándole los jugadores y la alineación. Guardar las dos alineaciones en el partido.
+        otherPlayerLineup = await getOtherPlayerLineup(player2Players);
       }));
+      Timer(Duration(seconds: 5), (() async {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => SelectRivalPage(
+                  playersOthers: player2Players,
+                  lineup: otherPlayerLineup,
+                )));
+      }));
+
       t.cancel();
     }
   });
@@ -1592,15 +1601,15 @@ getOtherPlayerLineup(dynamic player2Players) {
   var df = 0;
   var dl = 0;
   for (var element in player2Players) {
-    if(element["position"] == "DF"){
+    if (element["position"] == "DF") {
       df++;
-    } else if(element["position"] == "DL"){
+    } else if (element["position"] == "DL") {
       dl++;
     }
   }
-  if(df == 5){
+  if (df == 5) {
     lineup = "5-3-2";
-  } else if(dl == 3){
+  } else if (dl == 3) {
     lineup = "4-3-3";
   }
   return lineup;
