@@ -698,6 +698,15 @@ readyPlayer() async {
   db.collection("users").doc(player1.docs[0].id).update({"status": "ready"});
 }
 
+confirmedPlayer() async {
+  var player1 = await db
+      .collection('users')
+      .where('email', isEqualTo: globals.userLoggedIn.email)
+      .get();
+
+  db.collection("users").doc(player1.docs[0].id).update({"status": "confirmed"});
+}
+
 saveUserPlayer(Map<int, dynamic> selectedPlayers) async {
   Future<List> users = getUsers();
   User u = globals.userLoggedIn;

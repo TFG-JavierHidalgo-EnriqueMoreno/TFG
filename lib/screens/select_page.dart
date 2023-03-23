@@ -1445,7 +1445,7 @@ class SelectPageState extends State<SelectPage> {
               child: _allSelected == true && teamValue >= 0
                   ? ElevatedButton(
                       onPressed: () {
-                        confirm(context, _selectedPlayers);
+                        confirm(context, _selectedPlayers, dropdownValue);
                         setState(() {});
                       },
                       child: Text('Confirmar'))
@@ -1548,11 +1548,9 @@ Widget _getDrawer(BuildContext context) {
   );
 }
 
-confirm(BuildContext context, Map<int, dynamic> selectedPlayers) {
+confirm(BuildContext context, Map<int, dynamic> selectedPlayers, String dropdownValue) {
   saveUserPlayer(selectedPlayers);
   readyPlayer();
-  // Lineup lineup = Lineup();
-  // lineup.newLineup("4-4-2", "5-3-2");
   Timer? t;
   var player2Players = [];
   var otherPlayerLineup = "";
@@ -1567,6 +1565,8 @@ confirm(BuildContext context, Map<int, dynamic> selectedPlayers) {
       Timer(Duration(seconds: 5), (() async {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => SelectRivalPage(
+                  selectedLineup: dropdownValue,
+                  selectedPlayers: selectedPlayers,
                   playersOthers: player2Players,
                   lineup: otherPlayerLineup,
                 )));
@@ -1575,25 +1575,8 @@ confirm(BuildContext context, Map<int, dynamic> selectedPlayers) {
       t.cancel();
     }
   });
-  // Map<String, int> player2Points = {
-  //   "strength": 600,
-  //   "shooting": 750,
-  //   "speed": 770,
-  //   "dribbling": 610,
-  //   "defense": 780,
-  //   "passing": 400,
-  //   "rating": 80,
-  // };
-  // Map<String, int?> player1Points = calcPoints(selectedPlayers);
-  // Map<String, int> gameResult = calcResult(player1Points, player2Points);
-  // saveGame(gameResult["player1Goals"], gameResult["player2Goals"]);
-  // calcElo(
-  //     gameResult["player1Goals"]! > gameResult["player2Goals"]! ? true : false);
-  // Navigator.of(context).push(MaterialPageRoute(
-  //     builder: (context) => ResultPage(
-  //         player1Points: player1Points,
-  //         player2Points: player2Points,
-  //         gameResult: gameResult)));
+  
+
 }
 
 getOtherPlayerLineup(dynamic player2Players) {
@@ -1613,48 +1596,4 @@ getOtherPlayerLineup(dynamic player2Players) {
     lineup = "4-3-3";
   }
   return lineup;
-}
-
-calcPoints(Map<int, dynamic> selectedPlayers) {
-  int? strength = 0;
-  int? shooting = 0;
-  int? speed = 0;
-  int? dribbling = 0;
-  int? defense = 0;
-  int? passing = 0;
-  int? rating = 0;
-  selectedPlayers.forEach((key, value) {
-    strength = (strength! + value["strength"]) as int?;
-    shooting = (shooting! + value["shooting"]) as int?;
-    speed = (speed! + value["speed"]) as int?;
-    dribbling = (dribbling! + value["dribbling"]) as int?;
-    defense = (defense! + value["defense"]) as int?;
-    passing = (passing! + value["passing"]) as int?;
-    rating = (rating! + value["rating"]) as int?;
-  });
-  return {
-    "strength": strength,
-    "shooting": shooting,
-    "speed": speed,
-    "dribbling": dribbling,
-    "defense": defense,
-    "passing": passing,
-    "rating": (rating! / 11).round()
-  };
-}
-
-calcResult(Map<String, int?> player1Points, Map<String, int> player2Points) {
-  int player1Goals = 0;
-  int player2Goals = 0;
-  player1Points.forEach((key, value) {
-    if (value! > player2Points[key]!) {
-      player1Goals++;
-    } else {
-      player2Goals++;
-    }
-  });
-  return {
-    "player1Goals": player1Goals,
-    "player2Goals": player2Goals,
-  };
 }

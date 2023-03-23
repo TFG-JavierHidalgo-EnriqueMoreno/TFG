@@ -17,11 +17,17 @@ import 'home_page.dart';
 import 'package:my_app/entities/globals.dart' as globals;
 
 class SelectRivalPage extends StatefulWidget {
+  final Map<int, dynamic> selectedPlayers;
+  final String selectedLineup;
   final List<dynamic> playersOthers;
   final String lineup;
 
   const SelectRivalPage(
-      {super.key, required this.playersOthers, required this.lineup});
+      {super.key,
+      required this.selectedLineup,
+      required this.selectedPlayers,
+      required this.playersOthers,
+      required this.lineup});
 
   @override
   SelectRivalPageState createState() {
@@ -54,6 +60,8 @@ class SelectRivalPageState extends State<SelectRivalPage> {
     cp.addAll(pt);
 
     l = widget.lineup;
+    sp = widget.selectedPlayers;
+    sl = widget.selectedLineup;
   }
 
   List<dynamic> po = [];
@@ -63,6 +71,8 @@ class SelectRivalPageState extends State<SelectRivalPage> {
   List<dynamic> mc = [];
   List<dynamic> pt = [];
   List<dynamic> cp = [];
+  Map<int, dynamic> sp = {};
+  String sl = "";
 
   @override
   Widget build(BuildContext context) {
@@ -564,7 +574,7 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                 left: (MediaQuery.of(context).size.width) - 110,
                 child: ElevatedButton(
                     onPressed: () {
-                      //confirm(context, cp);
+                      confirmOpponent(context, sp, cp, l, sl);
                       setState(() {});
                     },
                     child: Text('Confirmar'))),
@@ -613,4 +623,77 @@ class SelectRivalPageState extends State<SelectRivalPage> {
     cp[i]["opponent"] = true;
     setState(() {});
   }
+}
+
+confirmOpponent(BuildContext context, Map<int, dynamic> selectedPlayers,
+    List<dynamic> cp, String otherLineup, String selectedLineup) {
+  confirmedPlayer();
+  Timer? t;
+  t = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
+    if (await checkOtherPlayerStatus() == "confirmed") {
+      Map<int, dynamic> otherPlayers = {};
+      for (var i = 0; i < cp.length; i++) {
+        otherPlayers.putIfAbsent(i, () => cp[i]);
+      }
+      Lineup lineup = Lineup();
+      lineup.newLineup(selectedLineup, otherLineup);
+      Map<String, int?> player1Points = calcPoints(selectedPlayers);
+      Map<String, int?> player2Points = calcPoints(otherPlayers);
+      Map<String, int> gameResult = calcResult(player1Points, player2Points);
+      saveGame(gameResult["player1Goals"], gameResult["player2Goals"]);
+      calcElo(gameResult["player1Goals"]! > gameResult["player2Goals"]!
+          ? true
+          : false);
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => ResultPage(
+              player1Points: player1Points,
+              player2Points: player2Points,
+              gameResult: gameResult)));
+      t.cancel();
+    }
+  });
+}
+
+calcPoints(Map<int, dynamic> selectedPlayers) {
+  int? strength = 0;
+  int? shooting = 0;
+  int? speed = 0;
+  int? dribbling = 0;
+  int? defense = 0;
+  int? passing = 0;
+  int? rating = 0;
+  selectedPlayers.forEach((key, value) {
+    strength = (strength! + value["strength"]) as int?;
+    shooting = (shooting! + value["shooting"]) as int?;
+    speed = (speed! + value["speed"]) as int?;
+    dribbling = (dribbling! + value["dribbling"]) as int?;
+    defense = (defense! + value["defense"]) as int?;
+    passing = (passing! + value["passing"]) as int?;
+    rating = (rating! + value["rating"]) as int?;
+  });
+  return {
+    "strength": strength,
+    "shooting": shooting,
+    "speed": speed,
+    "dribbling": dribbling,
+    "defense": defense,
+    "passing": passing,
+    "rating": (rating! / 11).round()
+  };
+}
+
+calcResult(Map<String, int?> player1Points, Map<String, int?> player2Points) {
+  int player1Goals = 0;
+  int player2Goals = 0;
+  player1Points.forEach((key, value) {
+    if (value! > player2Points[key]!) {
+      player1Goals++;
+    } else {
+      player2Goals++;
+    }
+  });
+  return {
+    "player1Goals": player1Goals,
+    "player2Goals": player2Goals,
+  };
 }
