@@ -7,6 +7,7 @@ import 'package:my_app/screens/player_page.dart';
 import 'package:my_app/screens/searching_page.dart';
 import 'package:my_app/screens/select_page.dart';
 import 'package:my_app/routes/custom_route.dart';
+import 'package:my_app/services/firebase_service.dart';
 import 'home_page.dart';
 
 import 'package:my_app/entities/globals.dart' as globals;
@@ -322,6 +323,7 @@ Widget _getDrawer(BuildContext context) {
 }
 
 goToHome(BuildContext context) {
+  resetPlayerState();
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const HomePage(),
@@ -330,6 +332,7 @@ goToHome(BuildContext context) {
 }
 
 playAgain(BuildContext context) {
+  searchGame();
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const SearchingPage(),
