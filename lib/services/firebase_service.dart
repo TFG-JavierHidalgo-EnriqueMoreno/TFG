@@ -274,11 +274,14 @@ Future<void> saveGame(int? localGoals, int? awayGoals) async {
   var us = list.firstWhere((element) => element["data"]["email"] == u.email);
 
   QuerySnapshot<Map<String, dynamic>> lastGame = await getLastGame();
+  var player2 = await getPlayer2();
 
   await db.collection("games").doc(lastGame.docs[0].data()["game_id"]).update({
     "local_goals": localGoals,
     "away_goals": awayGoals,
     "score": localGoals! > awayGoals! ? 1 : 2,
+    "local_user": us["uid"],
+    "away_user": player2.id,
   });
 }
 
@@ -762,7 +765,6 @@ saveUserPlayer(Map<int, dynamic> selectedPlayers) async {
 }
 
 updateOpponent(Map<int, dynamic> selectedPlayers) async {
-  inspect(selectedPlayers);
   Future<List> users = getUsers();
   User u = globals.userLoggedIn;
 

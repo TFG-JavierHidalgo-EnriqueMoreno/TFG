@@ -636,12 +636,14 @@ confirmOpponent(BuildContext context, Map<int, dynamic> selectedPlayers,
   Timer? t;
   t = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
     if (await checkOtherPlayerStatus() == "confirmed") {
+      var player2 = await getPlayer2();
       Lineup lineup = Lineup();
       lineup.newLineup(selectedLineup, otherLineup);
       Map<String, String> otherPlayerCO = await getOtherPlayerCO();
       Map<String, int?> player1Points =
-          calcPoints(selectedPlayers, otherPlayerCO);
-      Map<String, int?> player2Points = calcPoints(otherPlayers, otherPlayerCO);
+          calcPointsPlayer1(selectedPlayers, otherPlayerCO);
+      Map<String, int?> player2Points =
+          calcPointsPlayer2(otherPlayers, otherPlayerCO);
       Map<String, int> gameResult = calcResult(player1Points, player2Points);
       saveGame(gameResult["player1Goals"], gameResult["player2Goals"]);
       calcElo(gameResult["player1Goals"]! > gameResult["player2Goals"]!
@@ -651,13 +653,14 @@ confirmOpponent(BuildContext context, Map<int, dynamic> selectedPlayers,
           builder: (context) => ResultPage(
               player1Points: player1Points,
               player2Points: player2Points,
-              gameResult: gameResult)));
+              gameResult: gameResult,
+              player2: player2)));
       t.cancel();
     }
   });
 }
 
-calcPoints(
+calcPointsPlayer1(
     Map<int, dynamic> selectedPlayers, Map<String, String> otherPlayerCO) {
   int? strength = 0;
   int? shooting = 0;
@@ -668,41 +671,104 @@ calcPoints(
   int? rating = 0;
   selectedPlayers.forEach((key, value) {
     if (value["captain"] == true) {
-      strength = (strength! + value["strength"]) * 2 as int?;
-      shooting = (shooting! + value["shooting"]) * 2 as int?;
-      speed = (speed! + value["speed"]) * 2 as int?;
-      dribbling = (dribbling! + value["dribbling"]) * 2 as int?;
-      defense = (defense! + value["defense"]) * 2 as int?;
-      passing = (passing! + value["passing"]) * 2 as int?;
-      rating = (rating! + value["rating"]) * 2 as int?;
+      if (value["bd_id"] == otherPlayerCO["opponent"]) {
+        strength = strength! + value["strength"] as int?;
+        shooting = shooting! + value["shooting"] as int?;
+        speed = speed! + value["speed"] as int?;
+        dribbling = dribbling! + value["dribbling"] as int?;
+        defense = defense! + value["defense"] as int?;
+        passing = passing! + value["passing"] as int?;
+        rating = rating! + value["rating"] as int?;
+      } else {
+        strength = strength! + value["strength"] * 2 as int?;
+        shooting = shooting! + value["shooting"] * 2 as int?;
+        speed = speed! + value["speed"] * 2 as int?;
+        dribbling = dribbling! + value["dribbling"] * 2 as int?;
+        defense = defense! + value["defense"] * 2 as int?;
+        passing = passing! + value["passing"] * 2 as int?;
+        rating = rating! + value["rating"] * 2 as int?;
+      }
     } else {
-      strength = (strength! + value["strength"]) as int?;
-      shooting = (shooting! + value["shooting"]) as int?;
-      speed = (speed! + value["speed"]) as int?;
-      dribbling = (dribbling! + value["dribbling"]) as int?;
-      defense = (defense! + value["defense"]) as int?;
-      passing = (passing! + value["passing"]) as int?;
-      rating = (rating! + value["rating"]) as int?;
-    }
-    if (value["bd_id"] == otherPlayerCO["opponent"]) {
-      strength = (strength!) / 2 as int?;
-      shooting = (shooting!) / 2 as int?;
-      speed = (speed!) / 2 as int?;
-      dribbling = (dribbling!) / 2 as int?;
-      defense = (defense!) / 2 as int?;
-      passing = (passing!) / 2 as int?;
-      rating = (rating!) / 2 as int?;
-    }
-    if (value["bd_id"] == otherPlayerCO["captain"]) {
-      strength = (strength!) * 2 as int?;
-      shooting = (shooting!) * 2 as int?;
-      speed = (speed!) * 2 as int?;
-      dribbling = (dribbling!) * 2 as int?;
-      defense = (defense!) * 2 as int?;
-      passing = (passing!) * 2 as int?;
-      rating = (rating!) * 2 as int?;
+      if (value["bd_id"] == otherPlayerCO["opponent"]) {
+        strength = strength! + value["strength"] / 2 as int?;
+        shooting = shooting! + value["shooting"] / 2 as int?;
+        speed = speed! + value["speed"] / 2 as int?;
+        dribbling = dribbling! + value["dribbling"] / 2 as int?;
+        defense = defense! + value["defense"] / 2 as int?;
+        passing = passing! + value["passing"] / 2 as int?;
+        rating = rating! + value["rating"] / 2 as int?;
+      } else {
+        strength = strength! + value["strength"] as int?;
+        shooting = shooting! + value["shooting"] as int?;
+        speed = speed! + value["speed"] as int?;
+        dribbling = dribbling! + value["dribbling"] as int?;
+        defense = defense! + value["defense"] as int?;
+        passing = passing! + value["passing"] as int?;
+        rating = rating! + value["rating"] as int?;
+      }
     }
   });
+
+  return {
+    "strength": strength,
+    "shooting": shooting,
+    "speed": speed,
+    "dribbling": dribbling,
+    "defense": defense,
+    "passing": passing,
+    "rating": (rating! / 11).round()
+  };
+}
+
+calcPointsPlayer2(
+    Map<int, dynamic> selectedPlayers, Map<String, String> otherPlayerCO) {
+  int? strength = 0;
+  int? shooting = 0;
+  int? speed = 0;
+  int? dribbling = 0;
+  int? defense = 0;
+  int? passing = 0;
+  int? rating = 0;
+  selectedPlayers.forEach((key, value) {
+    if (value["opponent"] == true) {
+      if (value["bd_id"] == otherPlayerCO["captain"]) {
+        strength = strength! + value["strength"] as int?;
+        shooting = shooting! + value["shooting"] as int?;
+        speed = speed! + value["speed"] as int?;
+        dribbling = dribbling! + value["dribbling"] as int?;
+        defense = defense! + value["defense"] as int?;
+        passing = passing! + value["passing"] as int?;
+        rating = rating! + value["rating"] as int?;
+      } else {
+        strength = strength! + value["strength"] / 2 as int?;
+        shooting = shooting! + value["shooting"] / 2 as int?;
+        speed = speed! + value["speed"] / 2 as int?;
+        dribbling = dribbling! + value["dribbling"] / 2 as int?;
+        defense = defense! + value["defense"] / 2 as int?;
+        passing = passing! + value["passing"] / 2 as int?;
+        rating = rating! + value["rating"] / 2 as int?;
+      }
+    } else {
+      if (value["bd_id"] == otherPlayerCO["captain"]) {
+        strength = strength! + value["strength"] * 2 as int?;
+        shooting = shooting! + value["shooting"] * 2 as int?;
+        speed = speed! + value["speed"] * 2 as int?;
+        dribbling = dribbling! + value["dribbling"] * 2 as int?;
+        defense = defense! + value["defense"] * 2 as int?;
+        passing = passing! + value["passing"] * 2 as int?;
+        rating = rating! + value["rating"] * 2 as int?;
+      } else {
+        strength = strength! + value["strength"] as int?;
+        shooting = shooting! + value["shooting"] as int?;
+        speed = speed! + value["speed"] as int?;
+        dribbling = dribbling! + value["dribbling"] as int?;
+        defense = defense! + value["defense"] as int?;
+        passing = passing! + value["passing"] as int?;
+        rating = rating! + value["rating"] as int?;
+      }
+    }
+  });
+
   return {
     "strength": strength,
     "shooting": shooting,

@@ -16,12 +16,14 @@ class ResultPage extends StatefulWidget {
   final Map<String, int?> player1Points;
   final Map<String, int?> player2Points;
   final Map<String, int> gameResult;
+  final dynamic player2;
 
   const ResultPage(
       {super.key,
       required this.player1Points,
       required this.player2Points,
-      required this.gameResult});
+      required this.gameResult,
+      required this.player2});
 
   @override
   ResultPageState createState() {
@@ -41,11 +43,14 @@ class ResultPageState extends State<ResultPage> {
     _player1Points = widget.player1Points;
     _player2Points = widget.player2Points;
     _gameResult = widget.gameResult;
+    _player2 = widget.player2;
+    inspect(_player2);
   }
 
   Map<String, int?> _player1Points = {};
   Map<String, int?> _player2Points = {};
   Map<String, int> _gameResult = {};
+  dynamic _player2 = "";
 
   final _formKey = GlobalKey<FormState>();
 
@@ -77,9 +82,14 @@ class ResultPageState extends State<ResultPage> {
                       children: <Widget>[
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: const Icon(
-                            Icons.account_circle,
-                            size: 48.0,
+                          child: Column(
+                            children: [
+                              const Icon(
+                                Icons.account_circle,
+                                size: 48.0,
+                              ),
+                              Text("${globals.userLoggedIn.getUsername}"),
+                            ],
                           ),
                         ),
                         Text(
@@ -102,9 +112,14 @@ class ResultPageState extends State<ResultPage> {
                         ),
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: const Icon(
-                            Icons.account_circle,
-                            size: 48.0,
+                          child: Column(
+                            children: [
+                              const Icon(
+                                Icons.account_circle,
+                                size: 48.0,
+                              ),
+                              //Text("${_player2["username"]}}"),
+                            ],
                           ),
                         ),
                       ]),
