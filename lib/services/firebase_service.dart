@@ -266,7 +266,7 @@ Future<void> deleteUser() async {
   globals.userLoggedIn.password = "";
 }
 
-Future<void> saveGame(int? localGoals, int? awayGoals) async {
+Future<void> saveGame(int? localGoals, int? awayGoals, Lineup lineup) async {
   Future<List> users = getUsers();
   User u = globals.userLoggedIn;
 
@@ -282,6 +282,8 @@ Future<void> saveGame(int? localGoals, int? awayGoals) async {
     "score": localGoals! > awayGoals! ? 1 : 2,
     "local_user": us["uid"],
     "away_user": player2.id,
+    "local_lineup": lineup.getLocalLineup,
+    "away_lineup": lineup.getAwayLineup
   });
 }
 
@@ -852,5 +854,6 @@ getOtherPlayerCO() async {
     "otherPlayerCaptain": other_game.docs[0].data()["captain"],
     "otherPlayerOpponent": other_game.docs[0].data()["opponent"]
   };
+
   return res;
 }

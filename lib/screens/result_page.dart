@@ -44,7 +44,6 @@ class ResultPageState extends State<ResultPage> {
     _player2Points = widget.player2Points;
     _gameResult = widget.gameResult;
     _player2 = widget.player2;
-    inspect(_player2);
   }
 
   Map<String, int?> _player1Points = {};
@@ -118,7 +117,7 @@ class ResultPageState extends State<ResultPage> {
                                 Icons.account_circle,
                                 size: 48.0,
                               ),
-                              //Text("${_player2["username"]}}"),
+                              Text("${_player2.data()["username"]}"),
                             ],
                           ),
                         ),
