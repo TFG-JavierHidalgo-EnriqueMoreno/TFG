@@ -217,12 +217,15 @@ checkForGame(BuildContext context, bool isPlaying) async {
     if (isPlaying) {
       SearchingPageFormState.isPlaying = true;
       timer!.cancel();
-      var player2 = await getPlayer2();
+      Timer(Duration(seconds: 2), (() async {
+        var player2 = await getPlayer2();
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => PlayerPage(
                 player1: globals.userLoggedIn.username,
                 player2: player2.data()["username"],
               )));
+      }));
+      
     }
   });
 }
