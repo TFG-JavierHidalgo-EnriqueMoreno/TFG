@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:my_app/entities/club.dart';
 import 'package:my_app/entities/country.dart';
 import 'package:my_app/entities/globals.dart' as globals;
@@ -46,6 +47,7 @@ Future<void> saveUser(String? email, String? password, String? phone,
     "name": "$name $surname",
     "username": username,
     "elo": 0,
+    "status": "not_playing"
   }).then((value) => value.collection("level").add({
         "name": "Bronce",
         "min": 0,
@@ -856,4 +858,65 @@ getOtherPlayerCO() async {
   };
 
   return res;
+}
+
+Future<List> getLast5Games() async {
+  Future<List> users = getUsers();
+  User u = globals.userLoggedIn;
+  List list = await users;
+  List games = [];
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+  var player = await db
+      .collection('users')
+      .where('email', isEqualTo: globals.userLoggedIn.email)
+      .get();
+  var user_game = await db
+      .collection('user_game')
+      .where('user_id', isEqualTo: player.docs[0].id)
+      .orderBy('created_at', descending: true)
+      .limit(5)
+      .get();
+  for (var element in user_game.docs) {
+    await db.collection("games").doc(element.data()["game_id"]).get().then((value) {
+      String date = DateFormat('dd/MM').format(element.data()["created_at"].toDate());
+      if (value.data()!["local_user"] == us["uid"]) {
+        if (value.data()!["score"] == 1) {
+          var gameData = {
+            "win": true,
+            "goals": value.data()!["local_goals"],
+            "other_goals": value.data()!["away_goals"],
+            "date": date,
+          };
+          games.add(gameData);
+        } else {
+          var gameData = {
+            "win": false,
+            "goals": value.data()!["local_goals"],
+            "other_goals": value.data()!["away_goals"],
+            "date": date,
+          };
+          games.add(gameData);
+        }
+      } else {
+        if (value.data()!["score"] == 2) {
+          var gameData = {
+            "win": true,
+            "goals": value.data()!["away_goals"],
+            "other_goals": value.data()!["local_goals"],
+            "date": date,
+          };
+          games.add(gameData);
+        } else {
+          var gameData = {
+            "win": false,
+            "goals": value.data()!["away_goals"],
+            "other_goals": value.data()!["local_goals"],
+            "date": date,
+          };
+          games.add(gameData);
+        }
+      }
+    });
+  }
+  return games;
 }
