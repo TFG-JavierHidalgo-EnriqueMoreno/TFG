@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:core';
 import 'dart:developer';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:my_app/entities/lineup.dart';
+import 'package:my_app/screens/game_event.dart';
 import 'package:my_app/screens/result_page.dart';
 import 'package:my_app/routes/custom_route.dart';
 import 'package:my_app/services/api_service.dart';
@@ -653,7 +655,8 @@ confirmOpponent(BuildContext context, Map<int, dynamic> selectedPlayers,
             ? true
             : false);
         Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => ResultPage(
+            builder: (context) => GameEventPage(
+                players: selectedPlayers,
                 player1Points: player1Points,
                 player2Points: player2Points,
                 gameResult: gameResult,
@@ -715,6 +718,99 @@ calcPointsPlayer1(
     }
   });
 
+  //Establecer de forma aleatoria cosas que le pasa a tu equipo y editar los valores (Darno una pista el getRamdonPlayer)
+  //Pondría alguna vez de que no pasa nada en la posibilidad (Es decir que si vamos a poner que sea 5 factores a lo mejor puede ser 2 o 3)
+  //Una vez establecido esos cálculos establecidos poner un mapa en la cual la clave sea un número que sea del 0 hasta el 90
+  //Cuyo valor sería el mensaje que vamos a mostrar (Tarjeta amarilla para un defensa de tu equipo, Tu central esta en forma, Delantero con molestias.....)
+  //He visto que se puede ordenar un mapa por la clave
+
+  /*   EJEMPLO
+    Map map = {3: 'three', 1: 'one', 4: 'four', 5: 'five', 2: 'two'};
+    var sortedByKeyMap = Map.fromEntries(
+    map.entries.toList()..sort((e1, e2) => e1.key.compareTo(e2.key)));
+    print(sortedByKeyMap);
+  */
+
+  //Por último pasamos ese mapa a una vista que ponga historial del partido y recorremos el mapa indicando el minuto del partido y el mensaje para que sea más realista
+  //En este return establecer otro valor como simulacion que seria el mapa
+
+  // Map<int, String> his = {};
+  // int i = 0;
+  // while (i < 5) {
+  //   Random random = Random();
+  //   int indexRandom = random.nextInt(event.length);
+  //   switch (event[indexRandom]) {
+  //     case "":
+  //       break;
+  //     case "DL -":
+  //       Random random1 = Random();
+  //       int min = random.nextInt(91);
+  //       his.addAll({min: "Tu delanterio tiene una amarilla"});
+  //       //valores a cambiar
+  //       break;
+  //     case "DL +":
+  //       Random random1 = Random();
+  //       int min = random.nextInt(91);
+  //       break;
+  //     case "MC -":
+  //       Random random1 = Random();
+  //       int min = random.nextInt(91);
+  //       break;
+  //     case "MC +":
+  //       Random random1 = Random();
+  //       int min = random.nextInt(91);
+  //       break;
+  //     case "DF +":
+  //       Random random1 = Random();
+  //       int min = random.nextInt(91);
+  //       break;
+  //     case "DF -":
+  //       Random random1 = Random();
+  //       int min = random.nextInt(91);
+  //       break;
+  //     case "DL --":
+  //       Random random1 = Random();
+  //       int min = random.nextInt(91);
+  //       break;
+  //     case "DL ++":
+  //       Random random1 = Random();
+  //       int min = random.nextInt(91);
+  //       break;
+  //     case "MC --":
+  //       Random random1 = Random();
+  //       int min = random.nextInt(91);
+  //       break;
+  //     case "MC ++":
+  //       Random random1 = Random();
+  //       int min = random.nextInt(91);
+  //       break;
+  //     case "DF --":
+  //       Random random1 = Random();
+  //       int min = random.nextInt(91);
+  //       break;
+  //     case "DF ++":
+  //       Random random1 = Random();
+  //       int min = random.nextInt(91);
+  //       break;
+  //     case "DF ---":
+  //       Random random1 = Random();
+  //       int min = random.nextInt(91);
+  //       break;
+  //     case "DL ---":
+  //       Random random1 = Random();
+  //       int min = random.nextInt(91);
+  //       break;
+  //     case "MC ---":
+  //       Random random1 = Random();
+  //       int min = random.nextInt(91);
+  //       break;
+  //   }
+  //   i++;
+  // }
+
+  // var hisOrdenado = Map.fromEntries(
+  //     his.entries.toList()..sort((e1, e2) => e1.key.compareTo(e2.key)));
+
   return {
     "strength": strength,
     "shooting": shooting,
@@ -722,7 +818,7 @@ calcPointsPlayer1(
     "dribbling": dribbling,
     "defense": defense,
     "passing": passing,
-    "rating": (rating! / 11).round()
+    "rating": (rating! / 11).round(),
   };
 }
 

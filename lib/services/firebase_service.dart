@@ -877,8 +877,13 @@ Future<List> getLast5Games() async {
       .limit(5)
       .get();
   for (var element in user_game.docs) {
-    await db.collection("games").doc(element.data()["game_id"]).get().then((value) {
-      String date = DateFormat('dd/MM').format(element.data()["created_at"].toDate());
+    await db
+        .collection("games")
+        .doc(element.data()["game_id"])
+        .get()
+        .then((value) {
+      String date =
+          DateFormat('dd/MM').format(element.data()["created_at"].toDate());
       if (value.data()!["local_user"] == us["uid"]) {
         if (value.data()!["score"] == 1) {
           var gameData = {
@@ -919,4 +924,320 @@ Future<List> getLast5Games() async {
     });
   }
   return games;
+}
+
+getRandomEvents(
+    Map<String, int?> player1points, Map<int, dynamic> players) async {
+  var events = await db.collection("events").get();
+  QuerySnapshot<Map<String, dynamic>> lastGame = await getLastGame();
+  List<Map<int, String>> his = [];
+  int i = 0;
+  while (i < 5) {
+    Random random = Random();
+    int indexRandom = random.nextInt(events.docs.length);
+    switch (events.docs[indexRandom].data()["type"]) {
+      case "buena_forma":
+        Random random1 = Random();
+        int min = random.nextInt(91);
+        Random random2 = Random();
+        int player = random.nextInt(players.length);
+        var p = players[player];
+        switch (p["position"]) {
+          case "PT":
+          case "DF":
+            player1points["defense"] = (player1points["defense"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} está en buena forma. Tu defensa sube 10 puntos"
+            };
+
+            his.add(e);
+            break;
+          case "MC":
+            player1points["passing"] = (player1points["passing"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} está en buena forma. Tus pases suben 10 puntos"
+            };
+
+            his.add(e);
+
+            break;
+          case "DL":
+            player1points["shooting"] = (player1points["shooting"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} está en buena forma. Tu tiro sube 10 puntos"
+            };
+
+            his.add(e);
+            break;
+        }
+
+        break;
+      case "medio_creativo":
+        Random random1 = Random();
+        int min = random.nextInt(91);
+        player1points["passing"] = (player1points["passing"]! +
+            events.docs[indexRandom].data()["influence"]) as int?;
+        Map<int, String> e = {
+          min: "Tus mediocampistas están creativos. Tus pases suben 15 puntos"
+        };
+
+        his.add(e);
+
+        break;
+      case "portero_intratable":
+        Random random1 = Random();
+        int min = random.nextInt(91);
+        player1points["defense"] = (player1points["defense"]! +
+            events.docs[indexRandom].data()["influence"]) as int?;
+        Map<int, String> e = {
+          min: "Tu portero está intratable. Tu defensa sube 15 puntos"
+        };
+
+        his.add(e);
+        break;
+      case "defensa_solida":
+        Random random1 = Random();
+        int min = random.nextInt(91);
+        player1points["defense"] = (player1points["defense"]! +
+            events.docs[indexRandom].data()["influence"]) as int?;
+        Map<int, String> e = {
+          min: "Tu defensa está sólida. Tu defensa sube 15 puntos"
+        };
+
+        his.add(e);
+
+        break;
+      case "lesion":
+        Random random1 = Random();
+        int min = random.nextInt(91);
+        Random random2 = Random();
+        int player = random.nextInt(players.length);
+        var p = players[player];
+        switch (p["position"]) {
+          case "PT":
+          case "DF":
+            player1points["defense"] = (player1points["defense"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} se ha lesionado. Tu defensa baja 15 puntos"
+            };
+
+            his.add(e);
+
+            break;
+          case "MC":
+            player1points["passing"] = (player1points["passing"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} se ha lesionado. Tus pases bajan 15 puntos"
+            };
+            his.add(e);
+            break;
+          case "DL":
+            player1points["shooting"] = (player1points["shooting"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} se ha lesionado. Tu tiro baja 15 puntos"
+            };
+
+            his.add(e);
+
+            break;
+        }
+        break;
+      case "baja_forma":
+        Random random1 = Random();
+        int min = random.nextInt(91);
+        Random random2 = Random();
+        int player = random.nextInt(players.length);
+        var p = players[player];
+        switch (p["position"]) {
+          case "PT":
+          case "DF":
+            player1points["defense"] = (player1points["defense"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} se encuentra en baja forma. Tu defensa baja 10 puntos"
+            };
+            his.add(e);
+            break;
+          case "MC":
+            player1points["passing"] = (player1points["passing"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} se encuentra en baja forma. Tus pases bajan 10 puntos"
+            };
+            his.add(e);
+
+            break;
+          case "DL":
+            player1points["shooting"] = (player1points["shooting"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} se encuentra en baja forma. Tu tiro baja 10 puntos"
+            };
+            his.add(e);
+
+            break;
+        }
+        break;
+      case "delantero_enchufado":
+        Random random1 = Random();
+        int min = random.nextInt(91);
+        player1points["shooting"] = (player1points["shooting"]! +
+            events.docs[indexRandom].data()["influence"]) as int?;
+        Map<int, String> e = {
+          min: "Tu delantera está enchufada. Tu tiro sube 15 puntos"
+        };
+        his.add(e);
+
+        break;
+      case "amarilla":
+        Random random1 = Random();
+        int min = random.nextInt(91);
+        Random random2 = Random();
+        int player = random.nextInt(players.length);
+        var p = players[player];
+        switch (p["position"]) {
+          case "PT":
+          case "DF":
+            player1points["defense"] = (player1points["defense"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} ha recibido tarjeta amarilla. Tu defensa baja 10 puntos"
+            };
+            his.add(e);
+
+            break;
+          case "MC":
+            player1points["passing"] = (player1points["passing"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} ha recibido tarjeta amarilla. Tus pases bajan 10 puntos"
+            };
+            his.add(e);
+
+            break;
+          case "DL":
+            player1points["shooting"] = (player1points["shooting"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} ha recibido tarjeta amarilla. Tu tiro baja 10 puntos"
+            };
+            his.add(e);
+
+            break;
+        }
+        break;
+      case "molestia":
+        Random random1 = Random();
+        int min = random.nextInt(91);
+        Random random2 = Random();
+        int player = random.nextInt(players.length);
+        var p = players[player];
+        switch (p["position"]) {
+          case "PT":
+          case "DF":
+            player1points["defense"] = (player1points["defense"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} se encuentra con molestias. Tu defensa baja 5 puntos"
+            };
+            his.add(e);
+
+            break;
+          case "MC":
+            player1points["passing"] = (player1points["passing"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} se encuentra con molestias. Tus pases bajan 5 puntos"
+            };
+            his.add(e);
+            break;
+          case "DL":
+            player1points["shooting"] = (player1points["shooting"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} se encuentra con molestias. Tu tiro baja 5 puntos"
+            };
+            his.add(e);
+
+            break;
+        }
+        break;
+      case "roja":
+        Random random1 = Random();
+        int min = random.nextInt(91);
+        Random random2 = Random();
+        int player = random.nextInt(players.length);
+        var p = players[player];
+        switch (p["position"]) {
+          case "PT":
+          case "DF":
+            player1points["defense"] = (player1points["defense"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} ha sido expulsado. Tu defensa baja 20 puntos"
+            };
+            his.add(e);
+
+            break;
+          case "MC":
+            player1points["passing"] = (player1points["passing"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} ha sido expulsado. Tus pases bajan 20 puntos"
+            };
+            his.add(e);
+
+            break;
+          case "DL":
+            player1points["shooting"] = (player1points["shooting"]! +
+                events.docs[indexRandom].data()["influence"]) as int?;
+            Map<int, String> e = {
+              min:
+                  "Tu jugador ${p["name"]} ha sido expulsado. Tu tiro baja 20 puntos"
+            };
+            his.add(e);
+
+            break;
+        }
+        i++;
+    }
+    await db.collection("user_game").doc(lastGame.docs[0].id).update({
+      "strength": player1points["strength"],
+      "shooting": player1points["shooting"],
+      "speed": player1points["speed"],
+      "dribbling": player1points["dribbling"],
+      "defense": player1points["defense"],
+      "passing": player1points["passing"],
+      "rating": player1points["rating"]
+    });
+
+    var hisOrdenado = his.sort(
+      (a, b) => a.keys.first.compareTo(b.keys.first),
+    );
+
+    return hisOrdenado;
+  }
 }
