@@ -854,7 +854,7 @@ getOtherPlayerCO() async {
 
   Map<String, String> res = {
     "otherPlayerCaptain": other_game.docs[0].data()["captain"],
-    "otherPlayerOpponent": other_game.docs[0].data()["opponent"]
+    //"otherPlayerOpponent": other_game.docs[0].data()["opponent"]
   };
 
   return res;
@@ -1238,6 +1238,36 @@ getRandomEvents(
       (a, b) => a.keys.first.compareTo(b.keys.first),
     );
 
-    return hisOrdenado;
+    return {
+      "hisOrdenado": hisOrdenado,
+      "strength": player1points["strength"],
+      "shooting": player1points["shooting"],
+      "speed": player1points["speed"],
+      "dribbling": player1points["dribbling"],
+      "defense": player1points["defense"],
+      "passing": player1points["passing"],
+      "rating": player1points["rating"]
+    };
   }
+}
+
+getPlayer2Points() async {
+  var player2 = await getPlayer2();
+  var game = await getLastGame();
+
+  var res = await db
+      .collection("user_game")
+      .where("game_id", isEqualTo: game.docs[0].data()["game_id"])
+      .where("user_id", isEqualTo: player2.id)
+      .get();
+
+  return {
+    "strength": res.docs[0].data()["strength"],
+    "shooting": res.docs[0].data()["shooting"],
+    "speed": res.docs[0].data()["speed"],
+    "dribbling": res.docs[0].data()["dribbling"],
+    "defense": res.docs[0].data()["defense"],
+    "passing": res.docs[0].data()["passing"],
+    "rating": res.docs[0].data()["rating"]
+  };
 }

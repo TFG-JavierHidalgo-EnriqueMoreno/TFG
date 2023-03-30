@@ -640,26 +640,16 @@ confirmOpponent(BuildContext context, Map<int, dynamic> selectedPlayers,
   t = Timer.periodic(Duration(milliseconds: 1000), (Timer t) async {
     if (await checkOtherPlayerStatus() == "confirmed") {
       var player2 = await getPlayer2();
-      Lineup lineup = Lineup();
-      lineup.newLineup(selectedLineup, otherLineup);
       Timer(Duration(seconds: 3), (() async {
         otherPlayerCO = await getOtherPlayerCO();
         Map<String, int?> player1Points =
             calcPointsPlayer1(selectedPlayers, otherPlayerCO);
-        Map<String, int?> player2Points =
-            calcPointsPlayer2(otherPlayers, otherPlayerCO);
-        Map<String, int> gameResult = calcResult(player1Points, player2Points);
-        saveGame(
-            gameResult["player1Goals"], gameResult["player2Goals"], lineup);
-        calcElo(gameResult["player1Goals"]! > gameResult["player2Goals"]!
-            ? true
-            : false);
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => GameEventPage(
                 players: selectedPlayers,
                 player1Points: player1Points,
-                player2Points: player2Points,
-                gameResult: gameResult,
+                selectedLineup: selectedLineup,
+                otherLineup: otherLineup,
                 player2: player2)));
       }));
 
@@ -718,99 +708,6 @@ calcPointsPlayer1(
     }
   });
 
-  //Establecer de forma aleatoria cosas que le pasa a tu equipo y editar los valores (Darno una pista el getRamdonPlayer)
-  //Pondría alguna vez de que no pasa nada en la posibilidad (Es decir que si vamos a poner que sea 5 factores a lo mejor puede ser 2 o 3)
-  //Una vez establecido esos cálculos establecidos poner un mapa en la cual la clave sea un número que sea del 0 hasta el 90
-  //Cuyo valor sería el mensaje que vamos a mostrar (Tarjeta amarilla para un defensa de tu equipo, Tu central esta en forma, Delantero con molestias.....)
-  //He visto que se puede ordenar un mapa por la clave
-
-  /*   EJEMPLO
-    Map map = {3: 'three', 1: 'one', 4: 'four', 5: 'five', 2: 'two'};
-    var sortedByKeyMap = Map.fromEntries(
-    map.entries.toList()..sort((e1, e2) => e1.key.compareTo(e2.key)));
-    print(sortedByKeyMap);
-  */
-
-  //Por último pasamos ese mapa a una vista que ponga historial del partido y recorremos el mapa indicando el minuto del partido y el mensaje para que sea más realista
-  //En este return establecer otro valor como simulacion que seria el mapa
-
-  // Map<int, String> his = {};
-  // int i = 0;
-  // while (i < 5) {
-  //   Random random = Random();
-  //   int indexRandom = random.nextInt(event.length);
-  //   switch (event[indexRandom]) {
-  //     case "":
-  //       break;
-  //     case "DL -":
-  //       Random random1 = Random();
-  //       int min = random.nextInt(91);
-  //       his.addAll({min: "Tu delanterio tiene una amarilla"});
-  //       //valores a cambiar
-  //       break;
-  //     case "DL +":
-  //       Random random1 = Random();
-  //       int min = random.nextInt(91);
-  //       break;
-  //     case "MC -":
-  //       Random random1 = Random();
-  //       int min = random.nextInt(91);
-  //       break;
-  //     case "MC +":
-  //       Random random1 = Random();
-  //       int min = random.nextInt(91);
-  //       break;
-  //     case "DF +":
-  //       Random random1 = Random();
-  //       int min = random.nextInt(91);
-  //       break;
-  //     case "DF -":
-  //       Random random1 = Random();
-  //       int min = random.nextInt(91);
-  //       break;
-  //     case "DL --":
-  //       Random random1 = Random();
-  //       int min = random.nextInt(91);
-  //       break;
-  //     case "DL ++":
-  //       Random random1 = Random();
-  //       int min = random.nextInt(91);
-  //       break;
-  //     case "MC --":
-  //       Random random1 = Random();
-  //       int min = random.nextInt(91);
-  //       break;
-  //     case "MC ++":
-  //       Random random1 = Random();
-  //       int min = random.nextInt(91);
-  //       break;
-  //     case "DF --":
-  //       Random random1 = Random();
-  //       int min = random.nextInt(91);
-  //       break;
-  //     case "DF ++":
-  //       Random random1 = Random();
-  //       int min = random.nextInt(91);
-  //       break;
-  //     case "DF ---":
-  //       Random random1 = Random();
-  //       int min = random.nextInt(91);
-  //       break;
-  //     case "DL ---":
-  //       Random random1 = Random();
-  //       int min = random.nextInt(91);
-  //       break;
-  //     case "MC ---":
-  //       Random random1 = Random();
-  //       int min = random.nextInt(91);
-  //       break;
-  //   }
-  //   i++;
-  // }
-
-  // var hisOrdenado = Map.fromEntries(
-  //     his.entries.toList()..sort((e1, e2) => e1.key.compareTo(e2.key)));
-
   return {
     "strength": strength,
     "shooting": shooting,
@@ -822,79 +719,65 @@ calcPointsPlayer1(
   };
 }
 
-calcPointsPlayer2(
-    Map<int, dynamic> selectedPlayers, Map<String, String> otherPlayerCO) {
-  int? strength = 0;
-  int? shooting = 0;
-  int? speed = 0;
-  int? dribbling = 0;
-  int? defense = 0;
-  int? passing = 0;
-  int? rating = 0;
+// calcPointsPlayer2(
+//     Map<int, dynamic> selectedPlayers, Map<String, String> otherPlayerCO) {
+//   int? strength = 0;
+//   int? shooting = 0;
+//   int? speed = 0;
+//   int? dribbling = 0;
+//   int? defense = 0;
+//   int? passing = 0;
+//   int? rating = 0;
 
-  selectedPlayers.forEach((key, value) {
-    if (value["opponent"] == true) {
-      if (value["bd_id"] == otherPlayerCO["otherPlayerCaptain"]) {
-        strength = strength! + value["strength"] as int?;
-        shooting = shooting! + value["shooting"] as int?;
-        speed = speed! + value["speed"] as int?;
-        dribbling = dribbling! + value["dribbling"] as int?;
-        defense = defense! + value["defense"] as int?;
-        passing = passing! + value["passing"] as int?;
-        rating = rating! + value["rating"] as int?;
-      } else {
-        strength = strength! + (value["strength"] / 2).round() as int?;
-        shooting = shooting! + (value["shooting"] / 2).round() as int?;
-        speed = speed! + (value["speed"] / 2).round() as int?;
-        dribbling = dribbling! + (value["dribbling"] / 2).round() as int?;
-        defense = defense! + (value["defense"] / 2).round() as int?;
-        passing = passing! + (value["passing"] / 2).round() as int?;
-        rating = rating! + (value["rating"] / 2).round() as int?;
-      }
-    } else {
-      if (value["bd_id"] == otherPlayerCO["otherPlayerCaptain"]) {
-        strength = strength! + value["strength"] * 2 as int?;
-        shooting = shooting! + value["shooting"] * 2 as int?;
-        speed = speed! + value["speed"] * 2 as int?;
-        dribbling = dribbling! + value["dribbling"] * 2 as int?;
-        defense = defense! + value["defense"] * 2 as int?;
-        passing = passing! + value["passing"] * 2 as int?;
-        rating = rating! + value["rating"] * 2 as int?;
-      } else {
-        strength = strength! + value["strength"] as int?;
-        shooting = shooting! + value["shooting"] as int?;
-        speed = speed! + value["speed"] as int?;
-        dribbling = dribbling! + value["dribbling"] as int?;
-        defense = defense! + value["defense"] as int?;
-        passing = passing! + value["passing"] as int?;
-        rating = rating! + value["rating"] as int?;
-      }
-    }
-  });
+//   selectedPlayers.forEach((key, value) {
+//     if (value["opponent"] == true) {
+//       if (value["bd_id"] == otherPlayerCO["otherPlayerCaptain"]) {
+//         strength = strength! + value["strength"] as int?;
+//         shooting = shooting! + value["shooting"] as int?;
+//         speed = speed! + value["speed"] as int?;
+//         dribbling = dribbling! + value["dribbling"] as int?;
+//         defense = defense! + value["defense"] as int?;
+//         passing = passing! + value["passing"] as int?;
+//         rating = rating! + value["rating"] as int?;
+//       } else {
+//         strength = strength! + (value["strength"] / 2).round() as int?;
+//         shooting = shooting! + (value["shooting"] / 2).round() as int?;
+//         speed = speed! + (value["speed"] / 2).round() as int?;
+//         dribbling = dribbling! + (value["dribbling"] / 2).round() as int?;
+//         defense = defense! + (value["defense"] / 2).round() as int?;
+//         passing = passing! + (value["passing"] / 2).round() as int?;
+//         rating = rating! + (value["rating"] / 2).round() as int?;
+//       }
+//     } else {
+//       if (value["bd_id"] == otherPlayerCO["otherPlayerCaptain"]) {
+//         strength = strength! + value["strength"] * 2 as int?;
+//         shooting = shooting! + value["shooting"] * 2 as int?;
+//         speed = speed! + value["speed"] * 2 as int?;
+//         dribbling = dribbling! + value["dribbling"] * 2 as int?;
+//         defense = defense! + value["defense"] * 2 as int?;
+//         passing = passing! + value["passing"] * 2 as int?;
+//         rating = rating! + value["rating"] * 2 as int?;
+//       } else {
+//         strength = strength! + value["strength"] as int?;
+//         shooting = shooting! + value["shooting"] as int?;
+//         speed = speed! + value["speed"] as int?;
+//         dribbling = dribbling! + value["dribbling"] as int?;
+//         defense = defense! + value["defense"] as int?;
+//         passing = passing! + value["passing"] as int?;
+//         rating = rating! + value["rating"] as int?;
+//       }
+//     }
+//   });
 
-  return {
-    "strength": strength,
-    "shooting": shooting,
-    "speed": speed,
-    "dribbling": dribbling,
-    "defense": defense,
-    "passing": passing,
-    "rating": (rating! / 11).round()
-  };
-}
+//   return {
+//     "strength": strength,
+//     "shooting": shooting,
+//     "speed": speed,
+//     "dribbling": dribbling,
+//     "defense": defense,
+//     "passing": passing,
+//     "rating": (rating! / 11).round()
+//   };
+// }
 
-calcResult(Map<String, int?> player1Points, Map<String, int?> player2Points) {
-  int player1Goals = 0;
-  int player2Goals = 0;
-  player1Points.forEach((key, value) {
-    if (value! > player2Points[key]!) {
-      player1Goals++;
-    } else if (value < player2Points[key]!) {
-      player2Goals++;
-    }
-  });
-  return {
-    "player1Goals": player1Goals,
-    "player2Goals": player2Goals,
-  };
-}
+
