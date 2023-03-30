@@ -926,7 +926,7 @@ Future<List> getLast5Games() async {
   return games;
 }
 
-getRandomEvents(
+Future<Map<String, dynamic>> getRandomEvents(
     Map<String, int?> player1points, Map<int, dynamic> players) async {
   var events = await db.collection("events").get();
   QuerySnapshot<Map<String, dynamic>> lastGame = await getLastGame();
@@ -1224,34 +1224,35 @@ getRandomEvents(
         }
         i++;
     }
-    await db.collection("user_game").doc(lastGame.docs[0].id).update({
-      "strength": player1points["strength"],
-      "shooting": player1points["shooting"],
-      "speed": player1points["speed"],
-      "dribbling": player1points["dribbling"],
-      "defense": player1points["defense"],
-      "passing": player1points["passing"],
-      "rating": player1points["rating"]
-    });
-
-    var hisOrdenado = his.sort(
-      (a, b) => a.keys.first.compareTo(b.keys.first),
-    );
-
-    return {
-      "hisOrdenado": hisOrdenado,
-      "strength": player1points["strength"],
-      "shooting": player1points["shooting"],
-      "speed": player1points["speed"],
-      "dribbling": player1points["dribbling"],
-      "defense": player1points["defense"],
-      "passing": player1points["passing"],
-      "rating": player1points["rating"]
-    };
   }
+
+  await db.collection("user_game").doc(lastGame.docs[0].id).update({
+    "strength": player1points["strength"],
+    "shooting": player1points["shooting"],
+    "speed": player1points["speed"],
+    "dribbling": player1points["dribbling"],
+    "defense": player1points["defense"],
+    "passing": player1points["passing"],
+    "rating": player1points["rating"]
+  });
+
+  his.sort(
+    (a, b) => a.keys.first.compareTo(b.keys.first),
+  );
+
+  return {
+    "hisOrdenado": his,
+    "strength": player1points["strength"],
+    "shooting": player1points["shooting"],
+    "speed": player1points["speed"],
+    "dribbling": player1points["dribbling"],
+    "defense": player1points["defense"],
+    "passing": player1points["passing"],
+    "rating": player1points["rating"]
+  };
 }
 
-getPlayer2Points() async {
+Future<Map<String, int>> getPlayer2Points() async {
   var player2 = await getPlayer2();
   var game = await getLastGame();
 

@@ -63,13 +63,13 @@ class GameEventPageState extends State<GameEventPage> {
   String _password = "";
 
   _updatePlayer1Points(Map<String, dynamic> data) {
-    _player1Points.update("strength", (value) => data["strength"]);
-    _player1Points.update("shooting", (value) => data["shooting"]);
-    _player1Points.update("speed", (value) => data["speed"]);
-    _player1Points.update("dribbling", (value) => data["dribbling"]);
-    _player1Points.update("defense", (value) => data["defense"]);
-    _player1Points.update("passing", (value) => data["passing"]);
-    _player1Points.update("rating", (value) => data["rating"]);
+    _player1Points.update("strength", (value) => value = data["strength"]);
+    _player1Points.update("shooting", (value) => value = data["shooting"]);
+    _player1Points.update("speed", (value) => value = data["speed"]);
+    _player1Points.update("dribbling", (value) => value = data["dribbling"]);
+    _player1Points.update("defense", (value) => value = data["defense"]);
+    _player1Points.update("passing", (value) => value = data["passing"]);
+    _player1Points.update("rating", (value) => value = data["rating"]);
   }
 
   @override
@@ -92,17 +92,15 @@ class GameEventPageState extends State<GameEventPage> {
                 if (snapshot.hasData) {
                   _updatePlayer1Points(snapshot.data!);
                   children = <Widget>[
-                    ListView.builder(
-                        itemCount: snapshot.data!["hisOrdenado"].length,
-                        itemBuilder: ((context, index) {
-                          return Text(
-                              "${snapshot.data!["hisOrdenado"][index].values.first}");
-                        })),
+                    Text("${snapshot.data!["hisOrdenado"][0].values.first}"),
+                    Text("${snapshot.data!["hisOrdenado"][1].values.first}"),
+                    Text("${snapshot.data!["hisOrdenado"][2].values.first}"),
+                    Text("${snapshot.data!["hisOrdenado"][3].values.first}"),
+                    Text("${snapshot.data!["hisOrdenado"][4].values.first}"),
                     ElevatedButton(
                         onPressed: () {
                           endGame(context, _player1Points, _selectedLineup,
                               _otherLineup, _player2);
-                          setState(() {});
                         },
                         child: Text('Finalizar partido'))
                   ];
@@ -199,7 +197,7 @@ endGame(BuildContext context, Map<String, int?> player1Points,
     String selectedLineup, String otherLineup, dynamic player2) async {
   Lineup lineup = Lineup();
   lineup.newLineup(selectedLineup, otherLineup);
-  Map<String, int?> player2Points = await getPlayer2Points();
+  Map<String, int> player2Points = await getPlayer2Points();
   Timer(Duration(seconds: 3), (() async {
     Map<String, int> gameResult = calcResult(player1Points, player2Points);
     saveGame(gameResult["player1Goals"], gameResult["player2Goals"], lineup);
@@ -216,7 +214,7 @@ endGame(BuildContext context, Map<String, int?> player1Points,
   }));
 }
 
-calcResult(Map<String, int?> player1Points, Map<String, int?> player2Points) {
+calcResult(Map<String, int?> player1Points, Map<String, int> player2Points) {
   int player1Goals = 0;
   int player2Goals = 0;
   player1Points.forEach((key, value) {
