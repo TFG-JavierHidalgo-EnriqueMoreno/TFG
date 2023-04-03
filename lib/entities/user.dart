@@ -1,3 +1,4 @@
+import 'package:http/http.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
 class User extends ModelMVC {
@@ -11,15 +12,17 @@ class User extends ModelMVC {
   String phone = "";
   String email = "";
   int elo = 0;
+  String status = "";
 
   User? newUser(String username, String password, String name, String phone,
-      String email, int elo) {
+      String email, int elo, String status) {
     this.username = username;
     this.password = password;
     this.name = name;
     this.phone = phone;
     this.email = email;
     this.elo = elo;
+    this.status = status;
   }
 
   String get getUsername {
@@ -46,6 +49,10 @@ class User extends ModelMVC {
     return elo;
   }
 
+  String get getStatus {
+    return status;
+  }
+
   set setUsername(String newUsername) {
     username = newUsername;
   }
@@ -68,5 +75,9 @@ class User extends ModelMVC {
 
   set setElo(int newElo) {
     elo = newElo;
+  }
+
+  set setStatus(String newStatus) {
+    status = newStatus;
   }
 }

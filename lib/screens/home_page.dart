@@ -1,6 +1,10 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:my_app/screens/login_page.dart';
 import 'package:my_app/screens/player_page.dart';
+import 'package:my_app/screens/searching_page.dart';
 import 'package:my_app/screens/select_page.dart';
 import 'package:my_app/screens/user_profile.dart';
 import 'package:my_app/services/firebase_service.dart';
@@ -89,11 +93,19 @@ Widget _page(BuildContext context) {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                  onPressed: () => playGame(context),
+                  onPressed: () {
+                    playGame(context);
+                  },
                   child: Text('Jugar partido'))
             ],
           ),
-        )
+        ),
+        // StreamBuilder(
+        //   stream: _channel.stream,
+        //   builder: (context, snapshot) {
+        //     return Text(snapshot.hasData ? '${snapshot.data}' : '');
+        //   },
+        // )
       ],
     ),
   );
@@ -132,6 +144,7 @@ Widget _getDrawer(BuildContext context) {
 }
 
 showHome(BuildContext context) {
+  resetPlayerState();
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const HomePage(),
@@ -140,6 +153,7 @@ showHome(BuildContext context) {
 }
 
 showProfile(BuildContext context) {
+  resetPlayerState();
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const UserProfile(),
@@ -148,15 +162,15 @@ showProfile(BuildContext context) {
 }
 
 playGame(BuildContext context) {
-  getRandomPlayers();
   Navigator.of(context).pushReplacement(
     FadePageRoute(
-      builder: (context) => const PlayerPage(),
+      builder: (context) => const SearchingPage(),
     ),
   );
 }
 
 logout(BuildContext context) {
+  resetPlayerState();
   globals.isLoggedIn = false;
   Navigator.of(context).pushReplacement(
     FadePageRoute(

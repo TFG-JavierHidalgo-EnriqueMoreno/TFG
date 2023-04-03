@@ -112,7 +112,8 @@ Future<void> calcElo(bool gameResult) async {
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
+        "phone": us["data"]["phone"],
+        "status": us["data"]["status"],
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] + us["level"]["victory"];
@@ -124,7 +125,8 @@ Future<void> calcElo(bool gameResult) async {
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
+        "phone": us["data"]["phone"],
+        "status": us["data"]["status"],
       });
 
       globals.userLoggedIn.elo = 250;
@@ -135,7 +137,8 @@ Future<void> calcElo(bool gameResult) async {
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
+        "phone": us["data"]["phone"],
+        "status": us["data"]["status"],
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] + us["level"]["victory"];
@@ -172,9 +175,12 @@ Future<void> calcElo(bool gameResult) async {
           "team_value": previousLevel.docs[0].data()["team_value"]
         });
         globals.userLevel.name = us["level"]["previous"];
-        globals.userLevel.teamValue = previousLevel.docs[0].data()["team_value"];
-        globals.userLevel.numBronzes = previousLevel.docs[0].data()["num_bronzes"];
-        globals.userLevel.numSilvers = previousLevel.docs[0].data()["num_silvers"];
+        globals.userLevel.teamValue =
+            previousLevel.docs[0].data()["team_value"];
+        globals.userLevel.numBronzes =
+            previousLevel.docs[0].data()["num_bronzes"];
+        globals.userLevel.numSilvers =
+            previousLevel.docs[0].data()["num_silvers"];
         globals.userLevel.numGolds = previousLevel.docs[0].data()["num_golds"];
       }
       await db.collection("users").doc(us["uid"]).set({
@@ -183,7 +189,8 @@ Future<void> calcElo(bool gameResult) async {
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
+        "phone": us["data"]["phone"],
+        "status": us["data"]["status"],
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] - us["level"]["lose"];
@@ -194,7 +201,8 @@ Future<void> calcElo(bool gameResult) async {
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
+        "phone": us["data"]["phone"],
+        "status": us["data"]["status"],
       });
 
       globals.userLoggedIn.elo = 0;
@@ -205,7 +213,8 @@ Future<void> calcElo(bool gameResult) async {
         "name": us["data"]["name"],
         "password": us["data"]["password"],
         "username": us["data"]["username"],
-        "phone": us["data"]["phone"]
+        "phone": us["data"]["phone"],
+        "status": us["data"]["status"],
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] - us["level"]["lose"];
@@ -229,7 +238,8 @@ Future<void> editUser(
     "name": name,
     "password": password,
     "username": username,
-    "phone": phone
+    "phone": phone,
+    "status": "not_playing",
   });
 
   globals.userLoggedIn.name = name;
@@ -256,42 +266,25 @@ Future<void> deleteUser() async {
   globals.userLoggedIn.password = "";
 }
 
-Future<void> saveGame(int? localGoals, int? awayGoals, Lineup? lineup,
-    Map<int, dynamic> selectedPlayers) async {
+Future<void> saveGame(int? localGoals, int? awayGoals, Lineup lineup) async {
   Future<List> users = getUsers();
   User u = globals.userLoggedIn;
 
   List list = await users;
   var us = list.firstWhere((element) => element["data"]["email"] == u.email);
-  await db
-      .collection("games")
-      .add({
-        "local_goals": localGoals,
-        "away_goals": awayGoals,
-        "score": localGoals! > awayGoals! ? 1 : 2,
-      })
-      .then((value) => value.collection("lineup").add({
-            "local_lineup": lineup?.getLocalLineup,
-            "away_lineup": lineup?.getAwayLineup
-          }))
-      .then((value) => db.collection("user_game").add({
-            "game_id": value.parent.parent?.id,
-            "user_id": us["uid"],
-          }).then((value) {
-            value.collection("players").add({
-              "player0": selectedPlayers[0]["bd_id"],
-              "player1": selectedPlayers[1]["bd_id"],
-              "player2": selectedPlayers[2]["bd_id"],
-              "player3": selectedPlayers[3]["bd_id"],
-              "player4": selectedPlayers[4]["bd_id"],
-              "player5": selectedPlayers[5]["bd_id"],
-              "player6": selectedPlayers[6]["bd_id"],
-              "player7": selectedPlayers[7]["bd_id"],
-              "player8": selectedPlayers[8]["bd_id"],
-              "player9": selectedPlayers[9]["bd_id"],
-              "player10": selectedPlayers[10]["bd_id"],
-            });
-          }));
+
+  QuerySnapshot<Map<String, dynamic>> lastGame = await getLastGame();
+  var player2 = await getPlayer2();
+
+  await db.collection("games").doc(lastGame.docs[0].data()["game_id"]).update({
+    "local_goals": localGoals,
+    "away_goals": awayGoals,
+    "score": localGoals! > awayGoals! ? 1 : 2,
+    "local_user": us["uid"],
+    "away_user": player2.id,
+    "local_lineup": lineup.getLocalLineup,
+    "away_lineup": lineup.getAwayLineup
+  });
 }
 
 //TODO: Obtener el usuario logueado
@@ -450,9 +443,9 @@ Future<Map<String, List<dynamic>>> getRandomPlayers() async {
     Random r = new Random();
     int rn = r.nextInt(players.docs.length);
     var player = players.docs[rn].data() as Map;
+    player["captain"] = "false";
     var idPlayer = players.docs[rn].id.toString();
     player["bd_id"] = idPlayer;
-
     switch (player["category"]) {
       case "Gold":
         if (oro < oroMax) {
@@ -581,4 +574,286 @@ Future<void> saveCountry(Country? c) async {
     "name": c?.getName,
     "api_id": c?.getApiId,
   });
+}
+
+Future<Map<String, List<dynamic>>> searchGame() async {
+  Map<String, List<dynamic>> res = {};
+  var player1 = await db
+      .collection('users')
+      .where('email', isEqualTo: globals.userLoggedIn.email)
+      .get();
+
+  db
+      .collection("users")
+      .doc(player1.docs[0].id)
+      .update({"status": "searching"});
+
+  int max = player1.docs[0].data()["elo"] + 20;
+  int min = player1.docs[0].data()["elo"] - 20;
+
+  var allPlayers = await db
+      .collection('users')
+      .where('status', isEqualTo: "searching")
+      .where('elo', isLessThanOrEqualTo: max)
+      .where('elo', isGreaterThanOrEqualTo: min)
+      .get();
+  var player2;
+  if (allPlayers.docs.length > 1) {
+    player2 = allPlayers.docs.firstWhere(
+        (element) => element.data()["email"] != globals.userLoggedIn.email);
+    await db
+        .collection("users")
+        .doc(player1.docs[0].id)
+        .update({"status": "playing"});
+
+    await db.collection("users").doc(player2.id).update({"status": "playing"});
+
+    await db
+        .collection("games")
+        .add({"away_goals": 0, "local_goals": 0, "score": 0}).then((value) {
+      db.collection("user_game").add({
+        "game_id": value.id,
+        "user_id": player1.docs[0].id,
+        "created_at": Timestamp.now()
+      });
+
+      db.collection("user_game").add({
+        "game_id": value.id,
+        "user_id": player2.id,
+        "created_at": Timestamp.now()
+      });
+    });
+    res.putIfAbsent("player1", () => [player1.docs[0].data()]);
+    res.putIfAbsent("player2", () => [player2]);
+    return res;
+  }
+  return {};
+}
+
+resetPlayerState() async {
+  var player = await db
+      .collection('users')
+      .where('email', isEqualTo: globals.userLoggedIn.email)
+      .get();
+  await db
+      .collection("users")
+      .doc(player.docs[0].id)
+      .update({"status": "not_playing"});
+}
+
+Future<String> checkPlayerStatus() async {
+  var player = await db
+      .collection('users')
+      .where('email', isEqualTo: globals.userLoggedIn.email)
+      .get();
+
+  return player.docs[0].data()["status"];
+}
+
+Future<String> checkOtherPlayerStatus() async {
+  var player2 = await getPlayer2();
+
+  return player2.data()["status"];
+}
+
+getPlayer2() async {
+  var player = await db
+      .collection('users')
+      .where('email', isEqualTo: globals.userLoggedIn.email)
+      .get();
+  var game = await db
+      .collection('user_game')
+      .where('user_id', isEqualTo: player.docs[0].id)
+      .orderBy('created_at', descending: true)
+      .limit(1)
+      .get();
+  var otherPlayer = await db
+      .collection('user_game')
+      .where('game_id', isEqualTo: game.docs[0].data()["game_id"])
+      .where('user_id', isNotEqualTo: player.docs[0].id)
+      .get();
+  var player2 = await db
+      .collection('users')
+      .doc(otherPlayer.docs[0].data()["user_id"])
+      .get();
+  return player2;
+}
+
+Future<QuerySnapshot<Map<String, dynamic>>> getLastGame() async {
+  var player = await db
+      .collection('users')
+      .where('email', isEqualTo: globals.userLoggedIn.email)
+      .get();
+  var game = await db
+      .collection('user_game')
+      .where('user_id', isEqualTo: player.docs[0].id)
+      .orderBy('created_at', descending: true)
+      .limit(1)
+      .get();
+
+  return game;
+}
+
+readyPlayer() async {
+  var player1 = await db
+      .collection('users')
+      .where('email', isEqualTo: globals.userLoggedIn.email)
+      .get();
+
+  db.collection("users").doc(player1.docs[0].id).update({"status": "ready"});
+}
+
+confirmedPlayer() async {
+  var player1 = await db
+      .collection('users')
+      .where('email', isEqualTo: globals.userLoggedIn.email)
+      .get();
+
+  db
+      .collection("users")
+      .doc(player1.docs[0].id)
+      .update({"status": "confirmed"});
+}
+
+saveUserPlayer(Map<int, dynamic> selectedPlayers) async {
+  Future<List> users = getUsers();
+  User u = globals.userLoggedIn;
+
+  List list = await users;
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+
+  QuerySnapshot<Map<String, dynamic>> lastGame = await getLastGame();
+
+  // await db
+  //     .collection("games")
+  //     .doc(lastGame.docs[0]["game_id"])
+  //     .collection("lineup")
+  //     .add({
+  //   "local_lineup": lineup?.getLocalLineup,
+  //   "away_lineup": lineup?.getAwayLineup
+  // });
+
+  await db
+      .collection("user_game")
+      .where("game_id", isEqualTo: lastGame.docs[0].data()["game_id"])
+      .where("user_id", isEqualTo: us["uid"])
+      .get()
+      .then((value) {
+    db.collection("user_game").doc(value.docs[0].id).collection("players").add({
+      "player0": selectedPlayers[0]["bd_id"],
+      "player1": selectedPlayers[1]["bd_id"],
+      "player2": selectedPlayers[2]["bd_id"],
+      "player3": selectedPlayers[3]["bd_id"],
+      "player4": selectedPlayers[4]["bd_id"],
+      "player5": selectedPlayers[5]["bd_id"],
+      "player6": selectedPlayers[6]["bd_id"],
+      "player7": selectedPlayers[7]["bd_id"],
+      "player8": selectedPlayers[8]["bd_id"],
+      "player9": selectedPlayers[9]["bd_id"],
+      "player10": selectedPlayers[10]["bd_id"]
+    });
+    var captain = {};
+    selectedPlayers.forEach((key, value) {
+      if (value["captain"] == true) {
+        captain = value;
+      }
+    });
+    if (captain.isNotEmpty) {
+      db.collection("user_game").doc(value.docs[0].id).update({
+        "captain": captain["bd_id"],
+      });
+    }
+  });
+}
+
+updateOpponent(Map<int, dynamic> selectedPlayers) async {
+  Future<List> users = getUsers();
+  User u = globals.userLoggedIn;
+
+  List list = await users;
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+
+  QuerySnapshot<Map<String, dynamic>> lastGame = await getLastGame();
+
+  await db
+      .collection("user_game")
+      .where("game_id", isEqualTo: lastGame.docs[0].data()["game_id"])
+      .where("user_id", isEqualTo: us["uid"])
+      .get()
+      .then((value) {
+    var opponent = {};
+    selectedPlayers.forEach((key, value) {
+      if (value["opponent"] == true) {
+        opponent = value;
+      }
+    });
+    if (opponent.isNotEmpty) {
+      db.collection("user_game").doc(value.docs[0].id).update({
+        "opponent": opponent["bd_id"],
+      });
+    }
+  });
+}
+
+getPlayer2Players() async {
+  var player2 = await getPlayer2();
+  var game = await getLastGame();
+
+  var res = await db
+      .collection("user_game")
+      .where("game_id", isEqualTo: game.docs[0].data()["game_id"])
+      .where("user_id", isEqualTo: player2.id)
+      .get();
+
+  var id_players = await db
+      .collection("user_game")
+      .doc(res.docs[0].id)
+      .collection("players")
+      .get();
+
+  var players = [];
+
+  var data_players = id_players.docs[0].data();
+
+  data_players.forEach((key, value) async {
+    var player = await db.collection("players").doc(value).get();
+    Map<String, dynamic> p = {
+      "strength": player.data()!["strength"],
+      "rating": player.data()!["rating"],
+      "shooting": player.data()!["shooting"],
+      "speed": player.data()!["speed"],
+      "dribbling": player.data()!["dribbling"],
+      "defense": player.data()!["defense"],
+      "price": player.data()!["price"],
+      "club_id": player.data()!["club_id"],
+      "name": player.data()!["name"],
+      "position": player.data()!["position"],
+      "passing": player.data()!["passing"],
+      "category": player.data()!["category"],
+      "country_id": player.data()!["country_id"],
+      "opponent": player.data()!["opponent"],
+      "bd_id": value,
+    };
+    players.add(p);
+  });
+
+  return players;
+}
+
+getOtherPlayerCO() async {
+  var player2 = await getPlayer2();
+  var game = await getLastGame();
+
+  var other_game = await db
+      .collection("user_game")
+      .where("game_id", isEqualTo: game.docs[0].data()["game_id"])
+      .where("user_id", isEqualTo: player2.id)
+      .get();
+
+  Map<String, String> res = {
+    "otherPlayerCaptain": other_game.docs[0].data()["captain"],
+    "otherPlayerOpponent": other_game.docs[0].data()["opponent"]
+  };
+
+  return res;
 }

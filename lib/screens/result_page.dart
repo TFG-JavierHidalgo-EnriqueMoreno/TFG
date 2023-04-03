@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:my_app/screens/player_page.dart';
+import 'package:my_app/screens/searching_page.dart';
 import 'package:my_app/screens/select_page.dart';
 import 'package:my_app/routes/custom_route.dart';
+import 'package:my_app/services/firebase_service.dart';
 import 'home_page.dart';
 
 import 'package:my_app/entities/globals.dart' as globals;
@@ -14,11 +16,14 @@ class ResultPage extends StatefulWidget {
   final Map<String, int?> player1Points;
   final Map<String, int?> player2Points;
   final Map<String, int> gameResult;
+  final dynamic player2;
+
   const ResultPage(
       {super.key,
       required this.player1Points,
       required this.player2Points,
-      required this.gameResult});
+      required this.gameResult,
+      required this.player2});
 
   @override
   ResultPageState createState() {
@@ -38,11 +43,13 @@ class ResultPageState extends State<ResultPage> {
     _player1Points = widget.player1Points;
     _player2Points = widget.player2Points;
     _gameResult = widget.gameResult;
+    _player2 = widget.player2;
   }
 
   Map<String, int?> _player1Points = {};
   Map<String, int?> _player2Points = {};
   Map<String, int> _gameResult = {};
+  dynamic _player2 = "";
 
   final _formKey = GlobalKey<FormState>();
 
@@ -74,9 +81,14 @@ class ResultPageState extends State<ResultPage> {
                       children: <Widget>[
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: const Icon(
-                            Icons.account_circle,
-                            size: 48.0,
+                          child: Column(
+                            children: [
+                              const Icon(
+                                Icons.account_circle,
+                                size: 48.0,
+                              ),
+                              Text("${globals.userLoggedIn.getUsername}"),
+                            ],
                           ),
                         ),
                         Text(
@@ -99,9 +111,14 @@ class ResultPageState extends State<ResultPage> {
                         ),
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: const Icon(
-                            Icons.account_circle,
-                            size: 48.0,
+                          child: Column(
+                            children: [
+                              const Icon(
+                                Icons.account_circle,
+                                size: 48.0,
+                              ),
+                              Text("${_player2.data()["username"]}"),
+                            ],
                           ),
                         ),
                       ]),
@@ -320,6 +337,7 @@ Widget _getDrawer(BuildContext context) {
 }
 
 goToHome(BuildContext context) {
+  resetPlayerState();
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const HomePage(),
@@ -328,9 +346,10 @@ goToHome(BuildContext context) {
 }
 
 playAgain(BuildContext context) {
+  searchGame();
   Navigator.of(context).pushReplacement(
     FadePageRoute(
-      builder: (context) => const PlayerPage(),
+      builder: (context) => const SearchingPage(),
     ),
   );
 }

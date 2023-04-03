@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:core';
 import 'dart:developer';
 import 'dart:ui';
@@ -9,6 +10,8 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:my_app/entities/lineup.dart';
 import 'package:my_app/screens/result_page.dart';
 import 'package:my_app/routes/custom_route.dart';
+import 'package:my_app/screens/selectRival_page.dart';
+import 'package:my_app/services/api_service.dart';
 import 'package:my_app/services/firebase_service.dart';
 import 'home_page.dart';
 
@@ -55,7 +58,7 @@ class SelectPageState extends State<SelectPage> {
 
   bool _obscureText = true;
   String _password = "";
-  List<String> list = <String>['4-4-2', '4-3-3', '5-3-2', '5-4-1'];
+  List<String> list = <String>['4-4-2', '4-3-3', '5-3-2'];
   String dropdownValue = '4-4-2';
   bool _allSelected = false;
   final Map<int, bool> _selected = {
@@ -132,27 +135,75 @@ class SelectPageState extends State<SelectPage> {
         for (var element in indexSelected) {
           lpc.removeAt(element);
         }
-        switch (key) {
-          case 10:
-            gc = lpc;
-            break;
-          case 6:
-          case 7:
-          case 8:
-          case 9:
-            dc = lpc;
-            break;
-          case 2:
-          case 3:
-          case 4:
-          case 5:
-            mc = lpc;
-            break;
-          case 0:
-          case 1:
-            fc = lpc;
-            break;
-          default:
+        if (dropdownValue == '4-4-2') {
+          switch (key) {
+            case 10:
+              gc = lpc;
+              break;
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+              dc = lpc;
+              break;
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+              mc = lpc;
+              break;
+            case 0:
+            case 1:
+              fc = lpc;
+              break;
+            default:
+          }
+        } else if (dropdownValue == '4-3-3') {
+          switch (key) {
+            case 10:
+              gc = lpc;
+              break;
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+              dc = lpc;
+              break;
+            case 3:
+            case 4:
+            case 5:
+              mc = lpc;
+              break;
+            case 0:
+            case 1:
+            case 2:
+              fc = lpc;
+              break;
+            default:
+          }
+        } else {
+          switch (key) {
+            case 10:
+              gc = lpc;
+              break;
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+              dc = lpc;
+              break;
+            case 2:
+            case 3:
+            case 4:
+              mc = lpc;
+              break;
+            case 0:
+            case 1:
+              fc = lpc;
+              break;
+            default:
+          }
         }
       });
     }
@@ -405,6 +456,380 @@ class SelectPageState extends State<SelectPage> {
     );
   }
 
+  select_captain(BuildContext context) {
+    showDialog<String>(
+      context: context,
+      barrierColor: Colors.transparent,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Selecciona Capitán'),
+        //content: const Text('Usuario eliminado'),
+        actions: <Widget>[
+          SingleChildScrollView(
+            child: Container(
+              height: 300,
+              width: 300,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _selectedPlayers.length,
+                itemBuilder: ((context, index) {
+                  if (_selectedPlayers[index]["name"] != null) {
+                    return Container(
+                      child: TextButton(
+                          style: TextButton.styleFrom(primary: Colors.black),
+                          onPressed: () => _changeCaptain(context, index),
+                          child: Container(
+                            constraints: BoxConstraints(
+                              maxHeight: double.infinity,
+                            ),
+                            decoration: BoxDecoration(
+                                color: _selectedPlayers[index]["category"] ==
+                                        'Gold'
+                                    ? Color.fromARGB(255, 240, 203, 82)
+                                    : _selectedPlayers[index]["category"] ==
+                                            'Silver'
+                                        ? const Color(0xffc0c0c0)
+                                        : Color.fromARGB(255, 179, 107, 36),
+                                border: Border.all(
+                                    color: Colors.black, width: 1.0)),
+                            child: Column(
+                              children: <Widget>[
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child:
+                                          Icon(Icons.account_circle, size: 20),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                          _selectedPlayers[index]["name"],
+                                          style: TextStyle(fontSize: 20)),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                          _selectedPlayers[index]["price"]
+                                                  .toString() +
+                                              "M",
+                                          style: TextStyle(fontSize: 20)),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircleAvatar(
+                                        radius: 11.5,
+                                        backgroundColor: _selectedPlayers[index]
+                                                    ["shooting"] <
+                                                35
+                                            ? Colors.red
+                                            : _selectedPlayers[index]
+                                                        ["shooting"] <
+                                                    70
+                                                ? Colors.yellow
+                                                : Colors.green,
+                                        child: Center(
+                                          child: Text(
+                                              _selectedPlayers[index]
+                                                      ["shooting"]
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black)),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircleAvatar(
+                                        radius: 11.5,
+                                        backgroundColor: _selectedPlayers[index]
+                                                    ["speed"] <
+                                                35
+                                            ? Colors.red
+                                            : _selectedPlayers[index]["speed"] <
+                                                    70
+                                                ? Colors.yellow
+                                                : Colors.green,
+                                        child: Center(
+                                          child: Text(
+                                              _selectedPlayers[index]["speed"]
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black)),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircleAvatar(
+                                        radius: 11.5,
+                                        backgroundColor: _selectedPlayers[index]
+                                                    ["strength"] <
+                                                35
+                                            ? Colors.red
+                                            : _selectedPlayers[index]
+                                                        ["strength"] <
+                                                    70
+                                                ? Colors.yellow
+                                                : Colors.green,
+                                        child: Center(
+                                          child: Text(
+                                              _selectedPlayers[index]
+                                                      ["strength"]
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black)),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircleAvatar(
+                                        radius: 11.5,
+                                        backgroundColor: _selectedPlayers[index]
+                                                    ["passing"] <
+                                                35
+                                            ? Colors.red
+                                            : _selectedPlayers[index]
+                                                        ["passing"] <
+                                                    70
+                                                ? Colors.yellow
+                                                : Colors.green,
+                                        child: Center(
+                                          child: Text(
+                                              _selectedPlayers[index]["passing"]
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black)),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircleAvatar(
+                                        radius: 11.5,
+                                        backgroundColor: _selectedPlayers[index]
+                                                    ["dribbling"] <
+                                                35
+                                            ? Colors.red
+                                            : _selectedPlayers[index]
+                                                        ["dribbling"] <
+                                                    70
+                                                ? Colors.yellow
+                                                : Colors.green,
+                                        child: Center(
+                                          child: Text(
+                                              _selectedPlayers[index]
+                                                      ["dribbling"]
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black)),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircleAvatar(
+                                        radius: 11.5,
+                                        backgroundColor: _selectedPlayers[index]
+                                                    ["defense"] <
+                                                35
+                                            ? Colors.red
+                                            : _selectedPlayers[index]
+                                                        ["defense"] <
+                                                    70
+                                                ? Colors.yellow
+                                                : Colors.green,
+                                        child: Center(
+                                          child: Text(
+                                              _selectedPlayers[index]["defense"]
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black)),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircleAvatar(
+                                        radius: 11.5,
+                                        backgroundColor: _selectedPlayers[index]
+                                                    ["rating"] <
+                                                35
+                                            ? Colors.red
+                                            : _selectedPlayers[index]
+                                                        ["rating"] <
+                                                    70
+                                                ? Colors.yellow
+                                                : Colors.green,
+                                        child: Center(
+                                          child: Text(
+                                              _selectedPlayers[index]["rating"]
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black)),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: const [
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text("SHO",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black)),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text("PAC",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black)),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text("PHY",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black)),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text("PAS",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black)),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text("DRI",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black)),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text("DEF",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black)),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text("TOT",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black)),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          )),
+                    );
+                  } else {
+                    return Visibility(
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        child: Text(''),
+                      ),
+                      visible: false,
+                    );
+                  }
+                }),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  checkPlayerPositions() {
+    switch (dropdownValue) {
+      case "4-4-2":
+        if (_selected[2] == true) {
+          if (_selectedPlayers[2]['position'] != 'MC') {
+            teamValue = teamValue + _selectedPlayers[2]["price"] as int;
+            fc?.add(_selectedPlayers[2]);
+            fc?.sort((b, a) => a['price'].compareTo(b['price']));
+            _selectedPlayers[2] = {};
+            _selected[2] = false;
+            _allSelected = false;
+          }
+        }
+        if (_selected[5] == true) {
+          if (_selectedPlayers[5]['position'] != 'MC') {
+            teamValue = teamValue + _selectedPlayers[5]["price"] as int;
+            dc?.add(_selectedPlayers[5]);
+            dc?.sort((b, a) => a['price'].compareTo(b['price']));
+            _selectedPlayers[5] = {};
+            _selected[5] = false;
+            _allSelected = false;
+          }
+        }
+        break;
+      case "4-3-3":
+        if (_selected[2] == true) {
+          if (_selectedPlayers[2]['position'] != 'DL') {
+            teamValue = teamValue + _selectedPlayers[2]["price"] as int;
+            mc?.add(_selectedPlayers[2]);
+            mc?.sort((b, a) => a['price'].compareTo(b['price']));
+            _selectedPlayers[2] = {};
+            _selected[2] = false;
+            _allSelected = false;
+          }
+        }
+        if (_selected[5] == true) {
+          if (_selectedPlayers[5]['position'] != 'MC') {
+            teamValue = teamValue + _selectedPlayers[5]["price"] as int;
+            dc?.add(_selectedPlayers[5]);
+            dc?.sort((b, a) => a['price'].compareTo(b['price']));
+            _selectedPlayers[5] = {};
+            _selected[5] = false;
+            _allSelected = false;
+          }
+        }
+        break;
+      case "5-3-2":
+        if (_selected[2] == true) {
+          if (_selectedPlayers[2]['position'] != 'MC') {
+            teamValue = teamValue + _selectedPlayers[2]["price"] as int;
+            fc?.add(_selectedPlayers[2]);
+            fc?.sort((b, a) => a['price'].compareTo(b['price']));
+            _selectedPlayers[2] = {};
+            _selected[2] = false;
+            _allSelected = false;
+          }
+        }
+        if (_selected[5] == true) {
+          if (_selectedPlayers[5]['position'] != 'DF') {
+            teamValue = teamValue + _selectedPlayers[5]["price"] as int;
+            mc?.add(_selectedPlayers[5]);
+            mc?.sort((b, a) => a['price'].compareTo(b['price']));
+            _selectedPlayers[5] = {};
+            _selected[5] = false;
+            _allSelected = false;
+          }
+        }
+        break;
+      default:
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     const appTitle = 'Seleccion de jugadores';
@@ -451,6 +876,7 @@ class SelectPageState extends State<SelectPage> {
                           // This is called when the user selects an item.
                           setState(() {
                             dropdownValue = value!;
+                            checkPlayerPositions();
                           });
                         },
                         items:
@@ -504,7 +930,9 @@ class SelectPageState extends State<SelectPage> {
             ),
             Positioned(
               bottom: MediaQuery.of(context).size.height - 260,
-              left: (MediaQuery.of(context).size.width) - 335,
+              left: dropdownValue == "4-3-3"
+                  ? (MediaQuery.of(context).size.width) - 385
+                  : (MediaQuery.of(context).size.width) - 335,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -529,7 +957,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[0]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[0]["name"] != null &&
+                                        _selectedPlayers[0]["captain"] == true
+                                    ? "${_selectedPlayers[0]["name"]} (C)"
+                                    : _selectedPlayers[0]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -543,7 +975,9 @@ class SelectPageState extends State<SelectPage> {
             ),
             Positioned(
               bottom: MediaQuery.of(context).size.height - 260,
-              left: (MediaQuery.of(context).size.width) - 210,
+              left: dropdownValue == "4-3-3"
+                  ? (MediaQuery.of(context).size.width) - 270
+                  : (MediaQuery.of(context).size.width) - 210,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -568,7 +1002,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[1]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[1]["name"] != null &&
+                                        _selectedPlayers[1]["captain"] == true
+                                    ? "${_selectedPlayers[1]["name"]} (C)"
+                                    : _selectedPlayers[1]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -581,8 +1019,12 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 560,
-              left: (MediaQuery.of(context).size.width) - 420,
+              top: dropdownValue == "4-3-3"
+                  ? MediaQuery.of(context).size.height - 667
+                  : MediaQuery.of(context).size.height - 560,
+              left: dropdownValue == "4-3-3"
+                  ? (MediaQuery.of(context).size.width) - 155
+                  : (MediaQuery.of(context).size.width) - 420,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -591,7 +1033,9 @@ class SelectPageState extends State<SelectPage> {
                       children: [
                         ElevatedButton(
                             onPressed: () => {
-                                  select(2, _selected, context, m, mc),
+                                  dropdownValue == "4-3-3"
+                                      ? select(2, _selected, context, f, fc)
+                                      : select(2, _selected, context, m, mc),
                                 },
                             style: ElevatedButton.styleFrom(
                                 side: const BorderSide(
@@ -607,7 +1051,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[2]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[2]["name"] != null &&
+                                        _selectedPlayers[2]["captain"] == true
+                                    ? "${_selectedPlayers[2]["name"]} (C)"
+                                    : _selectedPlayers[2]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -620,8 +1068,14 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 490,
-              left: (MediaQuery.of(context).size.width) - 335,
+              top: dropdownValue == "4-3-3"
+                  ? MediaQuery.of(context).size.height - 560
+                  : MediaQuery.of(context).size.height - 490,
+              left: dropdownValue == "4-3-3"
+                  ? (MediaQuery.of(context).size.width) - 420
+                  : dropdownValue == "5-3-2"
+                      ? (MediaQuery.of(context).size.width) - 270
+                      : (MediaQuery.of(context).size.width) - 335,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -646,7 +1100,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[3]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[3]["name"] != null &&
+                                        _selectedPlayers[3]["captain"] == true
+                                    ? "${_selectedPlayers[3]["name"]} (C)"
+                                    : _selectedPlayers[3]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -659,8 +1117,14 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 490,
-              left: (MediaQuery.of(context).size.width) - 210,
+              top: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height - 560
+                  : MediaQuery.of(context).size.height - 490,
+              left: dropdownValue == "4-3-3"
+                  ? (MediaQuery.of(context).size.width) - 270
+                  : dropdownValue == "5-3-2"
+                      ? (MediaQuery.of(context).size.width) - 125
+                      : (MediaQuery.of(context).size.width) - 210,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -685,7 +1149,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[4]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[4]["name"] != null &&
+                                        _selectedPlayers[4]["captain"] == true
+                                    ? "${_selectedPlayers[4]["name"]} (C)"
+                                    : _selectedPlayers[4]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -698,7 +1166,9 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 560,
+              top: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height - 450
+                  : MediaQuery.of(context).size.height - 560,
               left: (MediaQuery.of(context).size.width) - 125,
               child: Stack(
                 children: <Widget>[
@@ -708,7 +1178,9 @@ class SelectPageState extends State<SelectPage> {
                       children: [
                         ElevatedButton(
                             onPressed: () => {
-                                  select(5, _selected, context, m, mc),
+                                  dropdownValue == '5-3-2'
+                                      ? select(5, _selected, context, d, dc)
+                                      : select(5, _selected, context, m, mc),
                                 },
                             style: ElevatedButton.styleFrom(
                                 side: const BorderSide(
@@ -724,7 +1196,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[5]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[5]["name"] != null &&
+                                        _selectedPlayers[5]["captain"] == true
+                                    ? "${_selectedPlayers[5]["name"]} (C)"
+                                    : _selectedPlayers[5]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -737,7 +1213,9 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 370,
+              top: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height - 450
+                  : MediaQuery.of(context).size.height - 370,
               left: (MediaQuery.of(context).size.width) - 420,
               child: Stack(
                 children: <Widget>[
@@ -763,7 +1241,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[6]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[6]["name"] != null &&
+                                        _selectedPlayers[6]["captain"] == true
+                                    ? "${_selectedPlayers[6]["name"]} (C)"
+                                    : _selectedPlayers[6]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -776,8 +1258,12 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 300,
-              left: (MediaQuery.of(context).size.width) - 335,
+              top: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height - 350
+                  : MediaQuery.of(context).size.height - 300,
+              left: dropdownValue == "5-3-2"
+                  ? (MediaQuery.of(context).size.width) - 380
+                  : (MediaQuery.of(context).size.width) - 335,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -802,7 +1288,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[7]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[7]["name"] != null &&
+                                        _selectedPlayers[7]["captain"] == true
+                                    ? "${_selectedPlayers[7]["name"]} (C)"
+                                    : _selectedPlayers[7]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -816,7 +1306,9 @@ class SelectPageState extends State<SelectPage> {
             ),
             Positioned(
               top: MediaQuery.of(context).size.height - 300,
-              left: (MediaQuery.of(context).size.width) - 210,
+              left: dropdownValue == "5-3-2"
+                  ? (MediaQuery.of(context).size.width / 2) - 75
+                  : (MediaQuery.of(context).size.width) - 210,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -841,7 +1333,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[8]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[8]["name"] != null &&
+                                        _selectedPlayers[8]["captain"] == true
+                                    ? "${_selectedPlayers[8]["name"]} (C)"
+                                    : _selectedPlayers[8]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -854,8 +1350,12 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 370,
-              left: (MediaQuery.of(context).size.width) - 125,
+              top: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height - 350
+                  : MediaQuery.of(context).size.height - 370,
+              left: dropdownValue == "5-3-2"
+                  ? (MediaQuery.of(context).size.width) - 165
+                  : (MediaQuery.of(context).size.width) - 125,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -880,7 +1380,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[9]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[9]["name"] != null &&
+                                        _selectedPlayers[9]["captain"] == true
+                                    ? "${_selectedPlayers[9]["name"]} (C)"
+                                    : _selectedPlayers[9]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -919,7 +1423,11 @@ class SelectPageState extends State<SelectPage> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_selectedPlayers[10]["name"] ?? "",
+                            child: Text(
+                                _selectedPlayers[10]["name"] != null &&
+                                        _selectedPlayers[10]["captain"] == true
+                                    ? "${_selectedPlayers[10]["name"]} (C)"
+                                    : _selectedPlayers[10]["name"] ?? "",
                                 style: const TextStyle(
                                     color: Colors.white70,
                                     fontWeight: FontWeight.bold)),
@@ -937,10 +1445,28 @@ class SelectPageState extends State<SelectPage> {
               child: _allSelected == true && teamValue >= 0
                   ? ElevatedButton(
                       onPressed: () {
-                        confirm(context, _selectedPlayers);
+                        confirm(context, _selectedPlayers, dropdownValue);
                         setState(() {});
                       },
                       child: Text('Confirmar'))
+                  : Visibility(
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        child: Text(''),
+                      ),
+                      visible: false,
+                    ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).size.height - 150,
+              right: (MediaQuery.of(context).size.width) - 130,
+              child: _selected.entries.any((element) => element.value == true)
+                  ? ElevatedButton(
+                      onPressed: () {
+                        select_captain(context);
+                        setState(() {});
+                      },
+                      child: Text('Elegir capitán'))
                   : Visibility(
                       child: ElevatedButton(
                         onPressed: () {},
@@ -953,6 +1479,16 @@ class SelectPageState extends State<SelectPage> {
         )),
       ),
     );
+  }
+
+  _changeCaptain(BuildContext context, int index) {
+    Navigator.pop(context, 'Confirmar');
+    setState(() {
+      _selectedPlayers.forEach((key, value) {
+        _selectedPlayers[key]["captain"] = false;
+      });
+      _selectedPlayers[index]["captain"] = true;
+    });
   }
 }
 
@@ -1012,71 +1548,52 @@ Widget _getDrawer(BuildContext context) {
   );
 }
 
-confirm(BuildContext context, Map<int, dynamic> selectedPlayers) {
-  Lineup lineup = Lineup();
-  lineup.newLineup("4-4-2", "5-3-2");
-  Map<String, int> player2Points = {
-    "strength": 600,
-    "shooting": 750,
-    "speed": 770,
-    "dribbling": 610,
-    "defense": 780,
-    "passing": 400,
-    "rating": 80,
-  };
-  Map<String, int?> player1Points = calcPoints(selectedPlayers);
-  Map<String, int> gameResult = calcResult(player1Points, player2Points);
-  saveGame(gameResult["player1Goals"], gameResult["player2Goals"], lineup,
-      selectedPlayers);
-  calcElo(
-      gameResult["player1Goals"]! > gameResult["player2Goals"]! ? true : false);
-  Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => ResultPage(
-          player1Points: player1Points,
-          player2Points: player2Points,
-          gameResult: gameResult)));
-}
+confirm(BuildContext context, Map<int, dynamic> selectedPlayers, String dropdownValue) {
+  saveUserPlayer(selectedPlayers);
+  readyPlayer();
+  Timer? t;
+  var player2Players = [];
+  var otherPlayerLineup = "";
+  t = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
+    if (await checkOtherPlayerStatus() == "ready") {
+      Timer(Duration(seconds: 3), (() async {
+        player2Players = await getPlayer2Players();
+      }));
+      Timer(Duration(seconds: 4), (() async {
+        otherPlayerLineup = await getOtherPlayerLineup(player2Players);
+      }));
+      Timer(Duration(seconds: 5), (() async {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => SelectRivalPage(
+                  selectedLineup: dropdownValue,
+                  selectedPlayers: selectedPlayers,
+                  playersOthers: player2Players,
+                  lineup: otherPlayerLineup,
+                )));
+      }));
 
-calcPoints(Map<int, dynamic> selectedPlayers) {
-  int? strength = 0;
-  int? shooting = 0;
-  int? speed = 0;
-  int? dribbling = 0;
-  int? defense = 0;
-  int? passing = 0;
-  int? rating = 0;
-  selectedPlayers.forEach((key, value) {
-    strength = (strength! + value["strength"]) as int?;
-    shooting = (shooting! + value["shooting"]) as int?;
-    speed = (speed! + value["speed"]) as int?;
-    dribbling = (dribbling! + value["dribbling"]) as int?;
-    defense = (defense! + value["defense"]) as int?;
-    passing = (passing! + value["passing"]) as int?;
-    rating = (rating! + value["rating"]) as int?;
-  });
-  return {
-    "strength": strength,
-    "shooting": shooting,
-    "speed": speed,
-    "dribbling": dribbling,
-    "defense": defense,
-    "passing": passing,
-    "rating": (rating! / 11).round()
-  };
-}
-
-calcResult(Map<String, int?> player1Points, Map<String, int> player2Points) {
-  int player1Goals = 0;
-  int player2Goals = 0;
-  player1Points.forEach((key, value) {
-    if (value! > player2Points[key]!) {
-      player1Goals++;
-    } else {
-      player2Goals++;
+      t.cancel();
     }
   });
-  return {
-    "player1Goals": player1Goals,
-    "player2Goals": player2Goals,
-  };
+  
+
+}
+
+getOtherPlayerLineup(dynamic player2Players) {
+  var lineup = "4-4-2";
+  var df = 0;
+  var dl = 0;
+  for (var element in player2Players) {
+    if (element["position"] == "DF") {
+      df++;
+    } else if (element["position"] == "DL") {
+      dl++;
+    }
+  }
+  if (df == 5) {
+    lineup = "5-3-2";
+  } else if (dl == 3) {
+    lineup = "4-3-3";
+  }
+  return lineup;
 }
