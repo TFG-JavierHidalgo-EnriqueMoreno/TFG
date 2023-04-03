@@ -77,15 +77,6 @@ Widget _page(BuildContext context) {
             ],
           ),
         ),
-        Row(
-          // Ultimo partido jugado?
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Text('Información',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
-          ],
-        ),
         Padding(
           padding: const EdgeInsets.only(top: 16.0),
           child: Row(
@@ -100,12 +91,97 @@ Widget _page(BuildContext context) {
             ],
           ),
         ),
-        // StreamBuilder(
-        //   stream: _channel.stream,
-        //   builder: (context, snapshot) {
-        //     return Text(snapshot.hasData ? '${snapshot.data}' : '');
-        //   },
-        // )
+        Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Tus últimos partidos',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Container(
+            width: 350,
+            height: 350,
+            child: FutureBuilder<List<dynamic>>(
+              future: getLast5Games(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<dynamic>> snapshot) {
+                if (snapshot.hasData) {
+                  if (snapshot.data!.isNotEmpty) {
+                    return ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: ((context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Container(
+                              height: 80,
+                              decoration: BoxDecoration(
+                                  color: snapshot.data![index]["win"] == true
+                                      ? Color(0xFF4CAF50)
+                                      : Color.fromARGB(255, 218, 60, 60),
+                                  border: Border.all(
+                                      color: Colors.black, width: 1.0)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    snapshot.data![index]["win"] == true
+                                        ? "VICTORIA"
+                                        : "DERROTA",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 12.0),
+                                    child: Text(
+                                        'Resultado: ${snapshot.data![index]["goals"]} - ${snapshot.data![index]["other_goals"]}',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14)),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 12.0),
+                                    child: Text(
+                                        'Fecha: ${snapshot.data![index]["date"]}',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }));
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("Aún no has jugado ningún partido"),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                } else {
+                  return Center(child: CircularProgressIndicator());
+                }
+              },
+            ),
+          ),
+        ),
       ],
     ),
   );
