@@ -40,6 +40,8 @@ Future<List> getUsers() async {
 
 Future<void> saveUser(String? email, String? password, String? phone,
     String? username, String? name, String? surname) async {
+  var achievements = await getAchievements();
+
   await db.collection("users").add({
     "email": email,
     "password": password,
@@ -48,19 +50,31 @@ Future<void> saveUser(String? email, String? password, String? phone,
     "username": username,
     "elo": 0,
     "status": "not_playing"
-  }).then((value) => value.collection("level").add({
-        "name": "Bronce",
-        "min": 0,
-        "max": 10,
-        "next": "Plata",
-        "previous": null,
-        "victory": 3,
-        "lose": 0,
-        "num_bronzes": 20,
-        "num_golds": 2,
-        "num_silvers": 13,
-        "team_value": 350
-      }));
+  }).then((value) {
+    value.collection("level").add({
+      "name": "Bronce",
+      "min": 0,
+      "max": 10,
+      "next": "Plata",
+      "previous": null,
+      "victory": 3,
+      "lose": 0,
+      "num_bronzes": 20,
+      "num_golds": 2,
+      "num_silvers": 13,
+      "team_value": 350
+    });
+    for (var element in achievements) {
+      db.collection("user_achievements").add(
+          {"user_id": value.id, "achievement_id": element.id, "progress": 0});
+    }
+  });
+}
+
+Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+    getAchievements() async {
+  var achievements = await db.collection("achievements").get();
+  return achievements.docs;
 }
 
 Future<void> calcElo(bool gameResult) async {
@@ -1270,5 +1284,21 @@ Future<Map<String, int>> getPlayer2Points() async {
     "defense": res.docs[0].data()["defense"],
     "passing": res.docs[0].data()["passing"],
     "rating": res.docs[0].data()["rating"]
+  };
+}
+
+Future<Map<String, dynamic>> getUserAchievements() async {
+  Future<List> users = getUsers();
+  User u = globals.userLoggedIn;
+  List list = await users;
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+  QuerySnapshot<Map<String, dynamic>> user_achievements = await db
+      .collection("user_achievements")
+      .where("user_id", isEqualTo: us["uid"])
+      .get();
+  var achievements = await getAchievements();
+  return {
+    "achievements": achievements,
+    "user_achievements": user_achievements.docs
   };
 }

@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:my_app/screens/achievement_page.dart';
 import 'package:my_app/screens/login_page.dart';
 import 'package:my_app/screens/player_page.dart';
 import 'package:my_app/screens/searching_page.dart';
@@ -207,9 +208,9 @@ Widget _getDrawer(BuildContext context) {
             leading: const Icon(Icons.play_arrow),
             onTap: () => playGame(context)),
         ListTile(
-            title: const Text("Historial"),
-            leading: const Icon(Icons.history),
-            onTap: () => showHome(context)),
+            title: const Text("Logros"),
+            leading: const Icon(Icons.auto_stories_sharp),
+            onTap: () => achievement(context)),
         ListTile(
             title: const Text("Cerrar Sesion"),
             leading: const Icon(Icons.logout),
@@ -251,6 +252,15 @@ logout(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const LoginScreen(),
+    ),
+  );
+}
+
+achievement(BuildContext context) {
+  resetPlayerState();
+  Navigator.of(context).pushReplacement(
+    FadePageRoute(
+      builder: (context) => const AchievementPage(),
     ),
   );
 }
