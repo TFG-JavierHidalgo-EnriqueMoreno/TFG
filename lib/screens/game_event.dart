@@ -79,7 +79,6 @@ class GameEventPageState extends State<GameEventPage> {
     return MaterialApp(
         title: appTitle,
         home: Scaffold(
-          drawer: _getDrawer(context),
           appBar: AppBar(
             title: const Text(appTitle),
           ),
@@ -138,41 +137,6 @@ class GameEventPageState extends State<GameEventPage> {
         ));
   }
 
-  Widget _getDrawer(BuildContext context) {
-    var accountEmail = Text(globals.userLoggedIn.email);
-    var accountName = Text(globals.userLoggedIn.username);
-    var accountPicture = const Icon(FontAwesomeIcons.userLarge);
-    return Drawer(
-      child: ListView(
-        children: <Widget>[
-          UserAccountsDrawerHeader(
-              accountName: accountName,
-              accountEmail: accountEmail,
-              currentAccountPicture: accountPicture),
-          ListTile(
-              title: const Text("Inicio"),
-              leading: const Icon(Icons.home),
-              onTap: () => showHome(context)),
-          ListTile(
-              title: const Text("Editar Perfil"),
-              leading: const Icon(Icons.edit),
-              onTap: () => showProfile(context)),
-          ListTile(
-              title: const Text("Jugar Partido"),
-              leading: const Icon(Icons.play_arrow),
-              onTap: () => playGame(context)),
-          ListTile(
-              title: const Text("Historial"),
-              leading: const Icon(Icons.history),
-              onTap: () => showHome(context)),
-          ListTile(
-              title: const Text("Cerrar Sesion"),
-              leading: const Icon(Icons.logout),
-              onTap: () => logout(context)),
-        ],
-      ),
-    );
-  }
 
   goToHome(BuildContext context) {
     resetPlayerState();
@@ -204,6 +168,7 @@ endGame(BuildContext context, Map<String, int?> player1Points,
     calcElo(gameResult["player1Goals"]! > gameResult["player2Goals"]!
         ? true
         : false);
+    updateAchievements(gameResult, player1Points, lineup);
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => ResultPage(
               player1Points: player1Points,

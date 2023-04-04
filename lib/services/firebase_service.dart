@@ -613,6 +613,7 @@ Future<Map<String, List<dynamic>>> searchGame() async {
       .where('elo', isLessThanOrEqualTo: max)
       .where('elo', isGreaterThanOrEqualTo: min)
       .get();
+
   var player2;
   if (allPlayers.docs.length > 1) {
     player2 = allPlayers.docs.firstWhere(
@@ -1301,4 +1302,103 @@ Future<Map<String, dynamic>> getUserAchievements() async {
     "achievements": achievements,
     "user_achievements": user_achievements.docs
   };
+}
+
+updateAchievements(
+    Map<String, int> gameResult, Map<String, int?> player1Points, Lineup lineup) async {
+  Map<String, dynamic> user_achievements = await getUserAchievements();
+  for (var element in user_achievements["achievements"]) {
+    var user_achievement = user_achievements["user_achievements"]
+        .firstWhere((e) => e.data()["achievement_id"] == element.id);
+    switch (element.data()["title"]) {
+      case "Primer partido":
+        if (user_achievement.data()["progress"] != 1) {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": 1,
+          });
+        }
+        break;
+      case "Primera victoria":
+        if (user_achievement.data()["progress"] != 1 &&
+            gameResult["player1Goals"]! > gameResult["player2Goals"]!) {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": 1,
+          });
+        }
+        break;
+      case "10 victorias":
+        if (user_achievement.data()["progress"] != 10 &&
+            gameResult["player1Goals"]! > gameResult["player2Goals"]!) {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": user_achievement.data()["progress"] + 1,
+          });
+        }
+        break;
+      case "Victoria aplastante":
+        if (user_achievement.data()["progress"] != 1 &&
+            gameResult["player1Goals"]! == 7) {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": 1,
+          });
+        }
+        break;
+      case "Dream Team":
+        if (user_achievement.data()["progress"] != 1 &&
+            player1Points["rating"]! >= 94) {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": 1,
+          });
+        }
+        break;
+      case "Poner el autobús":
+        if (user_achievement.data()["progress"] != 5 &&
+            lineup.getLocalLineup == "5-3-2") {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": user_achievement.data()["progress"] + 1,
+          });
+        }
+        break;
+      case "Partido a partido":
+        if (user_achievement.data()["progress"] != 5 &&
+            lineup.getLocalLineup == "4-4-2") {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": user_achievement.data()["progress"] + 1,
+          });
+        }
+        break;
+      case "Hasta el final":
+        if (user_achievement.data()["progress"] != 5 &&
+            lineup.getLocalLineup == "4-3-3") {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": user_achievement.data()["progress"] + 1,
+          });
+        }
+        break;
+      default:
+    }
+  }
 }

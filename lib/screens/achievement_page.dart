@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:my_app/screens/home_page.dart';
 import 'package:my_app/screens/login_page.dart';
 import 'package:my_app/screens/player_page.dart';
 import 'package:my_app/screens/searching_page.dart';
@@ -37,79 +38,75 @@ Widget _page(BuildContext context) {
     width: double.infinity,
     child: Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: Container(
-            width: 350,
-            height: 350,
-            child: FutureBuilder<Map<String, dynamic>>(
-              future: getUserAchievements(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<Map<String, dynamic>> snapshot) {
-                if (snapshot.hasData) {
-                  return ListView.builder(
-                      itemCount: snapshot.data!["achievements"].length,
-                      itemBuilder: ((context, index) {
-                        String id = snapshot.data!["achievements"][index].id;
+        Container(
+          width: 350,
+          height: MediaQuery.of(context).size.height - 100,
+          child: FutureBuilder<Map<String, dynamic>>(
+            future: getUserAchievements(),
+            builder: (BuildContext context,
+                AsyncSnapshot<Map<String, dynamic>> snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                    itemCount: snapshot.data!["achievements"].length,
+                    itemBuilder: ((context, index) {
+                      String id = snapshot.data!["achievements"][index].id;
 
-                        var a = snapshot.data!["user_achievements"].firstWhere(
-                            (element) =>
-                                element.data()["achievement_id"] == id);
+                      var a = snapshot.data!["user_achievements"].firstWhere(
+                          (element) => element.data()["achievement_id"] == id);
 
-                        int progress = a.data()["progress"];
+                      int progress = a.data()["progress"];
 
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Container(
-                            height: 80,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: progress ==
-                                            snapshot.data!["achievements"]
-                                                    [index]
-                                                .data()["goal"]
-                                        ? Colors.green
-                                        : Colors.white,
-                                    width: 1.0)),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Container(
+                          height: 80,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: progress ==
+                                          snapshot.data!["achievements"][index]
+                                              .data()["goal"]
+                                      ? Colors.green
+                                      : Colors.white,
+                                  width: 1.0)),
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  width: 200,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         "${snapshot.data!["achievements"][index].data()["title"]}",
                                       ),
                                       Padding(
-                                        padding:
-                                            const EdgeInsets.only(top: 8.0),
+                                        padding: const EdgeInsets.only(top: 8.0),
                                         child: Text(
                                             "${snapshot.data!["achievements"][index].data()["description"]}"),
                                       )
                                     ],
                                   ),
                                 ),
-                                Text(
-                                    "$progress/${snapshot.data!["achievements"][index].data()["goal"]}"),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: Text(
-                                      "${snapshot.data!["achievements"][index].data()["reward"]}"),
-                                ),
-                                Icon(Icons.diamond_outlined)
-                              ],
-                            ),
+                              ),
+                              Text(
+                                  "$progress/${snapshot.data!["achievements"][index].data()["goal"]}"),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Text(
+                                    "${snapshot.data!["achievements"][index].data()["reward"]}"),
+                              ),
+                              Icon(Icons.diamond_outlined)
+                            ],
                           ),
-                        );
-                      }));
-                } else {
-                  return Center(child: CircularProgressIndicator());
-                }
-              },
-            ),
+                        ),
+                      );
+                    }));
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }
+            },
           ),
         ),
       ],
@@ -129,6 +126,10 @@ Widget _getDrawer(BuildContext context) {
             accountEmail: accountEmail,
             currentAccountPicture: accountPicture),
         ListTile(
+            title: const Text("Inicio"),
+            leading: const Icon(Icons.home),
+            onTap: () => showHome(context)),
+        ListTile(
             title: const Text("Editar Perfil"),
             leading: const Icon(Icons.edit),
             onTap: () => showProfile(context)),
@@ -137,40 +138,10 @@ Widget _getDrawer(BuildContext context) {
             leading: const Icon(Icons.play_arrow),
             onTap: () => playGame(context)),
         ListTile(
-            title: const Text("Historial"),
-            leading: const Icon(Icons.history),
-            onTap: () => showHome(context)),
-        ListTile(
             title: const Text("Cerrar Sesion"),
             leading: const Icon(Icons.logout),
             onTap: () => logout(context)),
       ],
-    ),
-  );
-}
-
-showHome(BuildContext context) {
-  resetPlayerState();
-  Navigator.of(context).pushReplacement(
-    FadePageRoute(
-      builder: (context) => const AchievementPage(),
-    ),
-  );
-}
-
-showProfile(BuildContext context) {
-  resetPlayerState();
-  Navigator.of(context).pushReplacement(
-    FadePageRoute(
-      builder: (context) => const UserProfile(),
-    ),
-  );
-}
-
-playGame(BuildContext context) {
-  Navigator.of(context).pushReplacement(
-    FadePageRoute(
-      builder: (context) => const SearchingPage(),
     ),
   );
 }

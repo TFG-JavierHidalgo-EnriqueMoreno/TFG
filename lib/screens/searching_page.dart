@@ -25,7 +25,6 @@ class SearchingPage extends StatelessWidget {
     return MaterialApp(
       title: appTitle,
       home: Scaffold(
-        drawer: _getDrawer(context),
         appBar: AppBar(
           title: const Text(appTitle),
         ),
@@ -156,41 +155,6 @@ class SearchingPageFormState extends State<SearchingPageForm> {
   }
 }
 
-Widget _getDrawer(BuildContext context) {
-  var accountEmail = Text(globals.userLoggedIn.email);
-  var accountName = Text(globals.userLoggedIn.username);
-  var accountPicture = const Icon(FontAwesomeIcons.userLarge);
-  return Drawer(
-    child: ListView(
-      children: <Widget>[
-        UserAccountsDrawerHeader(
-            accountName: accountName,
-            accountEmail: accountEmail,
-            currentAccountPicture: accountPicture),
-        ListTile(
-            title: const Text("Inicio"),
-            leading: const Icon(Icons.home),
-            onTap: () => showHome(context)),
-        ListTile(
-            title: const Text("Editar Perfil"),
-            leading: const Icon(Icons.edit),
-            onTap: () => showProfile(context)),
-        ListTile(
-            title: const Text("Jugar Partido"),
-            leading: const Icon(Icons.play_arrow),
-            onTap: () => playGame(context)),
-        ListTile(
-            title: const Text("Historial"),
-            leading: const Icon(Icons.history),
-            onTap: () => showHome(context)),
-        ListTile(
-            title: const Text("Cerrar Sesion"),
-            leading: const Icon(Icons.logout),
-            onTap: () => logout(context)),
-      ],
-    ),
-  );
-}
 
 goToHome(BuildContext context) {
   Navigator.of(context).pushReplacement(
