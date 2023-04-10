@@ -32,7 +32,6 @@ Future<List> getUsers() async {
       "data": q.docs[i].data(),
       "level": level.docs[0].data()
     };
-
     users.add(u);
   }
   return users;
@@ -49,7 +48,8 @@ Future<void> saveUser(String? email, String? password, String? phone,
     "name": "$name $surname",
     "username": username,
     "elo": 0,
-    "status": "not_playing"
+    "status": "not_playing",
+    "tokens": 0
   }).then((value) {
     value.collection("level").add({
       "name": "Bronce",
@@ -130,6 +130,7 @@ Future<void> calcElo(bool gameResult) async {
         "username": us["data"]["username"],
         "phone": us["data"]["phone"],
         "status": us["data"]["status"],
+        "tokens": us["data"]["tokens"]
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] + us["level"]["victory"];
@@ -143,6 +144,7 @@ Future<void> calcElo(bool gameResult) async {
         "username": us["data"]["username"],
         "phone": us["data"]["phone"],
         "status": us["data"]["status"],
+        "tokens": us["data"]["tokens"]
       });
 
       globals.userLoggedIn.elo = 250;
@@ -155,6 +157,7 @@ Future<void> calcElo(bool gameResult) async {
         "username": us["data"]["username"],
         "phone": us["data"]["phone"],
         "status": us["data"]["status"],
+        "tokens": us["data"]["tokens"]
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] + us["level"]["victory"];
@@ -207,6 +210,7 @@ Future<void> calcElo(bool gameResult) async {
         "username": us["data"]["username"],
         "phone": us["data"]["phone"],
         "status": us["data"]["status"],
+        "tokens": us["data"]["tokens"]
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] - us["level"]["lose"];
@@ -219,6 +223,7 @@ Future<void> calcElo(bool gameResult) async {
         "username": us["data"]["username"],
         "phone": us["data"]["phone"],
         "status": us["data"]["status"],
+        "tokens": us["data"]["tokens"]
       });
 
       globals.userLoggedIn.elo = 0;
@@ -231,6 +236,7 @@ Future<void> calcElo(bool gameResult) async {
         "username": us["data"]["username"],
         "phone": us["data"]["phone"],
         "status": us["data"]["status"],
+        "tokens": us["data"]["tokens"]
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] - us["level"]["lose"];
@@ -256,6 +262,7 @@ Future<void> editUser(
     "username": username,
     "phone": phone,
     "status": "not_playing",
+    "tokens": us["data"]["tokens"]
   });
 
   globals.userLoggedIn.name = name;
@@ -280,6 +287,20 @@ Future<void> deleteUser() async {
   globals.userLoggedIn.username = "";
   globals.userLoggedIn.phone = "";
   globals.userLoggedIn.password = "";
+}
+
+Future<void> updateUserTokens() async {
+  Future<List> users = getUsers();
+
+  User u = globals.userLoggedIn;
+
+  List list = await users;
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+
+  await db
+      .collection("users")
+      .doc(us["uid"])
+      .update({"tokens": us["data"]["tokens"] - 1});
 }
 
 Future<void> saveGame(int? localGoals, int? awayGoals, Lineup lineup) async {
@@ -1304,8 +1325,8 @@ Future<Map<String, dynamic>> getUserAchievements() async {
   };
 }
 
-updateAchievements(
-    Map<String, int> gameResult, Map<String, int?> player1Points, Lineup lineup) async {
+updateAchievements(Map<String, int> gameResult, Map<String, int?> player1Points,
+    Lineup lineup) async {
   Map<String, dynamic> user_achievements = await getUserAchievements();
   for (var element in user_achievements["achievements"]) {
     var user_achievement = user_achievements["user_achievements"]

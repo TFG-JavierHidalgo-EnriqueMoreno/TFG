@@ -42,6 +42,119 @@ class PlayerPageState extends State<PlayerPage> {
   bool loaded = false;
   late Map<String, List<dynamic>> players;
 
+  confirmX2(BuildContext context) {
+    globals.userLoggedIn.tokens = globals.userLoggedIn.getTokens - 1;
+    updateUserTokens();
+    Navigator.pop(context);
+  }
+
+  confirmReload(BuildContext context) async {
+    globals.userLoggedIn.tokens = globals.userLoggedIn.getTokens - 1;
+    updateUserTokens();
+    Map<String, List<dynamic>> newPlayers = await getRandomPlayers();
+    players = newPlayers;
+
+    Navigator.pop(context);
+    setState(() {});
+  }
+
+  powerUpx2(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+                title: const Text('Descripción del PowerUp'),
+                actions: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+                        child: Text(
+                            "Este PowerUp doblará los puntos que consigas o pierdas en este partido."),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "El coste de esta acción es de 1 ",
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          Icon(Icons.diamond_outlined),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Tienes ${globals.userLoggedIn.tokens}"),
+                          Icon(Icons.diamond_outlined),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              confirmX2(context);
+                              setState(() {});
+                            },
+                            child: const Text('Aceptar'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancelar'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ]));
+  }
+
+  powerUpReload(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+                title: const Text('Descripción del PowerUp'),
+                actions: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+                        child: Text(
+                            "Este PowerUp generará un set de jugadores aleatorio completamente nuevo."),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "El coste de esta acción es de 1",
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          Icon(Icons.diamond_outlined),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Tienes ${globals.userLoggedIn.tokens}"),
+                          Icon(Icons.diamond_outlined),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          TextButton(
+                            onPressed: () => confirmReload(context),
+                            child: const Text('Aceptar'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancelar'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ]));
+  }
+
   @override
   Widget build(BuildContext context) {
     const appTitle = 'Jugadores';
@@ -60,8 +173,10 @@ class PlayerPageState extends State<PlayerPage> {
                   AsyncSnapshot<Map<String, List<dynamic>>> snapshot) {
                 List<Widget> children;
                 if (snapshot.hasData) {
+                  if (loaded != true) {
+                    players = snapshot.data!;
+                  }
                   loaded = true;
-                  players = snapshot.data!;
                   children = <Widget>[
                     Container(
                       height: 50.0,
@@ -73,10 +188,10 @@ class PlayerPageState extends State<PlayerPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.max,
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          children: const <Widget>[
-                            Text(
+                          children: <Widget>[
+                            const Text(
                               "Tus jugadores para este partido",
-                            )
+                            ),
                           ]),
                     ),
                     Padding(
@@ -142,16 +257,50 @@ class PlayerPageState extends State<PlayerPage> {
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          FloatingActionButton.extended(
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) =>
-                                      SelectPage(p: players)));
-                            },
-                            backgroundColor: const Color(0xFF4CAF50),
-                            label: const Text("Continuar"),
+                          Visibility(
+                            visible: globals.userLoggedIn.tokens >= 1,
+                            child: Row(
+                              children: [
+                                FloatingActionButton.extended(
+                                  onPressed: () {
+                                    powerUpx2(context);
+                                  },
+                                  backgroundColor:
+                                      Color.fromARGB(255, 42, 89, 218),
+                                  label: const Text(
+                                    "x2",
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: FloatingActionButton.extended(
+                                    onPressed: () {
+                                      powerUpReload(context);
+                                    },
+                                    backgroundColor:
+                                        Color.fromARGB(255, 42, 89, 218),
+                                    label: const Icon(Icons.replay),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              FloatingActionButton.extended(
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          SelectPage(p: players)));
+                                },
+                                backgroundColor: const Color(0xFF4CAF50),
+                                label: const Text("Continuar"),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -194,7 +343,6 @@ class PlayerPageState extends State<PlayerPage> {
     );
   }
 }
-
 
 goToHome(BuildContext context) {
   Navigator.of(context).pushReplacement(
