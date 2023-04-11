@@ -66,7 +66,7 @@ Future<void> saveUser(String? email, String? password, String? phone,
     });
     for (var element in achievements) {
       db.collection("user_achievements").add(
-          {"user_id": value.id, "achievement_id": element.id, "progress": 0});
+          {"user_id": value.id, "achievement_id": element.id, "progress": 0, "claimed": false});
     }
   });
 }
@@ -77,7 +77,7 @@ Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
   return achievements.docs;
 }
 
-Future<void> calcElo(bool gameResult) async {
+Future<void> calcElo(bool gameResult, bool x2) async {
   Future<List> users = getUsers();
 
   User u = globals.userLoggedIn;
@@ -85,6 +85,10 @@ Future<void> calcElo(bool gameResult) async {
   List list = await users;
 
   var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+  if(x2){
+    us["level"]["victory"] = us["level"]["victory"] * 2;
+    us["level"]["lose"] = us["level"]["lose"] * 2;
+  }
   if (gameResult) {
     if (us["level"]["name"] != "Maestro") {
       if (us["data"]["elo"] + us["level"]["victory"] > us["level"]["max"]) {
@@ -890,7 +894,6 @@ getOtherPlayerCO() async {
 
   Map<String, String> res = {
     "otherPlayerCaptain": other_game.docs[0].data()["captain"],
-    //"otherPlayerOpponent": other_game.docs[0].data()["opponent"]
   };
 
   return res;
@@ -1422,4 +1425,24 @@ updateAchievements(Map<String, int> gameResult, Map<String, int?> player1Points,
       default:
     }
   }
+}
+
+updateTokens(int reward, String id_achievement) async{
+
+  await db.collection("user_achievements").doc(id_achievement).update({
+    "claimed": true,
+  });
+  Future<List> users = getUsers();
+
+  User u = globals.userLoggedIn;
+
+  List list = await users;
+
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+  await db.collection("users").doc(us["uid"]).update({
+    "tokens": us["data"]["tokens"] + reward
+  });
+
+  globals.userLoggedIn.tokens = globals.userLoggedIn.tokens + reward;
+
 }

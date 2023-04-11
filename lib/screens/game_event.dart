@@ -21,6 +21,7 @@ class GameEventPage extends StatefulWidget {
   final Map<int, dynamic> players;
   final String selectedLineup;
   final String otherLineup;
+  final bool x2;
 
   const GameEventPage(
       {super.key,
@@ -28,7 +29,7 @@ class GameEventPage extends StatefulWidget {
       required this.player1Points,
       required this.selectedLineup,
       required this.otherLineup,
-      required this.player2});
+      required this.player2, required this.x2});
 
   @override
   GameEventPageState createState() {
@@ -50,6 +51,7 @@ class GameEventPageState extends State<GameEventPage> {
     _player2 = widget.player2;
     _selectedLineup = widget.selectedLineup;
     _otherLineup = widget.otherLineup;
+    _x2 = widget.x2;
   }
 
   Map<String, int?> _player1Points = {};
@@ -58,6 +60,7 @@ class GameEventPageState extends State<GameEventPage> {
   String _selectedLineup = "";
   String _otherLineup = "";
   final _formKey = GlobalKey<FormState>();
+  late bool _x2;
 
   bool _obscureText = true;
   String _password = "";
@@ -99,7 +102,7 @@ class GameEventPageState extends State<GameEventPage> {
                     ElevatedButton(
                         onPressed: () {
                           endGame(context, _player1Points, _selectedLineup,
-                              _otherLineup, _player2);
+                              _otherLineup, _player2, _x2);
                         },
                         child: Text('Finalizar partido'))
                   ];
@@ -158,7 +161,7 @@ class GameEventPageState extends State<GameEventPage> {
 }
 
 endGame(BuildContext context, Map<String, int?> player1Points,
-    String selectedLineup, String otherLineup, dynamic player2) async {
+    String selectedLineup, String otherLineup, dynamic player2, bool x2) async {
   Lineup lineup = Lineup();
   lineup.newLineup(selectedLineup, otherLineup);
   Map<String, int> player2Points = await getPlayer2Points();
@@ -167,7 +170,7 @@ endGame(BuildContext context, Map<String, int?> player1Points,
     saveGame(gameResult["player1Goals"], gameResult["player2Goals"], lineup);
     calcElo(gameResult["player1Goals"]! > gameResult["player2Goals"]!
         ? true
-        : false);
+        : false, x2);
     updateAchievements(gameResult, player1Points, lineup);
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => ResultPage(

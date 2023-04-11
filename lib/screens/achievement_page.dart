@@ -24,94 +24,157 @@ class _AchievementPageState extends State<AchievementPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: globals.isLoggedIn ? _page(context) : LoginScreen(),
+      body: Container(
+        width: double.infinity,
+        child: Column(
+          children: [
+            Container(
+              width: 350,
+              height: MediaQuery.of(context).size.height - 100,
+              child: FutureBuilder<Map<String, dynamic>>(
+                future: getUserAchievements(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<Map<String, dynamic>> snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                        itemCount: snapshot.data!["achievements"].length,
+                        itemBuilder: ((context, index) {
+                          String id = snapshot.data!["achievements"][index].id;
+                          var a = snapshot.data!["user_achievements"]
+                              .firstWhere((element) =>
+                                  element.data()["achievement_id"] == id);
+                          int progress = a.data()["progress"];
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Container(
+                              height: 80,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: progress ==
+                                              snapshot.data!["achievements"]
+                                                      [index]
+                                                  .data()["goal"]
+                                          ? Colors.green
+                                          : Colors.white,
+                                      width: 1.0)),
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      width: 180,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "${snapshot.data!["achievements"][index].data()["title"]}",
+                                          ),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 8.0),
+                                            child: Text(
+                                                "${snapshot.data!["achievements"][index].data()["description"]}"),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                      "$progress/${snapshot.data!["achievements"][index].data()["goal"]}"),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 12.0),
+                                    child: a.data()["claimed"] == true
+                                        ? TextButton(
+                                            onPressed: () {},
+                                            child: Text(
+                                              "Reclamado",
+                                              style: TextStyle(
+                                                  color: Color(0xFF4CAF50)),
+                                            ),
+                                          )
+                                        : progress ==
+                                                snapshot.data!["achievements"]
+                                                        [index]
+                                                    .data()["goal"]
+                                            ? TextButton(
+                                                onPressed: () {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                        backgroundColor:
+                                                            Color(0xFF4CAF50),
+                                                        duration: Duration(
+                                                            seconds: 3),
+                                                        content: Container(
+                                                          height: 40,
+                                                          child: Column(
+                                                            children: [
+                                                              Row(
+                                                                children: [
+                                                                  Text(
+                                                                      "Logro reclamado con éxito. "),
+                                                                ],
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Text(
+                                                                      "${snapshot.data!["achievements"][index].data()["reward"]} "),
+                                                                  Icon(Icons
+                                                                      .diamond_outlined),
+                                                                  snapshot.data!["achievements"][index].data()[
+                                                                              "reward"] ==
+                                                                          1
+                                                                      ? Text(
+                                                                          " ha sido añadido a tu cuenta")
+                                                                      : Text(
+                                                                          " han sido añadidos a tu cuenta"),
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )),
+                                                  );
+                                                  updateTokens(
+                                                      snapshot
+                                                          .data!["achievements"]
+                                                              [index]
+                                                          .data()["reward"],
+                                                      a.id);
+                                                  setState(() {});
+                                                },
+                                                child: Text("Reclamar"),
+                                              )
+                                            : Text(
+                                                "${snapshot.data!["achievements"][index].data()["reward"]}"),
+                                  ),
+                                  if (a.data()["claimed"] == false &&
+                                      progress !=
+                                          snapshot.data!["achievements"][index]
+                                              .data()["goal"])
+                                    Icon(Icons.diamond_outlined)
+                                ],
+                              ),
+                            ),
+                          );
+                        }));
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
         title: const Text("Logros"),
       ),
       drawer: _getDrawer(context),
     );
   }
-}
-
-Widget _page(BuildContext context) {
-  return Container(
-    width: double.infinity,
-    child: Column(
-      children: [
-        Container(
-          width: 350,
-          height: MediaQuery.of(context).size.height - 100,
-          child: FutureBuilder<Map<String, dynamic>>(
-            future: getUserAchievements(),
-            builder: (BuildContext context,
-                AsyncSnapshot<Map<String, dynamic>> snapshot) {
-              if (snapshot.hasData) {
-                return ListView.builder(
-                    itemCount: snapshot.data!["achievements"].length,
-                    itemBuilder: ((context, index) {
-                      String id = snapshot.data!["achievements"][index].id;
-
-                      var a = snapshot.data!["user_achievements"].firstWhere(
-                          (element) => element.data()["achievement_id"] == id);
-
-                      int progress = a.data()["progress"];
-
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Container(
-                          height: 80,
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: progress ==
-                                          snapshot.data!["achievements"][index]
-                                              .data()["goal"]
-                                      ? Colors.green
-                                      : Colors.white,
-                                  width: 1.0)),
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  width: 200,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "${snapshot.data!["achievements"][index].data()["title"]}",
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 8.0),
-                                        child: Text(
-                                            "${snapshot.data!["achievements"][index].data()["description"]}"),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                  "$progress/${snapshot.data!["achievements"][index].data()["goal"]}"),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Text(
-                                    "${snapshot.data!["achievements"][index].data()["reward"]}"),
-                              ),
-                              Icon(Icons.diamond_outlined)
-                            ],
-                          ),
-                        ),
-                      );
-                    }));
-              } else {
-                return Center(child: CircularProgressIndicator());
-              }
-            },
-          ),
-        ),
-      ],
-    ),
-  );
 }
 
 Widget _getDrawer(BuildContext context) {

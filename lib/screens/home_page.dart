@@ -54,7 +54,12 @@ Widget _page(BuildContext context) {
                     Icon(Icons.person),
                     Text('Liga: ${globals.userLevel.name}'),
                     Text("Puntos de liga: ${globals.userLoggedIn.elo}"),
-                    Text("Tokens: ${globals.userLoggedIn.tokens}")
+                    Row(
+                      children: [
+                        Text("${globals.userLoggedIn.tokens} "),
+                        Icon(Icons.diamond_outlined),
+                      ],
+                    ),
                   ],
                 ),
               ),

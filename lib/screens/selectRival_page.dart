@@ -23,13 +23,14 @@ class SelectRivalPage extends StatefulWidget {
   final String selectedLineup;
   final List<dynamic> playersOthers;
   final String lineup;
+  final bool x2;
 
   const SelectRivalPage(
       {super.key,
       required this.selectedLineup,
       required this.selectedPlayers,
       required this.playersOthers,
-      required this.lineup});
+      required this.lineup, required this.x2});
 
   @override
   SelectRivalPageState createState() {
@@ -64,6 +65,7 @@ class SelectRivalPageState extends State<SelectRivalPage> {
     l = widget.lineup;
     sp = widget.selectedPlayers;
     sl = widget.selectedLineup;
+    _x2 = widget.x2;
   }
 
   List<dynamic> po = [];
@@ -75,6 +77,7 @@ class SelectRivalPageState extends State<SelectRivalPage> {
   List<dynamic> cp = [];
   Map<int, dynamic> sp = {};
   String sl = "";
+  late bool _x2;
 
   @override
   Widget build(BuildContext context) {
@@ -573,12 +576,15 @@ class SelectRivalPageState extends State<SelectRivalPage> {
             Positioned(
                 top: MediaQuery.of(context).size.height - 150,
                 left: (MediaQuery.of(context).size.width) - 110,
-                child: ElevatedButton(
-                    onPressed: () {
-                      confirmOpponent(context, sp, cp, l, sl);
-                      setState(() {});
-                    },
-                    child: Text('Confirmar'))),
+                child: Visibility(
+                  visible: cp.any((element) => element["opponent"] == true),
+                  child: ElevatedButton(
+                      onPressed: () {
+                        confirmOpponent(context, sp, cp, l, sl, _x2);
+                        setState(() {});
+                      },
+                      child: Text('Confirmar')),
+                )),
           ],
         )),
       ),
@@ -595,7 +601,7 @@ class SelectRivalPageState extends State<SelectRivalPage> {
 }
 
 confirmOpponent(BuildContext context, Map<int, dynamic> selectedPlayers,
-    List<dynamic> cp, String otherLineup, String selectedLineup) async {
+    List<dynamic> cp, String otherLineup, String selectedLineup, bool x2) async {
   Map<int, dynamic> otherPlayers = {};
   for (var i = 0; i < cp.length; i++) {
     otherPlayers.putIfAbsent(i, () => cp[i]);
@@ -617,7 +623,7 @@ confirmOpponent(BuildContext context, Map<int, dynamic> selectedPlayers,
                 player1Points: player1Points,
                 selectedLineup: selectedLineup,
                 otherLineup: otherLineup,
-                player2: player2)));
+                player2: player2, x2: x2)));
       }));
 
       t.cancel();

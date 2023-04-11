@@ -19,8 +19,9 @@ import 'package:my_app/entities/globals.dart' as globals;
 
 class SelectPage extends StatefulWidget {
   final Map<String, List<dynamic>> p;
+  final bool x2;
 
-  const SelectPage({super.key, required this.p});
+  const SelectPage({super.key, required this.p, required this.x2});
 
   @override
   SelectPageState createState() {
@@ -39,10 +40,12 @@ class SelectPageState extends State<SelectPage> {
   void initState() {
     super.initState();
     cp = widget.p;
+    _x2 = widget.x2;
     _assignPlayers(cp);
   }
 
   late Map<String, List<dynamic>> cp;
+  late bool _x2;
 
   List<dynamic>? g = [];
   List<dynamic>? d = [];
@@ -1441,10 +1444,10 @@ class SelectPageState extends State<SelectPage> {
             Positioned(
               top: MediaQuery.of(context).size.height - 150,
               left: (MediaQuery.of(context).size.width) - 110,
-              child: _allSelected == true && teamValue >= 0
+              child: _allSelected == true && teamValue >= 0 && _selectedPlayers.values.any((element) => element["captain"] == true)
                   ? ElevatedButton(
                       onPressed: () {
-                        confirm(context, _selectedPlayers, dropdownValue);
+                        confirm(context, _selectedPlayers, dropdownValue, _x2);
                         setState(() {});
                       },
                       child: Text('Confirmar'))
@@ -1516,7 +1519,7 @@ class SelectPageState extends State<SelectPage> {
 // ),
 
 
-confirm(BuildContext context, Map<int, dynamic> selectedPlayers, String dropdownValue) {
+confirm(BuildContext context, Map<int, dynamic> selectedPlayers, String dropdownValue, bool x2) {
   saveUserPlayer(selectedPlayers);
   readyPlayer();
   Timer? t;
@@ -1537,6 +1540,7 @@ confirm(BuildContext context, Map<int, dynamic> selectedPlayers, String dropdown
                   selectedPlayers: selectedPlayers,
                   playersOthers: player2Players,
                   lineup: otherPlayerLineup,
+                  x2: x2
                 )));
       }));
 

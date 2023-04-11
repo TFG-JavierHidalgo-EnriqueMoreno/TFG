@@ -41,10 +41,12 @@ class PlayerPageState extends State<PlayerPage> {
 
   bool loaded = false;
   late Map<String, List<dynamic>> players;
+  bool x2 = false;
 
   confirmX2(BuildContext context) {
     globals.userLoggedIn.tokens = globals.userLoggedIn.getTokens - 1;
     updateUserTokens();
+    x2 = true;
     Navigator.pop(context);
   }
 
@@ -53,7 +55,6 @@ class PlayerPageState extends State<PlayerPage> {
     updateUserTokens();
     Map<String, List<dynamic>> newPlayers = await getRandomPlayers();
     players = newPlayers;
-
     Navigator.pop(context);
     setState(() {});
   }
@@ -264,6 +265,7 @@ class PlayerPageState extends State<PlayerPage> {
                             child: Row(
                               children: [
                                 FloatingActionButton.extended(
+                                  heroTag: "btn1",
                                   onPressed: () {
                                     powerUpx2(context);
                                   },
@@ -277,6 +279,7 @@ class PlayerPageState extends State<PlayerPage> {
                                 Padding(
                                   padding: const EdgeInsets.only(left: 8.0),
                                   child: FloatingActionButton.extended(
+                                    heroTag: "btn2",
                                     onPressed: () {
                                       powerUpReload(context);
                                     },
@@ -292,10 +295,11 @@ class PlayerPageState extends State<PlayerPage> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               FloatingActionButton.extended(
+                                heroTag: "btn3",
                                 onPressed: () {
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (context) =>
-                                          SelectPage(p: players)));
+                                          SelectPage(p: players, x2: x2)));
                                 },
                                 backgroundColor: const Color(0xFF4CAF50),
                                 label: const Text("Continuar"),

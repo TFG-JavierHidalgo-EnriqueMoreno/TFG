@@ -105,6 +105,7 @@ class SearchingPageFormState extends State<SearchingPageForm> {
                 Padding(
                   padding: const EdgeInsets.only(top: 40.0),
                   child: FloatingActionButton.extended(
+                    heroTag: "btn4",
                     onPressed: () {
                       resetPlayerState();
                       Navigator.of(context).push(
@@ -155,7 +156,6 @@ class SearchingPageFormState extends State<SearchingPageForm> {
   }
 }
 
-
 goToHome(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
@@ -175,21 +175,20 @@ goToPlayerPage(BuildContext context, Map<String, List<dynamic>> players) {
 }
 
 checkForGame(BuildContext context, bool isPlaying) async {
-  Timer? timer;
-  timer = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
+  Timer? periodic;
+  periodic = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
     isPlaying = await checkPlayerStatus() == "playing";
     if (isPlaying) {
       SearchingPageFormState.isPlaying = true;
-      timer!.cancel();
+      periodic!.cancel();
       Timer(Duration(seconds: 2), (() async {
         var player2 = await getPlayer2();
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => PlayerPage(
-                player1: globals.userLoggedIn.username,
-                player2: player2.data()["username"],
-              )));
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => PlayerPage(
+                  player1: globals.userLoggedIn.username,
+                  player2: player2.data()["username"],
+                )));
       }));
-      
     }
   });
 }
