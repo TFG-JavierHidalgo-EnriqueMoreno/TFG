@@ -328,6 +328,10 @@ Widget _getDrawer(BuildContext context) {
             leading: const Icon(Icons.auto_stories_sharp),
             onTap: () => achievement(context)),
         ListTile(
+            title: const Text("Estadísticas"),
+            leading: const Icon(Icons.query_stats),
+            onTap: () => stats(context)),
+        ListTile(
             title: const Text("Cerrar Sesion"),
             leading: const Icon(Icons.logout),
             onTap: () => logout(context)),

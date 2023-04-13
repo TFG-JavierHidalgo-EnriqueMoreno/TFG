@@ -65,8 +65,12 @@ Future<void> saveUser(String? email, String? password, String? phone,
       "team_value": 350
     });
     for (var element in achievements) {
-      db.collection("user_achievements").add(
-          {"user_id": value.id, "achievement_id": element.id, "progress": 0, "claimed": false});
+      db.collection("user_achievements").add({
+        "user_id": value.id,
+        "achievement_id": element.id,
+        "progress": 0,
+        "claimed": false
+      });
     }
   });
 }
@@ -85,7 +89,7 @@ Future<void> calcElo(bool gameResult, bool x2) async {
   List list = await users;
 
   var us = list.firstWhere((element) => element["data"]["email"] == u.email);
-  if(x2){
+  if (x2) {
     us["level"]["victory"] = us["level"]["victory"] * 2;
     us["level"]["lose"] = us["level"]["lose"] * 2;
   }
@@ -1328,6 +1332,100 @@ Future<Map<String, dynamic>> getUserAchievements() async {
   };
 }
 
+Future<Map<String, dynamic>> getUserStatistics() async {
+  Future<List> users = getUsers();
+  User u = globals.userLoggedIn;
+  List list = await users;
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+  var nGames = await db
+      .collection("user_game")
+      .where("user_id", isEqualTo: us["uid"])
+      .count()
+      .get();
+
+  var totalGames = await db
+      .collection("user_game")
+      .where("user_id", isEqualTo: us["uid"])
+      .get();
+
+  int nVictory = 0;
+  int? nGoals = 0;
+  int n442 = 0;
+  int n433 = 0;
+  int n532 = 0;
+  int? shooting = 0;
+  int? defense = 0;
+  int? passing = 0;
+  for (var user_game in totalGames.docs) {
+    var game =
+        await db.collection("games").doc(user_game.data()["game_id"]).get();
+    if (game.data()!["local_user"] == us["uid"]) {
+      if (game.data()!["score"] == 1) {
+        nVictory = nVictory + 1;
+      }
+      nGoals = (nGoals! + game.data()!["local_goals"]) as int?;
+
+      switch (game.data()!["local_lineup"]) {
+        case "4-4-2":
+          n442 = n442 + 1;
+          break;
+        case "4-3-3":
+          n433 = n433 + 1;
+          break;
+        case "5-3-2":
+          n532 = n532 + 1;
+          break;
+        default:
+      }
+    } else {
+      if (game.data()!["away_user"] == us["uid"]) {
+        if (game.data()!["score"] == 2) {
+          nVictory = nVictory + 1;
+        }
+        nGoals = (nGoals! + game.data()!["away_goals"]) as int?;
+
+        switch (game.data()!["away_lineup"]) {
+          case "4-4-2":
+            n442 = n442 + 1;
+            break;
+          case "4-3-3":
+            n433 = n433 + 1;
+            break;
+          case "5-3-2":
+            n532 = n532 + 1;
+            break;
+          default:
+        }
+      }
+    }
+    shooting = (shooting! + user_game.data()["shooting"]) as int?;
+    defense = (defense! + user_game.data()["defense"]) as int?;
+    passing = (passing! + user_game.data()["passing"]) as int?;
+  }
+
+  return {
+    "nGames": nGames.count,
+    "nVictory": nVictory,
+    "averageVictory": nGames.count == 0 ? 0 : (nVictory / nGames.count) * 100,
+    "nGoals": nGoals,
+    "averageGoals": nGames.count == 0 ? 0 : nGoals! / nGames.count,
+    "favoriteLineUp": nGames.count == 0
+        ? "Aún no has jugado ningún partido"
+        : n442 >= n433 && n442 >= n532
+            ? "4-4-2 ($n442 partidos)"
+            : n433 >= n532
+                ? "4-3-3 ($n433 partidos)"
+                : "5-3-2 ($n532 partidos)",
+    "styleGame": nGames.count == 0
+        ? "Aún no has jugado ningún partido"
+        : shooting! >= defense! && shooting >= passing!
+            ? "Ofensivo"
+            : defense >= passing!
+                ? "Defensivo"
+                : "Equilibrado"
+  };
+}
+
 updateAchievements(Map<String, int> gameResult, Map<String, int?> player1Points,
     Lineup lineup) async {
   Map<String, dynamic> user_achievements = await getUserAchievements();
@@ -1427,8 +1525,7 @@ updateAchievements(Map<String, int> gameResult, Map<String, int?> player1Points,
   }
 }
 
-updateTokens(int reward, String id_achievement) async{
-
+updateTokens(int reward, String id_achievement) async {
   await db.collection("user_achievements").doc(id_achievement).update({
     "claimed": true,
   });
@@ -1439,10 +1536,10 @@ updateTokens(int reward, String id_achievement) async{
   List list = await users;
 
   var us = list.firstWhere((element) => element["data"]["email"] == u.email);
-  await db.collection("users").doc(us["uid"]).update({
-    "tokens": us["data"]["tokens"] + reward
-  });
+  await db
+      .collection("users")
+      .doc(us["uid"])
+      .update({"tokens": us["data"]["tokens"] + reward});
 
   globals.userLoggedIn.tokens = globals.userLoggedIn.tokens + reward;
-
 }
