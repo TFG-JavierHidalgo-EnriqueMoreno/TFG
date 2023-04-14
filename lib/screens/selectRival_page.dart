@@ -30,7 +30,8 @@ class SelectRivalPage extends StatefulWidget {
       required this.selectedLineup,
       required this.selectedPlayers,
       required this.playersOthers,
-      required this.lineup, required this.x2});
+      required this.lineup,
+      required this.x2});
 
   @override
   SelectRivalPageState createState() {
@@ -78,6 +79,7 @@ class SelectRivalPageState extends State<SelectRivalPage> {
   Map<int, dynamic> sp = {};
   String sl = "";
   late bool _x2;
+  bool confirmed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -573,18 +575,30 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                 ],
               ),
             ),
-            Positioned(
-                top: MediaQuery.of(context).size.height - 150,
-                left: (MediaQuery.of(context).size.width) - 110,
-                child: Visibility(
-                  visible: cp.any((element) => element["opponent"] == true),
-                  child: ElevatedButton(
-                      onPressed: () {
-                        confirmOpponent(context, sp, cp, l, sl, _x2);
-                        setState(() {});
-                      },
-                      child: Text('Confirmar')),
-                )),
+            confirmed == true
+                ? Positioned(
+                    top: MediaQuery.of(context).size.height - 130,
+                    left: (MediaQuery.of(context).size.width) - 157,
+                    child: const Text(
+                      "Esperando al oponente...",
+                      style: TextStyle(
+                          color: Colors.orangeAccent,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  )
+                : Positioned(
+                    top: MediaQuery.of(context).size.height - 150,
+                    left: (MediaQuery.of(context).size.width) - 110,
+                    child: Visibility(
+                      visible: cp.any((element) => element["opponent"] == true),
+                      child: ElevatedButton(
+                          onPressed: () {
+                            confirmed = true;
+                            confirmOpponent(context, sp, cp, l, sl, _x2);
+                            setState(() {});
+                          },
+                          child: Text('Confirmar')),
+                    )),
           ],
         )),
       ),
@@ -600,8 +614,13 @@ class SelectRivalPageState extends State<SelectRivalPage> {
   }
 }
 
-confirmOpponent(BuildContext context, Map<int, dynamic> selectedPlayers,
-    List<dynamic> cp, String otherLineup, String selectedLineup, bool x2) async {
+confirmOpponent(
+    BuildContext context,
+    Map<int, dynamic> selectedPlayers,
+    List<dynamic> cp,
+    String otherLineup,
+    String selectedLineup,
+    bool x2) async {
   Map<int, dynamic> otherPlayers = {};
   for (var i = 0; i < cp.length; i++) {
     otherPlayers.putIfAbsent(i, () => cp[i]);
@@ -623,7 +642,8 @@ confirmOpponent(BuildContext context, Map<int, dynamic> selectedPlayers,
                 player1Points: player1Points,
                 selectedLineup: selectedLineup,
                 otherLineup: otherLineup,
-                player2: player2, x2: x2)));
+                player2: player2,
+                x2: x2)));
       }));
 
       t.cancel();

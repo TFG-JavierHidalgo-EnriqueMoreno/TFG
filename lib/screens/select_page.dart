@@ -13,6 +13,8 @@ import 'package:my_app/routes/custom_route.dart';
 import 'package:my_app/screens/selectRival_page.dart';
 import 'package:my_app/services/api_service.dart';
 import 'package:my_app/services/firebase_service.dart';
+import 'package:timer_count_down/timer_controller.dart';
+import 'package:timer_count_down/timer_count_down.dart';
 import 'home_page.dart';
 
 import 'package:my_app/entities/globals.dart' as globals;
@@ -20,8 +22,8 @@ import 'package:my_app/entities/globals.dart' as globals;
 class SelectPage extends StatefulWidget {
   final Map<String, List<dynamic>> p;
   final bool x2;
-
-  const SelectPage({super.key, required this.p, required this.x2});
+  final int timer;
+  const SelectPage({super.key, required this.p, required this.x2, required this.timer});
 
   @override
   SelectPageState createState() {
@@ -41,11 +43,22 @@ class SelectPageState extends State<SelectPage> {
     super.initState();
     cp = widget.p;
     _x2 = widget.x2;
+    _timer = widget.timer;
     _assignPlayers(cp);
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.pause();
+  }
+
+  final CountdownController _controller =
+      new CountdownController(autoStart: true);
+
   late Map<String, List<dynamic>> cp;
   late bool _x2;
+  late int _timer;
 
   List<dynamic>? g = [];
   List<dynamic>? d = [];
@@ -92,7 +105,7 @@ class SelectPageState extends State<SelectPage> {
     10: {},
   };
 
-  bool loaded = false;
+  bool confirmed = false;
 
   void _assignPlayers(Map<String, List<dynamic>> cp) {
     g = cp["PT"];
@@ -109,6 +122,13 @@ class SelectPageState extends State<SelectPage> {
     setState(() {
       _obscureText = !_obscureText;
     });
+  }
+
+  String _printDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$twoDigitMinutes:$twoDigitSeconds";
   }
 
   void _changeButton(BuildContext context, bool changed, int key,
@@ -853,6 +873,15 @@ class SelectPageState extends State<SelectPage> {
                 ),
               ),
             ),
+            Countdown(
+              seconds: _timer,
+              build: (BuildContext context, double time) => Text(
+                  "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}"),
+              interval: Duration(milliseconds: 100),
+              onFinished: () {
+                print('Timer is done!');
+              },
+            ),
             Column(
               children: <Widget>[
                 Row(
@@ -1441,24 +1470,40 @@ class SelectPageState extends State<SelectPage> {
                 ],
               ),
             ),
-            Positioned(
-              top: MediaQuery.of(context).size.height - 150,
-              left: (MediaQuery.of(context).size.width) - 110,
-              child: _allSelected == true && teamValue >= 0 && _selectedPlayers.values.any((element) => element["captain"] == true)
-                  ? ElevatedButton(
-                      onPressed: () {
-                        confirm(context, _selectedPlayers, dropdownValue, _x2);
-                        setState(() {});
-                      },
-                      child: Text('Confirmar'))
-                  : Visibility(
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        child: Text(''),
-                      ),
-                      visible: false,
+            confirmed == true
+                ? Positioned(
+                    top: MediaQuery.of(context).size.height - 130,
+                    left: (MediaQuery.of(context).size.width) - 157,
+                    child: const Text(
+                      "Esperando al oponente...",
+                      style: TextStyle(
+                          color: Colors.orangeAccent,
+                          fontWeight: FontWeight.w500),
                     ),
-            ),
+                  )
+                : Positioned(
+                    top: MediaQuery.of(context).size.height - 150,
+                    left: (MediaQuery.of(context).size.width) - 110,
+                    child: _allSelected == true &&
+                            teamValue >= 0 &&
+                            _selectedPlayers.values
+                                .any((element) => element["captain"] == true)
+                        ? ElevatedButton(
+                            onPressed: () {
+                              confirmed = true;
+                              confirm(context, _selectedPlayers, dropdownValue,
+                                  _x2);
+                              setState(() {});
+                            },
+                            child: Text('Confirmar'))
+                        : Visibility(
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: Text(''),
+                            ),
+                            visible: false,
+                          ),
+                  ),
             Positioned(
               top: MediaQuery.of(context).size.height - 150,
               right: (MediaQuery.of(context).size.width) - 130,
@@ -1518,8 +1563,8 @@ class SelectPageState extends State<SelectPage> {
 //   ],
 // ),
 
-
-confirm(BuildContext context, Map<int, dynamic> selectedPlayers, String dropdownValue, bool x2) {
+confirm(BuildContext context, Map<int, dynamic> selectedPlayers,
+    String dropdownValue, bool x2) {
   saveUserPlayer(selectedPlayers);
   readyPlayer();
   Timer? t;
@@ -1536,19 +1581,16 @@ confirm(BuildContext context, Map<int, dynamic> selectedPlayers, String dropdown
       Timer(Duration(seconds: 5), (() async {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => SelectRivalPage(
-                  selectedLineup: dropdownValue,
-                  selectedPlayers: selectedPlayers,
-                  playersOthers: player2Players,
-                  lineup: otherPlayerLineup,
-                  x2: x2
-                )));
+                selectedLineup: dropdownValue,
+                selectedPlayers: selectedPlayers,
+                playersOthers: player2Players,
+                lineup: otherPlayerLineup,
+                x2: x2)));
       }));
 
       t.cancel();
     }
   });
-  
-
 }
 
 getOtherPlayerLineup(dynamic player2Players) {

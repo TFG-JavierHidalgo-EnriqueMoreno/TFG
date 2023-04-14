@@ -183,6 +183,7 @@ checkForGame(BuildContext context, bool isPlaying) async {
       periodic!.cancel();
       Timer(Duration(seconds: 2), (() async {
         var player2 = await getPlayer2();
+        // TODO: Fallo null check (context)
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => PlayerPage(
                   player1: globals.userLoggedIn.username,

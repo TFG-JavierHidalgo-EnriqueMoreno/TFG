@@ -7,6 +7,8 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:my_app/screens/select_page.dart';
 import 'package:my_app/routes/custom_route.dart';
 import 'package:my_app/services/firebase_service.dart';
+import 'package:timer_count_down/timer_controller.dart';
+import 'package:timer_count_down/timer_count_down.dart';
 import 'home_page.dart';
 
 import 'package:my_app/entities/globals.dart' as globals;
@@ -36,12 +38,22 @@ class PlayerPageState extends State<PlayerPage> {
     _player2 = widget.player2;
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.pause();
+  }
+
+  final CountdownController _controller =
+      new CountdownController(autoStart: true);
   String _player1 = "";
   String _player2 = "";
 
   bool loaded = false;
   late Map<String, List<dynamic>> players;
   bool x2 = false;
+
+  int timer = 300;
 
   confirmX2(BuildContext context) {
     globals.userLoggedIn.tokens = globals.userLoggedIn.getTokens - 1;
@@ -156,9 +168,16 @@ class PlayerPageState extends State<PlayerPage> {
                 ]));
   }
 
+  String _printDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$twoDigitMinutes:$twoDigitSeconds";
+  }
+
   @override
   Widget build(BuildContext context) {
-    const appTitle = 'Jugadores';
+    const appTitle = 'Tus jugadores para este partido';
     const floatingbutton = null;
 
     return MaterialApp(
@@ -190,8 +209,17 @@ class PlayerPageState extends State<PlayerPage> {
                           mainAxisSize: MainAxisSize.max,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            const Text(
-                              "Tus jugadores para este partido",
+                            Countdown(
+                              seconds: timer,
+                              build: (BuildContext context, double time) {
+                                timer = time.round();
+                                return Text(
+                                    "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}");
+                              },
+                              interval: Duration(milliseconds: 100),
+                              onFinished: () {
+                                print('Timer is done!');
+                              },
                             ),
                           ]),
                     ),
@@ -297,9 +325,12 @@ class PlayerPageState extends State<PlayerPage> {
                               FloatingActionButton.extended(
                                 heroTag: "btn3",
                                 onPressed: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          SelectPage(p: players, x2: x2)));
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) => SelectPage(
+                                              p: players,
+                                              x2: x2,
+                                              timer: timer)));
                                 },
                                 backgroundColor: const Color(0xFF4CAF50),
                                 label: const Text("Continuar"),
