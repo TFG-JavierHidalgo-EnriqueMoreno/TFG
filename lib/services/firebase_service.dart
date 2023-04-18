@@ -882,7 +882,7 @@ getPlayer2Players() async {
     };
     players.add(p);
   });
-
+  inspect(players);
   return players;
 }
 

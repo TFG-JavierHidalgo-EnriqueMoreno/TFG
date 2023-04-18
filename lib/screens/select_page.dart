@@ -23,7 +23,8 @@ class SelectPage extends StatefulWidget {
   final Map<String, List<dynamic>> p;
   final bool x2;
   final int timer;
-  const SelectPage({super.key, required this.p, required this.x2, required this.timer});
+  const SelectPage(
+      {super.key, required this.p, required this.x2, required this.timer});
 
   @override
   SelectPageState createState() {
@@ -1492,7 +1493,7 @@ class SelectPageState extends State<SelectPage> {
                             onPressed: () {
                               confirmed = true;
                               confirm(context, _selectedPlayers, dropdownValue,
-                                  _x2);
+                                  _x2, _timer);
                               setState(() {});
                             },
                             child: Text('Confirmar'))
@@ -1539,75 +1540,23 @@ class SelectPageState extends State<SelectPage> {
   }
 }
 
-// TODO: BOTON DE CONFIRMAR
-// Row(
-//   mainAxisAlignment: MainAxisAlignment.end,
-//   children: [
-//     Padding(
-//       padding: const EdgeInsets.only(left: 260.0),
-//       child: _allSelected == true
-//           ? ElevatedButton(
-//               onPressed: () {
-//                 confirm(context);
-//                 setState(() {});
-//               },
-//               child: Text('Confirmar'))
-//           : Visibility(
-//               child: ElevatedButton(
-//                 onPressed: () {},
-//                 child: Text(''),
-//               ),
-//               visible: false,
-//             ),
-//     ),
-//   ],
-// ),
-
 confirm(BuildContext context, Map<int, dynamic> selectedPlayers,
-    String dropdownValue, bool x2) {
+    String dropdownValue, bool x2, int timer) {
   saveUserPlayer(selectedPlayers);
   readyPlayer();
   Timer? t;
-  var player2Players = [];
   var otherPlayerLineup = "";
   t = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
     if (await checkOtherPlayerStatus() == "ready") {
       Timer(Duration(seconds: 3), (() async {
-        player2Players = await getPlayer2Players();
-      }));
-      Timer(Duration(seconds: 4), (() async {
-        otherPlayerLineup = await getOtherPlayerLineup(player2Players);
-      }));
-      Timer(Duration(seconds: 5), (() async {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => SelectRivalPage(
                 selectedLineup: dropdownValue,
                 selectedPlayers: selectedPlayers,
-                playersOthers: player2Players,
-                lineup: otherPlayerLineup,
-                x2: x2)));
+                x2: x2,
+                timer: timer)));
       }));
-
       t.cancel();
     }
   });
-}
-
-getOtherPlayerLineup(dynamic player2Players) {
-  var lineup = "4-4-2";
-  var df = 0;
-  var dl = 0;
-  for (var element in player2Players) {
-    if (element["position"] == "DF") {
-      df++;
-    } else if (element["position"] == "DL") {
-      dl++;
-    }
-  }
-  if (df == 5) {
-    lineup = "5-3-2";
-  } else if (dl == 3) {
-    lineup = "4-3-3";
-  }
-  return lineup;
 }
