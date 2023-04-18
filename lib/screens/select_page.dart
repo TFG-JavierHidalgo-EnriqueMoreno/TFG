@@ -876,8 +876,11 @@ class SelectPageState extends State<SelectPage> {
             ),
             Countdown(
               seconds: _timer,
-              build: (BuildContext context, double time) => Text(
-                  "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}"),
+              build: (BuildContext context, double time) {
+                _timer = time.round();
+                return Text(
+                    "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}");
+              },
               interval: Duration(milliseconds: 100),
               onFinished: () {
                 print('Timer is done!');

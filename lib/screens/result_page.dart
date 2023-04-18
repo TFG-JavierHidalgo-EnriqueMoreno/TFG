@@ -67,7 +67,7 @@ class ResultPageState extends State<ResultPage> {
           appBar: AppBar(
             title: const Text(appTitle),
           ),
-          body: _player1Points == {} && _player2Points == {}
+          body: _player1Points.isEmpty && _player2Points.isEmpty
               ? Text('Hola')
               : Column(
                   mainAxisAlignment: MainAxisAlignment.start,
