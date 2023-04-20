@@ -884,13 +884,13 @@ class SelectPageState extends State<SelectPage> {
               interval: Duration(milliseconds: 100),
               onFinished: () {
                 deleteGame();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      duration: Duration(seconds: 3),
-                      backgroundColor: Color.fromARGB(255, 209, 67, 67),
-                      content: Text(
-                          'Ningun jugador ha completado el partido. Partida cancelada')),
-                );
+                // ScaffoldMessenger.of(context).showSnackBar(
+                //   const SnackBar(
+                //       duration: Duration(seconds: 3),
+                //       backgroundColor: Color.fromARGB(255, 209, 67, 67),
+                //       content: Text(
+                //           'Ningun jugador ha completado el partido. Partida cancelada')),
+                // );
                 goToHome(context);
               },
             ),
@@ -1560,7 +1560,7 @@ confirm(BuildContext context, Map<int, dynamic> selectedPlayers,
   t = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
     if (await checkOtherPlayerStatus() == "ready") {
       Timer(Duration(seconds: 3), (() async {
-        Navigator.of(context).push(MaterialPageRoute(
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => SelectRivalPage(
                 selectedLineup: dropdownValue,
                 selectedPlayers: selectedPlayers,

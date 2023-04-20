@@ -91,7 +91,7 @@ class SelectRivalPageState extends State<SelectRivalPage> {
     List<dynamic> mc = [];
     List<dynamic> pt = [];
     var po = await getPlayer2Players();
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 5));
     po.forEach((element) {
       element["opponent"] = false;
       if (element["position"] == "DF") {
@@ -109,7 +109,7 @@ class SelectRivalPageState extends State<SelectRivalPage> {
     cp.addAll(df);
     cp.addAll(pt);
     l = getOtherPlayerLineup(cp);
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 5));
     return true;
   }
 
@@ -745,7 +745,7 @@ confirmOpponent(
         otherPlayerCO = await getOtherPlayerCO();
         Map<String, int?> player1Points =
             calcPointsPlayer1(selectedPlayers, otherPlayerCO);
-        Navigator.of(context).push(MaterialPageRoute(
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => GameEventPage(
                 players: selectedPlayers,
                 player1Points: player1Points,
