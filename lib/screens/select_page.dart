@@ -883,7 +883,15 @@ class SelectPageState extends State<SelectPage> {
               },
               interval: Duration(milliseconds: 100),
               onFinished: () {
-                print('Timer is done!');
+                deleteGame();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      duration: Duration(seconds: 3),
+                      backgroundColor: Color.fromARGB(255, 209, 67, 67),
+                      content: Text(
+                          'Ningun jugador ha completado el partido. Partida cancelada')),
+                );
+                goToHome(context);
               },
             ),
             Column(

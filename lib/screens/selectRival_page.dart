@@ -150,9 +150,30 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                           "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}"),
                       interval: Duration(milliseconds: 100),
                       onFinished: () async {
+                        String playerStatus = await checkPlayerStatus();
                         String otherPlayerStatus =
                             await checkOtherPlayerStatus();
-                        if (otherPlayerStatus == 'confirmed') {
+                        if (playerStatus == "confirmed" &&
+                            otherPlayerStatus != "confirmed") {
+                          var player2 = await getPlayer2();
+                          Map<String, int> gameResult = {
+                            "player1Goals": 3,
+                            "player2Goals": 0
+                          };
+                          var p = calcPointsPlayer1NotConfirm(sp);
+                          saveGameNotConfirm(p, l, gameResult);
+                          Navigator.of(context)
+                              .pushReplacement(MaterialPageRoute(
+                                  builder: (context) => ResultPage(
+                                        player1Points: const {},
+                                        player2Points: const {},
+                                        gameResult: gameResult,
+                                        player2: player2,
+                                      )));
+                        }
+
+                        if (otherPlayerStatus == 'confirmed' &&
+                            playerStatus != "confirmed") {
                           var player2 = await getPlayer2();
                           Map<String, int> gameResult = {
                             "player1Goals": 0,
@@ -166,6 +187,20 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                                         gameResult: gameResult,
                                         player2: player2,
                                       )));
+                        }
+
+                        if (otherPlayerStatus != "confirmed" &&
+                            playerStatus != "confirmed") {
+                          deleteGame();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                duration: Duration(seconds: 3),
+                                backgroundColor:
+                                    Color.fromARGB(255, 209, 67, 67),
+                                content: Text(
+                                    'Ningun jugador ha completado el partido. Partida cancelada')),
+                          );
+                          goToHome(context);
                         }
                       },
                     ),
@@ -785,6 +820,47 @@ calcPointsPlayer1(
     "rating": (rating! / 11).round(),
   };
 }
+
+calcPointsPlayer1NotConfirm(Map<int, dynamic> selectedPlayers) {
+  int? strength = 0;
+  int? shooting = 0;
+  int? speed = 0;
+  int? dribbling = 0;
+  int? defense = 0;
+  int? passing = 0;
+  int? rating = 0;
+
+  selectedPlayers.forEach((key, value) {
+    if (value["captain"] == true) {
+      strength = strength! + value["strength"] * 2 as int?;
+      shooting = shooting! + value["shooting"] * 2 as int?;
+      speed = speed! + value["speed"] * 2 as int?;
+      dribbling = dribbling! + value["dribbling"] * 2 as int?;
+      defense = defense! + value["defense"] * 2 as int?;
+      passing = passing! + value["passing"] * 2 as int?;
+      rating = rating! + value["rating"] * 2 as int?;
+    } else {
+      strength = strength! + value["strength"] as int?;
+      shooting = shooting! + value["shooting"] as int?;
+      speed = speed! + value["speed"] as int?;
+      dribbling = dribbling! + value["dribbling"] as int?;
+      defense = defense! + value["defense"] as int?;
+      passing = passing! + value["passing"] as int?;
+      rating = rating! + value["rating"] as int?;
+    }
+  });
+
+  return {
+    "strength": strength,
+    "shooting": shooting,
+    "speed": speed,
+    "dribbling": dribbling,
+    "defense": defense,
+    "passing": passing,
+    "rating": (rating! / 11).round(),
+  };
+}
+
 
 // calcPointsPlayer2(
 //     Map<int, dynamic> selectedPlayers, Map<String, String> otherPlayerCO) {

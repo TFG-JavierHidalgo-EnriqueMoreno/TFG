@@ -1295,6 +1295,56 @@ Future<Map<String, dynamic>> getRandomEvents(
   };
 }
 
+saveGameNotConfirm(Map<String, int?> player1points, String lineup,
+    Map<String, int> gameResult) async {
+  QuerySnapshot<Map<String, dynamic>> lastGame = await getLastGame();
+  Future<List> users = getUsers();
+  User u = globals.userLoggedIn;
+  Lineup l = Lineup();
+  l.newLineup(lineup, "");
+  List list = await users;
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+
+  await db.collection("user_game").doc(lastGame.docs[0].id).update({
+    "strength": player1points["strength"],
+    "shooting": player1points["shooting"],
+    "speed": player1points["speed"],
+    "dribbling": player1points["dribbling"],
+    "defense": player1points["defense"],
+    "passing": player1points["passing"],
+    "rating": player1points["rating"]
+  });
+
+  var player2 = await getPlayer2();
+  var game = await getLastGame();
+
+  var res = await db
+      .collection("user_game")
+      .where("game_id", isEqualTo: game.docs[0].data()["game_id"])
+      .where("user_id", isEqualTo: player2.id)
+      .get();
+
+  db.collection("user_game").doc(res.docs[0].id).update({
+    "strength": 0,
+    "shooting": 0,
+    "speed": 0,
+    "dribbling": 0,
+    "defense": 0,
+    "passing": 0,
+    "rating": 0
+  });
+  await db.collection("games").doc(lastGame.docs[0].data()["game_id"]).update({
+    "local_goals": 3,
+    "away_goals": 0,
+    "score": 1,
+    "local_user": us["uid"],
+    "away_user": player2.id,
+    "local_lineup": lineup,
+    "away_lineup": ""
+  });
+  updateAchievements(gameResult, player1points, l);
+}
+
 Future<Map<String, int>> getPlayer2Points() async {
   var player2 = await getPlayer2();
   var game = await getLastGame();
@@ -1542,4 +1592,10 @@ updateTokens(int reward, String id_achievement) async {
       .update({"tokens": us["data"]["tokens"] + reward});
 
   globals.userLoggedIn.tokens = globals.userLoggedIn.tokens + reward;
+}
+
+deleteGame() async {
+  var game = await getLastGame();
+  await db.collection("games").doc(game.docs[0].data()["game_id"]).delete();
+  await db.collection("user_game").doc(game.docs[0].id).delete();
 }

@@ -68,7 +68,191 @@ class ResultPageState extends State<ResultPage> {
             title: const Text(appTitle),
           ),
           body: _player1Points.isEmpty && _player2Points.isEmpty
-              ? Text('Hola')
+              ? _gameResult["player1Goals"] == 3
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 20.0),
+                                    child: Column(
+                                      children: [
+                                        const Icon(
+                                          Icons.account_circle,
+                                          size: 48.0,
+                                        ),
+                                        Text(
+                                            "${globals.userLoggedIn.getUsername}"),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    _gameResult["player1Goals"].toString(),
+                                    style: TextStyle(
+                                      fontSize: 50.0,
+                                    ),
+                                  ),
+                                  const Text(
+                                    "-",
+                                    style: TextStyle(
+                                      fontSize: 50.0,
+                                    ),
+                                  ),
+                                  Text(
+                                    _gameResult["player2Goals"].toString(),
+                                    style: TextStyle(
+                                      fontSize: 50.0,
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 20.0),
+                                    child: Column(
+                                      children: [
+                                        const Icon(
+                                          Icons.account_circle,
+                                          size: 48.0,
+                                        ),
+                                        Text("${_player2.data()["username"]}"),
+                                      ],
+                                    ),
+                                  ),
+                                ]),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Center(
+                              child: Text(
+                                "Tu oponente no ha completado el partido. (Victoria por abandono)",
+                                style: TextStyle(
+                                  fontSize: 35.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: EdgeInsets.only(right: 10),
+                                    child: ElevatedButton(
+                                        onPressed: () => playAgain(context),
+                                        child: Text("Volver a jugar")),
+                                  ),
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {});
+                                        goToHome(context);
+                                      },
+                                      child: Text("Inicio"))
+                                ]),
+                          )
+                        ])
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 20.0),
+                                    child: Column(
+                                      children: [
+                                        const Icon(
+                                          Icons.account_circle,
+                                          size: 48.0,
+                                        ),
+                                        Text(
+                                            "${globals.userLoggedIn.getUsername}"),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    _gameResult["player1Goals"].toString(),
+                                    style: TextStyle(
+                                      fontSize: 50.0,
+                                    ),
+                                  ),
+                                  const Text(
+                                    "-",
+                                    style: TextStyle(
+                                      fontSize: 50.0,
+                                    ),
+                                  ),
+                                  Text(
+                                    _gameResult["player2Goals"].toString(),
+                                    style: TextStyle(
+                                      fontSize: 50.0,
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 20.0),
+                                    child: Column(
+                                      children: [
+                                        const Icon(
+                                          Icons.account_circle,
+                                          size: 48.0,
+                                        ),
+                                        Text("${_player2.data()["username"]}"),
+                                      ],
+                                    ),
+                                  ),
+                                ]),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Center(
+                              child: Text(
+                                "No has completado el partido. (Derrota por abandono)",
+                                style: TextStyle(
+                                  fontSize: 35.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: EdgeInsets.only(right: 10),
+                                    child: ElevatedButton(
+                                        onPressed: () => playAgain(context),
+                                        child: Text("Volver a jugar")),
+                                  ),
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {});
+                                        goToHome(context);
+                                      },
+                                      child: Text("Inicio"))
+                                ]),
+                          )
+                        ])
               : Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
