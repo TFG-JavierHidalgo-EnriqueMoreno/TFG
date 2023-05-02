@@ -29,7 +29,8 @@ class GameEventPage extends StatefulWidget {
       required this.player1Points,
       required this.selectedLineup,
       required this.otherLineup,
-      required this.player2, required this.x2});
+      required this.player2,
+      required this.x2});
 
   @override
   GameEventPageState createState() {
@@ -140,7 +141,6 @@ class GameEventPageState extends State<GameEventPage> {
         ));
   }
 
-
   goToHome(BuildContext context) {
     resetPlayerState();
     Navigator.of(context).pushReplacement(
@@ -168,11 +168,13 @@ endGame(BuildContext context, Map<String, int?> player1Points,
   Timer(Duration(seconds: 3), (() async {
     Map<String, int> gameResult = calcResult(player1Points, player2Points);
     saveGame(gameResult["player1Goals"], gameResult["player2Goals"], lineup);
-    calcElo(gameResult["player1Goals"]! > gameResult["player2Goals"]!
-        ? true
-        : false, x2);
+    calcElo(
+        gameResult["player1Goals"]! > gameResult["player2Goals"]!
+            ? true
+            : false,
+        x2);
     updateAchievements(gameResult, player1Points, lineup);
-    Navigator.of(context).push(MaterialPageRoute(
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => ResultPage(
               player1Points: player1Points,
               player2Points: player2Points,

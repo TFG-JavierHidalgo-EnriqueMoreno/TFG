@@ -25,9 +25,9 @@ class SearchingPage extends StatelessWidget {
     return MaterialApp(
       title: appTitle,
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text(appTitle),
-        ),
+        // appBar: AppBar(
+        //   title: const Text(appTitle),
+        // ),
         body: const SearchingPageForm(),
       ),
     );
@@ -108,7 +108,7 @@ class SearchingPageFormState extends State<SearchingPageForm> {
                     heroTag: "btn4",
                     onPressed: () {
                       resetPlayerState();
-                      Navigator.of(context).push(
+                      Navigator.of(context).pushReplacement(
                           MaterialPageRoute(builder: (context) => HomePage()));
                     },
                     backgroundColor: Color.fromARGB(255, 209, 67, 67),
@@ -166,7 +166,7 @@ goToHome(BuildContext context) {
 
 goToPlayerPage(BuildContext context, Map<String, List<dynamic>> players) {
   SchedulerBinding.instance.addPostFrameCallback((_) {
-    Navigator.of(context).push(MaterialPageRoute(
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => PlayerPage(
               player1: players["player1"]![0]["username"],
               player2: players["player2"]![0]["username"],
@@ -184,7 +184,7 @@ checkForGame(BuildContext context, bool isPlaying) async {
       Timer(Duration(seconds: 2), (() async {
         var player2 = await getPlayer2();
         // TODO: Fallo null check (context)
-        Navigator.of(context).push(MaterialPageRoute(
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => PlayerPage(
                   player1: globals.userLoggedIn.username,
                   player2: player2.data()["username"],
