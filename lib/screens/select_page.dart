@@ -50,8 +50,8 @@ class SelectPageState extends State<SelectPage> {
 
   @override
   void dispose() {
-    super.dispose();
     _controller.pause();
+    super.dispose();
   }
 
   final CountdownController _controller =
@@ -1552,7 +1552,7 @@ class SelectPageState extends State<SelectPage> {
 }
 
 confirm(BuildContext context, Map<int, dynamic> selectedPlayers,
-    String dropdownValue, bool x2, int timer) {
+    String dropdownValue, bool x2, int timer){
   saveUserPlayer(selectedPlayers);
   readyPlayer();
   Timer? t;

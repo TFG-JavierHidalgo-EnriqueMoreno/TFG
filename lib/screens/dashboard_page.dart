@@ -161,6 +161,10 @@ Widget _getDrawer(BuildContext context) {
             leading: const Icon(Icons.play_arrow),
             onTap: () => playGame(context)),
         ListTile(
+            title: const Text("Logros"),
+            leading: const Icon(Icons.auto_stories_sharp),
+            onTap: () => achievement(context)),
+        ListTile(
             title: const Text("Cerrar Sesion"),
             leading: const Icon(Icons.logout),
             onTap: () => logout(context)),

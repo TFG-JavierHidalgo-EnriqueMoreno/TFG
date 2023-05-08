@@ -40,8 +40,8 @@ class PlayerPageState extends State<PlayerPage> {
 
   @override
   void dispose() {
-    super.dispose();
     _controller.pause();
+    super.dispose();
   }
 
   final CountdownController _controller =

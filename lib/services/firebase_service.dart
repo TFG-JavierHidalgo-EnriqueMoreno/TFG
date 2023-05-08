@@ -981,7 +981,7 @@ Future<Map<String, dynamic>> getRandomEvents(
     switch (events.docs[indexRandom].data()["type"]) {
       case "buena_forma":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         Random random2 = Random();
         int player = random.nextInt(players.length);
         var p = players[player];
@@ -1023,7 +1023,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "medio_creativo":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         player1points["passing"] = (player1points["passing"]! +
             events.docs[indexRandom].data()["influence"]) as int?;
         Map<int, String> e = {
@@ -1035,7 +1035,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "portero_intratable":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         player1points["defense"] = (player1points["defense"]! +
             events.docs[indexRandom].data()["influence"]) as int?;
         Map<int, String> e = {
@@ -1046,7 +1046,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "defensa_solida":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         player1points["defense"] = (player1points["defense"]! +
             events.docs[indexRandom].data()["influence"]) as int?;
         Map<int, String> e = {
@@ -1058,7 +1058,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "lesion":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         Random random2 = Random();
         int player = random.nextInt(players.length);
         var p = players[player];
@@ -1099,7 +1099,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "baja_forma":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         Random random2 = Random();
         int player = random.nextInt(players.length);
         var p = players[player];
@@ -1138,7 +1138,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "delantero_enchufado":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         player1points["shooting"] = (player1points["shooting"]! +
             events.docs[indexRandom].data()["influence"]) as int?;
         Map<int, String> e = {
@@ -1149,7 +1149,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "amarilla":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         Random random2 = Random();
         int player = random.nextInt(players.length);
         var p = players[player];
@@ -1189,7 +1189,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "molestia":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         Random random2 = Random();
         int player = random.nextInt(players.length);
         var p = players[player];
@@ -1228,7 +1228,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "roja":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         Random random2 = Random();
         int player = random.nextInt(players.length);
         var p = players[player];

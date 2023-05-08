@@ -11,6 +11,7 @@ import 'package:my_app/screens/searching_page.dart';
 import 'package:my_app/screens/select_page.dart';
 import 'package:my_app/routes/custom_route.dart';
 import 'package:my_app/services/firebase_service.dart';
+import 'package:timer_count_down/timer_count_down.dart';
 import 'home_page.dart';
 
 import 'package:my_app/entities/globals.dart' as globals;
@@ -76,6 +77,32 @@ class GameEventPageState extends State<GameEventPage> {
     _player1Points.update("rating", (value) => value = data["rating"]);
   }
 
+  // Items in the list
+  final _items = [];
+  var listItems = [];
+  // The key of the list
+  final GlobalKey<AnimatedListState> _key = GlobalKey();
+
+  // Add a new item to the list
+  // This is trigger when the floating button is pressed
+  void _addItem(dynamic item) {
+    _items.insert(_items.length, "${item.keys.first} ${item.values.first}");
+    _key.currentState!.insertItem(0, duration: const Duration(seconds: 1));
+  }
+
+  startTimer() {
+    int i = 0;
+    Timer t;
+    t = Timer.periodic(Duration(milliseconds: 2000), (Timer t) async {
+      if(_items.length < 6){
+        _addItem(listItems[i]);
+      } else {
+        t.cancel();
+      }
+      i = i + 1;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     const appTitle = 'Registro del partido';
@@ -93,13 +120,51 @@ class GameEventPageState extends State<GameEventPage> {
                   AsyncSnapshot<Map<String, dynamic>> snapshot) {
                 List<Widget> children;
                 if (snapshot.hasData) {
+                  listItems = snapshot.data!["hisOrdenado"];
+                  startTimer();
                   _updatePlayer1Points(snapshot.data!);
                   children = <Widget>[
-                    Text("${snapshot.data!["hisOrdenado"][0].values.first}"),
-                    Text("${snapshot.data!["hisOrdenado"][1].values.first}"),
-                    Text("${snapshot.data!["hisOrdenado"][2].values.first}"),
-                    Text("${snapshot.data!["hisOrdenado"][3].values.first}"),
-                    Text("${snapshot.data!["hisOrdenado"][4].values.first}"),
+                    Text("0' Comienza el partido"),
+                    Container(
+                      height: 400,
+                      child: AnimatedList(
+                        key: _key,
+                        initialItemCount: 0,
+                        padding: const EdgeInsets.all(10),
+                        itemBuilder: (context, index, animation) {
+                          return SlideTransition(
+                            key: UniqueKey(),
+                            position: Tween<Offset>(
+                              begin: const Offset(-1, -0.5),
+                              end: const Offset(0, 0),
+                            ).animate(animation),
+                            child: RotationTransition(
+                              turns: animation,
+                              child: SizeTransition(
+                                axis: Axis.vertical,
+                                sizeFactor: animation,
+                                child: SizedBox(
+                                  height: 150,
+                                  child: InkWell(
+                                    child: Card(
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 20),
+                                      elevation: 10,
+                                      color: Colors.primaries[(index * 100) %
+                                          Colors.primaries.length][300],
+                                      child: Center(
+                                        child: Text(_items[index],
+                                            style: const TextStyle(fontSize: 28)),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                     ElevatedButton(
                         onPressed: () {
                           endGame(context, _player1Points, _selectedLineup,
