@@ -14,45 +14,31 @@ import 'home_page.dart';
 
 import 'package:my_app/entities/globals.dart' as globals;
 
-class SearchingPage extends StatelessWidget {
+class SearchingPage extends StatefulWidget {
   const SearchingPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    const appTitle = 'Jugadores';
-    const floatingbutton = null;
+  SearchingPageState createState() {
+    return SearchingPageState();
+  }
+}
 
-    return MaterialApp(
-      title: appTitle,
-      home: Scaffold(
-        // appBar: AppBar(
-        //   title: const Text(appTitle),
-        // ),
-        body: const SearchingPageForm(),
-      ),
+class SearchingPageState extends State<SearchingPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _page(context),
     );
   }
-}
-
-class SearchingPageForm extends StatefulWidget {
-  const SearchingPageForm({super.key});
-
-  @override
-  SearchingPageFormState createState() {
-    return SearchingPageFormState();
-  }
-}
-
-class SearchingPageFormState extends State<SearchingPageForm> {
-  // Create a global key that uniquely identifies the Form widget
-  // and allows validation of the form.
-  //
-  // Note: This is a `GlobalKey<FormState>`,
-  // not a GlobalKey<MyCustomFormState>.
 
   @override
   void initState() {
     super.initState();
+    BuildContext c = context;
+    _player2.addListener(() {
+      goToPlayerPage2(c, _player2.value, redirected);
+      redirected = true;
+    } );
     var duration = Duration(seconds: 20);
     timer = Timer(duration, (() {
       if (!isPlaying) {
@@ -77,13 +63,25 @@ class SearchingPageFormState extends State<SearchingPageForm> {
     super.dispose();
   }
 
+  bool redirected = false;
   late Timer timer;
   bool loaded = false;
   late Map<String, List<dynamic>> players;
   static bool isPlaying = false;
+  ValueNotifier<String> _player2 = ValueNotifier<String>('');
 
-  @override
-  Widget build(BuildContext context) {
+  checkForGame(BuildContext context, bool isPlaying) {
+    Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
+      isPlaying = await checkPlayerStatus() == "playing";
+      if (isPlaying) {
+        var player2 = await getPlayer2();
+        _player2.value = player2.data()["username"];
+        t.cancel();
+      }
+    });
+  }
+
+  Widget _page(BuildContext context) {
     return Container(
       child: FutureBuilder<Map<String, List<dynamic>>>(
         future: searchGame(),
@@ -92,7 +90,6 @@ class SearchingPageFormState extends State<SearchingPageForm> {
           List<Widget> children;
           if (snapshot.hasData) {
             if (snapshot.data!.isEmpty) {
-              // start15secTime(context, isPlaying, timer);
               checkForGame(context, isPlaying);
               children = <Widget>[
                 Center(child: Text('Buscando partido...')),
@@ -174,22 +171,14 @@ goToPlayerPage(BuildContext context, Map<String, List<dynamic>> players) {
   });
 }
 
-checkForGame(BuildContext context, bool isPlaying) async {
-  Timer? periodic;
-  periodic = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
-    isPlaying = await checkPlayerStatus() == "playing";
-    if (isPlaying) {
-      SearchingPageFormState.isPlaying = true;
-      periodic!.cancel();
-      Timer(Duration(seconds: 2), (() async {
-        var player2 = await getPlayer2();
-        // TODO: Fallo null check (context)
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => PlayerPage(
-                  player1: globals.userLoggedIn.username,
-                  player2: player2.data()["username"],
-                )));
-      }));
-    }
-  });
+goToPlayerPage2(BuildContext context, String player2, bool redirected) {
+  if (player2 != '' && redirected == false) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => PlayerPage(
+                player1: globals.userLoggedIn.username,
+                player2: player2,
+              )));
+    });
+  }
 }

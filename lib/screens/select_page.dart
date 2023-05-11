@@ -1555,9 +1555,7 @@ confirm(BuildContext context, Map<int, dynamic> selectedPlayers,
     String dropdownValue, bool x2, int timer){
   saveUserPlayer(selectedPlayers);
   readyPlayer();
-  Timer? t;
-  var otherPlayerLineup = "";
-  t = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
+  Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
     if (await checkOtherPlayerStatus() == "ready") {
       Timer(Duration(seconds: 3), (() async {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
