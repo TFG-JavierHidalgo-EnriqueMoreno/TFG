@@ -38,7 +38,7 @@ class SearchingPageState extends State<SearchingPage> {
     _player2.addListener(() {
       goToPlayerPage2(c, _player2.value, redirected);
       redirected = true;
-    } );
+    });
     var duration = Duration(seconds: 20);
     timer = Timer(duration, (() {
       if (!isPlaying) {

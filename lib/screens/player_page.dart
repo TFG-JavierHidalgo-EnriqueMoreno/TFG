@@ -301,16 +301,19 @@ class PlayerPageState extends State<PlayerPage> {
                             visible: globals.userLoggedIn.tokens >= 1,
                             child: Row(
                               children: [
-                                FloatingActionButton.extended(
-                                  heroTag: "btn1",
-                                  onPressed: () {
-                                    powerUpx2(context);
-                                  },
-                                  backgroundColor:
-                                      Color.fromARGB(255, 42, 89, 218),
-                                  label: const Text(
-                                    "x2",
-                                    style: TextStyle(fontSize: 16),
+                                Visibility(
+                                  visible: x2 == false,
+                                  child: FloatingActionButton.extended(
+                                    heroTag: "btn1",
+                                    onPressed: () {
+                                      powerUpx2(context);
+                                    },
+                                    backgroundColor:
+                                        Color.fromARGB(255, 42, 89, 218),
+                                    label: const Text(
+                                      "x2",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
                                   ),
                                 ),
                                 Padding(
