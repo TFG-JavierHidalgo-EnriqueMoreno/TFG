@@ -6,6 +6,7 @@ import 'package:my_app/screens/achievement_page.dart';
 import 'package:my_app/screens/dashboard_page.dart';
 import 'package:my_app/screens/login_page.dart';
 import 'package:my_app/screens/player_page.dart';
+import 'package:my_app/screens/ranking_page.dart';
 import 'package:my_app/screens/searching_page.dart';
 import 'package:my_app/screens/select_page.dart';
 import 'package:my_app/screens/user_profile.dart';
@@ -223,6 +224,10 @@ Widget _getDrawer(BuildContext context) {
             leading: const Icon(Icons.query_stats),
             onTap: () => stats(context)),
         ListTile(
+            title: const Text("Ranking Global"),
+            leading: const Icon(Icons.logout),
+            onTap: () => ranking(context)),
+        ListTile(
             title: const Text("Cerrar Sesion"),
             leading: const Icon(Icons.logout),
             onTap: () => logout(context)),
@@ -253,6 +258,14 @@ playGame(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const SearchingPage(),
+    ),
+  );
+}
+
+ranking(BuildContext context) {
+  Navigator.of(context).pushReplacement(
+    FadePageRoute(
+      builder: (context) => const RankingPage(),
     ),
   );
 }

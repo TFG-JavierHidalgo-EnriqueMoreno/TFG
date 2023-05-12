@@ -1599,3 +1599,53 @@ deleteGame() async {
   await db.collection("games").doc(game.docs[0].data()["game_id"]).delete();
   await db.collection("user_game").doc(game.docs[0].id).delete();
 }
+
+Future<Map<String, List<Map<String, int>>>> getGlobalRanking() async {
+  Map<String, List<Map<String, int>>> res = {};
+  List<Map<String, int>> listVictory = [];
+  List<Map<String, int>> listElo = [];
+  List<dynamic> users = await getUsers();
+
+  for (int i = 0; i < users.length; i++) {
+    Map<String, int> player_victory = {};
+    Map<String, int> player_elo = {};
+    int nVictory = 0;
+    QuerySnapshot<Map<String, dynamic>> q = await db
+        .collection("users")
+        .where("email", isEqualTo: users[i]["data"]["email"])
+        .get();
+    String uid = q.docs[0].id;
+    QuerySnapshot<Map<String, dynamic>> user_games =
+        await db.collection("user_game").where("user_id", isEqualTo: uid).get();
+    for (int j = 0; j < user_games.docs.length; j++) {
+      DocumentSnapshot<Map<String, dynamic>> game = await db
+          .collection("games")
+          .doc(user_games.docs[j].data()["game_id"])
+          .get();
+      if (game["local_user"] == uid) {
+        if (game["score"] == 1) {
+          nVictory = nVictory + 1;
+        }
+      } else {
+        if (game["score"] == 2) {
+          nVictory = nVictory + 1;
+        }
+      }
+    }
+    ;
+    player_victory.putIfAbsent(users[i]["data"]["username"], () => nVictory);
+    listVictory.add(player_victory);
+
+    player_elo.putIfAbsent(
+        users[i]["data"]["username"], () => users[i]["data"]["elo"] as int);
+
+    listElo.add(player_elo);
+  }
+
+  listVictory.sort((a, b) => b.values.first.compareTo(a.values.first));
+  listElo.sort((a, b) => b.values.first.compareTo(a.values.first));
+  res.putIfAbsent("nVictory", () => listVictory);
+  res.putIfAbsent("elo", () => listElo);
+
+  return res;
+}
