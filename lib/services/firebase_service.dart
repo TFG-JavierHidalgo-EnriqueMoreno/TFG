@@ -1631,8 +1631,7 @@ Future<Map<String, List<Map<String, int>>>> getGlobalRanking() async {
           nVictory = nVictory + 1;
         }
       }
-    }
-    ;
+    };
     player_victory.putIfAbsent(users[i]["data"]["username"], () => nVictory);
     listVictory.add(player_victory);
 
@@ -1644,6 +1643,12 @@ Future<Map<String, List<Map<String, int>>>> getGlobalRanking() async {
 
   listVictory.sort((a, b) => b.values.first.compareTo(a.values.first));
   listElo.sort((a, b) => b.values.first.compareTo(a.values.first));
+  if(listVictory.length > 10){
+    listVictory = listVictory.sublist(0, 9);
+  }
+  if(listElo.length > 10){
+    listElo = listElo.sublist(0, 9);
+  }
   res.putIfAbsent("nVictory", () => listVictory);
   res.putIfAbsent("elo", () => listElo);
 
