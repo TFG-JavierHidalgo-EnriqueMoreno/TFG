@@ -273,6 +273,18 @@ Widget _getDrawer(BuildContext context) {
             leading: const Icon(Icons.query_stats),
             onTap: () => stats(context)),
         ListTile(
+            title: const Text("Ranking Global"),
+            leading: const Icon(Icons.star_rate),
+            onTap: () => ranking(context)),
+        ListTile(
+            title: const Text("Terminos"),
+            leading: const Icon(Icons.library_books),
+            onTap: () => termsService(context)),
+        ListTile(
+            title: const Text("Reglas"),
+            leading: const Icon(Icons.rule),
+            onTap: () => showRules(context)),
+        ListTile(
             title: const Text("Cerrar Sesion"),
             leading: const Icon(Icons.logout),
             onTap: () => logout(context)),
