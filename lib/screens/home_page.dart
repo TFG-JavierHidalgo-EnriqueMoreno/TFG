@@ -9,6 +9,7 @@ import 'package:my_app/screens/player_page.dart';
 import 'package:my_app/screens/ranking_page.dart';
 import 'package:my_app/screens/searching_page.dart';
 import 'package:my_app/screens/select_page.dart';
+import 'package:my_app/screens/termsService_page.dart';
 import 'package:my_app/screens/user_profile.dart';
 import 'package:my_app/services/firebase_service.dart';
 import '../routes/custom_route.dart';
@@ -228,6 +229,10 @@ Widget _getDrawer(BuildContext context) {
             leading: const Icon(Icons.logout),
             onTap: () => ranking(context)),
         ListTile(
+            title: const Text("Terminos"),
+            leading: const Icon(Icons.logout),
+            onTap: () => termsService(context)),
+        ListTile(
             title: const Text("Cerrar Sesion"),
             leading: const Icon(Icons.logout),
             onTap: () => logout(context)),
@@ -285,6 +290,14 @@ achievement(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const AchievementPage(),
+    ),
+  );
+}
+
+termsService(BuildContext context) {
+  Navigator.of(context).pushReplacement(
+    FadePageRoute(
+      builder: (context) => const TermsServicePage(),
     ),
   );
 }
