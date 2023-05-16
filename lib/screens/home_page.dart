@@ -7,6 +7,7 @@ import 'package:my_app/screens/dashboard_page.dart';
 import 'package:my_app/screens/login_page.dart';
 import 'package:my_app/screens/player_page.dart';
 import 'package:my_app/screens/ranking_page.dart';
+import 'package:my_app/screens/rules_page.dart';
 import 'package:my_app/screens/searching_page.dart';
 import 'package:my_app/screens/select_page.dart';
 import 'package:my_app/screens/termsService_page.dart';
@@ -233,6 +234,10 @@ Widget _getDrawer(BuildContext context) {
             leading: const Icon(Icons.logout),
             onTap: () => termsService(context)),
         ListTile(
+            title: const Text("Reglas"),
+            leading: const Icon(Icons.logout),
+            onTap: () => showRules(context)),
+        ListTile(
             title: const Text("Cerrar Sesion"),
             leading: const Icon(Icons.logout),
             onTap: () => logout(context)),
@@ -246,6 +251,14 @@ showHome(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const HomePage(),
+    ),
+  );
+}
+
+showRules(BuildContext context) {
+  Navigator.of(context).pushReplacement(
+    FadePageRoute(
+      builder: (context) => const RulesPage(),
     ),
   );
 }
