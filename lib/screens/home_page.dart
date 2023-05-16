@@ -297,7 +297,7 @@ achievement(BuildContext context) {
 termsService(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
-      builder: (context) => const TermsServicePage(),
+      builder: (context) => TermsService(),
     ),
   );
 }
