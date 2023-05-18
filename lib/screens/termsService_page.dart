@@ -37,8 +37,6 @@ class _TermsServicePageState extends State<TermsServicePage> {
   @override
   void initState() {
     scrollController.addListener(() {
-      print(scrollController.position.atEdge);
-      print(scrollController.position.pixels);
       if (scrollController.position.atEdge) {
         bool isTop = scrollController.position.pixels == 0;
         if (isTop) {
@@ -139,6 +137,7 @@ class _TermsServicePageState extends State<TermsServicePage> {
         ]),
       ),
       appBar: AppBar(
+        backgroundColor: const Color(0xFF4CAF50),
         title: const Text("BattleDraft"),
       ),
       drawer: _getDrawer(context),
@@ -154,6 +153,9 @@ Widget _getDrawer(BuildContext context) {
     child: ListView(
       children: <Widget>[
         UserAccountsDrawerHeader(
+            decoration: BoxDecoration(
+              color: const Color(0xFF4CAF50),
+            ),
             accountName: accountName,
             accountEmail: accountEmail,
             currentAccountPicture: accountPicture),

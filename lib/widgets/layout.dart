@@ -12,6 +12,9 @@ Widget _getDrawer(BuildContext context) {
     child: ListView(
       children: <Widget>[
         UserAccountsDrawerHeader(
+            decoration: BoxDecoration(
+              color: const Color(0xFF4CAF50),
+            ),
             accountName: accountName, accountEmail: accountEmail),
         ListTile(
             title: const Text("Jugar Partido"),

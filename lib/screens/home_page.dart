@@ -31,6 +31,7 @@ class _HomePageState extends State<HomePage> {
       body: globals.isLoggedIn ? _page(context) : LoginScreen(),
       appBar: AppBar(
         title: const Text("BattleDraft"),
+        backgroundColor: const Color(0xFF4CAF50),
       ),
       drawer: _getDrawer(context),
     );
@@ -95,6 +96,7 @@ Widget _page(BuildContext context) {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4CAF50)),
                   onPressed: () {
                     playGame(context);
                   },
@@ -206,6 +208,9 @@ Widget _getDrawer(BuildContext context) {
     child: ListView(
       children: <Widget>[
         UserAccountsDrawerHeader(
+            decoration: BoxDecoration(
+              color: const Color(0xFF4CAF50),
+            ),
             accountName: accountName,
             accountEmail: accountEmail,
             currentAccountPicture: accountPicture),

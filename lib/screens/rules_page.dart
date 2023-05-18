@@ -30,7 +30,9 @@ class _RulesPageState extends State<RulesPage> {
             child: Scaffold(
               drawer: _getDrawer(context),
               appBar: AppBar(
+                backgroundColor: const Color(0xFF4CAF50),
                 bottom: TabBar(
+                  indicatorColor: Colors.white,
                   tabs: [
                     Tab(text: "Ligas"),
                     Tab(text: "Partidos"),
@@ -39,7 +41,7 @@ class _RulesPageState extends State<RulesPage> {
                 ),
                 title: Text('Reglas'),
               ),
-              body: const TabBarView(
+              body: TabBarView(
                 children: [
                   SingleChildScrollView(
                       //controller: scrollController,
@@ -183,6 +185,9 @@ Widget _getDrawer(BuildContext context) {
     child: ListView(
       children: <Widget>[
         UserAccountsDrawerHeader(
+            decoration: BoxDecoration(
+              color: const Color(0xFF4CAF50),
+            ),
             accountName: accountName,
             accountEmail: accountEmail,
             currentAccountPicture: accountPicture),

@@ -65,6 +65,7 @@ class ResultPageState extends State<ResultPage> {
       home: Scaffold(
           drawer: _getDrawer(context),
           appBar: AppBar(
+            backgroundColor: const Color(0xFF4CAF50),
             title: const Text(appTitle),
           ),
           body: _player1Points.isEmpty && _player2Points.isEmpty
@@ -503,6 +504,9 @@ Widget _getDrawer(BuildContext context) {
     child: ListView(
       children: <Widget>[
         UserAccountsDrawerHeader(
+            decoration: BoxDecoration(
+              color: const Color(0xFF4CAF50),
+            ),
             accountName: accountName,
             accountEmail: accountEmail,
             currentAccountPicture: accountPicture),

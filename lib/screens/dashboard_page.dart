@@ -36,90 +36,204 @@ class _DashboardPageState extends State<DashboardPage> {
                 builder: (BuildContext context,
                     AsyncSnapshot<Map<String, dynamic>> snapshot) {
                   if (snapshot.hasData) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Row(
-                          children: [
-                            Text(
-                              "Total de partidos: ",
-                              style: TextStyle(fontSize: 20),
+                    if (snapshot.data!["nGames"] == 0) {
+                      return Center(
+                          child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Text('Aún no has jugado ningún partido'),
+                          ),
+                          Text(
+                              'Juega tu primer partido para poder visualizar tus'),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Text('estadísticas'),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            const Color(0xFF4CAF50)),
+                                    onPressed: () {
+                                      playGame(context);
+                                    },
+                                    child: Text('Jugar partido'))
+                              ],
                             ),
-                            Text(
-                              "${snapshot.data!["nGames"]}",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w600),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              "Total de victorias: ",
-                              style: TextStyle(fontSize: 20),
+                          ),
+                        ],
+                      ));
+                    } else {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Container(
+                            height: 70,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: const Color(0xFF4CAF50).withOpacity(0.3),
                             ),
-                            Text("${snapshot.data!["nVictory"]}",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600))
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              "Porcentaje de victorias: ",
-                              style: TextStyle(fontSize: 20),
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 16.0),
+                                  child: Text(
+                                    "Total de partidos: ",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                                Text(
+                                  "${snapshot.data!["nGames"]}",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600),
+                                )
+                              ],
                             ),
-                            Text("${snapshot.data!["averageVictory"]} %",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600))
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              "Goles totales: ",
-                              style: TextStyle(fontSize: 20),
+                          ),
+                          Container(
+                            height: 70,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: const Color(0xFF4CAF50).withOpacity(0.3),
                             ),
-                            Text("${snapshot.data!["nGoals"]}",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600))
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              "Media de goles por partido: ",
-                              style: TextStyle(fontSize: 20),
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 16.0),
+                                  child: Text(
+                                    "Total de victorias: ",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                                Text("${snapshot.data!["nVictory"]}",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600))
+                              ],
                             ),
-                            Text("${snapshot.data!["averageGoals"]}",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600))
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              "Alineación preferida: ",
-                              style: TextStyle(fontSize: 20),
+                          ),
+                          Container(
+                            height: 70,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: const Color(0xFF4CAF50).withOpacity(0.3),
                             ),
-                            Text("${snapshot.data!["favoriteLineUp"]}",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600))
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              "Estilo de juego: ",
-                              style: TextStyle(fontSize: 20),
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 16.0),
+                                  child: Text(
+                                    "Porcentaje de victorias: ",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                                Text("${snapshot.data!["averageVictory"]} %",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600))
+                              ],
                             ),
-                            Text("${snapshot.data!["styleGame"]}",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600))
-                          ],
-                        ),
-                      ],
-                    );
+                          ),
+                          Container(
+                            height: 70,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: const Color(0xFF4CAF50).withOpacity(0.3),
+                            ),
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 16.0),
+                                  child: Text(
+                                    "Goles totales: ",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                                Text("${snapshot.data!["nGoals"]}",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600))
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: 70,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: const Color(0xFF4CAF50).withOpacity(0.3),
+                            ),
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 16.0),
+                                  child: Text(
+                                    "Media de goles por partido: ",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                                Text("${snapshot.data!["averageGoals"]}",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600))
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: 70,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: const Color(0xFF4CAF50).withOpacity(0.3),
+                            ),
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 16.0),
+                                  child: Text(
+                                    "Alineación preferida: ",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                                Text("${snapshot.data!["favoriteLineUp"]}",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600))
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: 70,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: const Color(0xFF4CAF50).withOpacity(0.3),
+                            ),
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 16.0),
+                                  child: Text(
+                                    "Estilo de juego: ",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                                Text("${snapshot.data!["styleGame"]}",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600))
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    }
                   } else {
                     return Center(child: CircularProgressIndicator());
                   }
@@ -130,6 +244,7 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
       ),
       appBar: AppBar(
+        backgroundColor: const Color(0xFF4CAF50),
         title: const Text("Estadísticas"),
       ),
       drawer: _getDrawer(context),
@@ -145,6 +260,9 @@ Widget _getDrawer(BuildContext context) {
     child: ListView(
       children: <Widget>[
         UserAccountsDrawerHeader(
+            decoration: BoxDecoration(
+              color: const Color(0xFF4CAF50),
+            ),
             accountName: accountName,
             accountEmail: accountEmail,
             currentAccountPicture: accountPicture),

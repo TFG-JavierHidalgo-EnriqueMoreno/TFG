@@ -861,6 +861,7 @@ class SelectPageState extends State<SelectPage> {
       title: appTitle,
       home: Scaffold(
         appBar: AppBar(
+          backgroundColor: const Color(0xFF4CAF50),
           title: const Text(appTitle),
         ),
         body: Scaffold(
@@ -1487,7 +1488,7 @@ class SelectPageState extends State<SelectPage> {
                     top: MediaQuery.of(context).size.height - 130,
                     left: (MediaQuery.of(context).size.width) - 157,
                     child: const Text(
-                      "Esperando al oponente...",
+                      "Esperando al rival...",
                       style: TextStyle(
                           color: Colors.orangeAccent,
                           fontWeight: FontWeight.w500),
@@ -1552,7 +1553,7 @@ class SelectPageState extends State<SelectPage> {
 }
 
 confirm(BuildContext context, Map<int, dynamic> selectedPlayers,
-    String dropdownValue, bool x2, int timer){
+    String dropdownValue, bool x2, int timer) {
   saveUserPlayer(selectedPlayers);
   readyPlayer();
   Timer.periodic(Duration(milliseconds: 500), (Timer t) async {

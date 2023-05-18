@@ -147,8 +147,13 @@ class _AchievementPageState extends State<AchievementPage> {
                                                 },
                                                 child: Text("Reclamar"),
                                               )
-                                            : Text(
-                                                "${snapshot.data!["achievements"][index].data()["reward"]}"),
+                                            : Row(
+                                                children: [
+                                                  Text(
+                                                      "${snapshot.data!["achievements"][index].data()["reward"]} "),
+                                                  Icon(Icons.diamond_outlined),
+                                                ],
+                                              ),
                                   ),
                                   if (a.data()["claimed"] == false &&
                                       progress !=
@@ -170,6 +175,7 @@ class _AchievementPageState extends State<AchievementPage> {
         ),
       ),
       appBar: AppBar(
+        backgroundColor: const Color(0xFF4CAF50),
         title: const Text("Logros"),
       ),
       drawer: _getDrawer(context),
@@ -185,6 +191,9 @@ Widget _getDrawer(BuildContext context) {
     child: ListView(
       children: <Widget>[
         UserAccountsDrawerHeader(
+            decoration: BoxDecoration(
+              color: const Color(0xFF4CAF50),
+            ),
             accountName: accountName,
             accountEmail: accountEmail,
             currentAccountPicture: accountPicture),

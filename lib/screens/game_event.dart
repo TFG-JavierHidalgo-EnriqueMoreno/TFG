@@ -94,7 +94,7 @@ class GameEventPageState extends State<GameEventPage> {
     int i = 0;
     Timer t;
     t = Timer.periodic(Duration(milliseconds: 2000), (Timer t) async {
-      if(_items.length < 6){
+      if (_items.length < 6) {
         _addItem(listItems[i]);
       } else {
         t.cancel();
@@ -111,6 +111,7 @@ class GameEventPageState extends State<GameEventPage> {
         title: appTitle,
         home: Scaffold(
           appBar: AppBar(
+            backgroundColor: const Color(0xFF4CAF50),
             title: const Text(appTitle),
           ),
           body: Container(
@@ -154,7 +155,8 @@ class GameEventPageState extends State<GameEventPage> {
                                           Colors.primaries.length][300],
                                       child: Center(
                                         child: Text(_items[index],
-                                            style: const TextStyle(fontSize: 28)),
+                                            style:
+                                                const TextStyle(fontSize: 28)),
                                       ),
                                     ),
                                   ),

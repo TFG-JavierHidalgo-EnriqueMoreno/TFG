@@ -184,6 +184,7 @@ class PlayerPageState extends State<PlayerPage> {
       title: appTitle,
       home: Scaffold(
           appBar: AppBar(
+            backgroundColor: const Color(0xFF4CAF50),
             title: const Text(appTitle),
           ),
           body: Container(

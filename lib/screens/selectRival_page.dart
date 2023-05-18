@@ -127,6 +127,7 @@ class SelectRivalPageState extends State<SelectRivalPage> {
       title: appTitle,
       home: Scaffold(
         appBar: AppBar(
+          backgroundColor: const Color(0xFF4CAF50),
           title: const Text(appTitle),
         ),
         body: FutureBuilder<bool>(
@@ -683,7 +684,7 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                             top: MediaQuery.of(context).size.height - 130,
                             left: (MediaQuery.of(context).size.width) - 157,
                             child: const Text(
-                              "Esperando al oponente...",
+                              "Esperando al rival...",
                               style: TextStyle(
                                   color: Colors.orangeAccent,
                                   fontWeight: FontWeight.w500),
