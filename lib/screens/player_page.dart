@@ -53,7 +53,7 @@ class PlayerPageState extends State<PlayerPage> {
   late Map<String, List<dynamic>> players;
   bool x2 = false;
 
-  int timer = 300;
+  int timer = 5000;
 
   confirmX2(BuildContext context) {
     globals.userLoggedIn.tokens = globals.userLoggedIn.getTokens - 1;
@@ -178,7 +178,6 @@ class PlayerPageState extends State<PlayerPage> {
   @override
   Widget build(BuildContext context) {
     const appTitle = 'Tus jugadores para este partido';
-    const floatingbutton = null;
 
     return MaterialApp(
       title: appTitle,
@@ -235,63 +234,1199 @@ class PlayerPageState extends State<PlayerPage> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0, left: 16.0),
+                      child: Text("Porteros",
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.w600)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 16.0, left: 16.0, right: 16.0),
                       child: Container(
-                          child: Card(
+                        height: 400,
                         child: ListView.builder(
-                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: players["PT"]!.length,
                           itemBuilder: ((context, index) {
-                            return Container(
-                              child: Text('${players["PT"]![index]["name"]}'),
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: Container(
+                                child: Container(
+                                  constraints: BoxConstraints(
+                                    maxHeight: double.infinity,
+                                  ),
+                                  decoration: BoxDecoration(
+                                      color: players["PT"]![index]
+                                                  ["category"] ==
+                                              'Gold'
+                                          ? Color.fromARGB(255, 240, 203, 82)
+                                          : players["PT"]![index]["category"] ==
+                                                  'Silver'
+                                              ? const Color(0xffc0c0c0)
+                                              : Color.fromARGB(
+                                                  255, 179, 107, 36),
+                                      border: Border.all(
+                                          color: Colors.black, width: 1.0)),
+                                  child: Column(
+                                    children: <Widget>[
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Icon(Icons.account_circle,
+                                                size: 20),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text(
+                                                players["PT"]![index]["name"],
+                                                style: TextStyle(fontSize: 20)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text(
+                                                players["PT"]![index]["price"]
+                                                        .toString() +
+                                                    "M",
+                                                style: TextStyle(fontSize: 20)),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["PT"]![index]
+                                                              ["shooting"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["PT"]![index]
+                                                                  ["shooting"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["PT"]![index]
+                                                            ["shooting"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["PT"]![index]
+                                                              ["speed"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["PT"]![index]
+                                                                  ["speed"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["PT"]![index]
+                                                            ["speed"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["PT"]![index]
+                                                              ["strength"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["PT"]![index]
+                                                                  ["strength"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["PT"]![index]
+                                                            ["strength"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["PT"]![index]
+                                                              ["passing"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["PT"]![index]
+                                                                  ["passing"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["PT"]![index]
+                                                            ["passing"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor: players["PT"]![
+                                                          index]["dribbling"] <
+                                                      35
+                                                  ? Colors.red
+                                                  : players["PT"]![index]
+                                                              ["dribbling"] <
+                                                          70
+                                                      ? Colors.yellow
+                                                      : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["PT"]![index]
+                                                            ["dribbling"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["PT"]![index]
+                                                              ["defense"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["PT"]![index]
+                                                                  ["defense"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["PT"]![index]
+                                                            ["defense"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["PT"]![index]
+                                                              ["rating"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["PT"]![index]
+                                                                  ["rating"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["PT"]![index]
+                                                            ["rating"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: const [
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("SHO",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("PAC",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("PHY",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("PAS",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("DRI",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("DEF",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("TOT",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             );
                           }),
                         ),
-                      )),
+                      ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 16.0, left: 16.0),
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Text("Defensas",
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.w600)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 16.0, left: 16.0, right: 16),
                       child: Container(
-                          child: Card(
+                        height: 1375,
                         child: ListView.builder(
-                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: players["DF"]!.length,
                           itemBuilder: ((context, index) {
-                            return Container(
-                              child: Text('${players["DF"]![index]["name"]}'),
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: Container(
+                                child: Container(
+                                  constraints: BoxConstraints(
+                                    maxHeight: double.infinity,
+                                  ),
+                                  decoration: BoxDecoration(
+                                      color: players["DF"]![index]
+                                                  ["category"] ==
+                                              'Gold'
+                                          ? Color.fromARGB(255, 240, 203, 82)
+                                          : players["DF"]![index]["category"] ==
+                                                  'Silver'
+                                              ? const Color(0xffc0c0c0)
+                                              : Color.fromARGB(
+                                                  255, 179, 107, 36),
+                                      border: Border.all(
+                                          color: Colors.black, width: 1.0)),
+                                  child: Column(
+                                    children: <Widget>[
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Icon(Icons.account_circle,
+                                                size: 20),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text(
+                                                players["DF"]![index]["name"],
+                                                style: TextStyle(fontSize: 20)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text(
+                                                players["DF"]![index]["price"]
+                                                        .toString() +
+                                                    "M",
+                                                style: TextStyle(fontSize: 20)),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["DF"]![index]
+                                                              ["shooting"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["DF"]![index]
+                                                                  ["shooting"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["DF"]![index]
+                                                            ["shooting"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["DF"]![index]
+                                                              ["speed"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["DF"]![index]
+                                                                  ["speed"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["DF"]![index]
+                                                            ["speed"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["DF"]![index]
+                                                              ["strength"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["DF"]![index]
+                                                                  ["strength"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["DF"]![index]
+                                                            ["strength"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["DF"]![index]
+                                                              ["passing"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["DF"]![index]
+                                                                  ["passing"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["DF"]![index]
+                                                            ["passing"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor: players["DF"]![
+                                                          index]["dribbling"] <
+                                                      35
+                                                  ? Colors.red
+                                                  : players["DF"]![index]
+                                                              ["dribbling"] <
+                                                          70
+                                                      ? Colors.yellow
+                                                      : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["DF"]![index]
+                                                            ["dribbling"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["DF"]![index]
+                                                              ["defense"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["DF"]![index]
+                                                                  ["defense"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["DF"]![index]
+                                                            ["defense"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["DF"]![index]
+                                                              ["rating"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["DF"]![index]
+                                                                  ["rating"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["DF"]![index]
+                                                            ["rating"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: const [
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("SHO",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("PAC",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("PHY",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("PAS",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("DRI",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("DEF",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("TOT",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             );
                           }),
                         ),
-                      )),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0, left: 16.0),
+                      child: Text("Mediocampistas",
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.w600)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 16.0, left: 16.0, right: 16.0),
                       child: Container(
-                          child: Card(
+                        height: 1500,
                         child: ListView.builder(
-                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: players["MC"]!.length,
                           itemBuilder: ((context, index) {
-                            return Container(
-                              child: Text('${players["MC"]![index]["name"]}'),
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: Container(
+                                child: Container(
+                                  constraints: BoxConstraints(
+                                    maxHeight: double.infinity,
+                                  ),
+                                  decoration: BoxDecoration(
+                                      color: players["MC"]![index]
+                                                  ["category"] ==
+                                              'Gold'
+                                          ? Color.fromARGB(255, 240, 203, 82)
+                                          : players["MC"]![index]["category"] ==
+                                                  'Silver'
+                                              ? const Color(0xffc0c0c0)
+                                              : Color.fromARGB(
+                                                  255, 179, 107, 36),
+                                      border: Border.all(
+                                          color: Colors.black, width: 1.0)),
+                                  child: Column(
+                                    children: <Widget>[
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Icon(Icons.account_circle,
+                                                size: 20),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text(
+                                                players["MC"]![index]["name"],
+                                                style: TextStyle(fontSize: 20)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text(
+                                                players["MC"]![index]["price"]
+                                                        .toString() +
+                                                    "M",
+                                                style: TextStyle(fontSize: 20)),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["MC"]![index]
+                                                              ["shooting"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["MC"]![index]
+                                                                  ["shooting"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["MC"]![index]
+                                                            ["shooting"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["MC"]![index]
+                                                              ["speed"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["MC"]![index]
+                                                                  ["speed"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["MC"]![index]
+                                                            ["speed"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["MC"]![index]
+                                                              ["strength"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["MC"]![index]
+                                                                  ["strength"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["MC"]![index]
+                                                            ["strength"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["MC"]![index]
+                                                              ["passing"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["MC"]![index]
+                                                                  ["passing"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["MC"]![index]
+                                                            ["passing"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor: players["MC"]![
+                                                          index]["dribbling"] <
+                                                      35
+                                                  ? Colors.red
+                                                  : players["MC"]![index]
+                                                              ["dribbling"] <
+                                                          70
+                                                      ? Colors.yellow
+                                                      : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["MC"]![index]
+                                                            ["dribbling"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["MC"]![index]
+                                                              ["defense"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["MC"]![index]
+                                                                  ["defense"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["MC"]![index]
+                                                            ["defense"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["MC"]![index]
+                                                              ["rating"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["MC"]![index]
+                                                                  ["rating"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["MC"]![index]
+                                                            ["rating"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: const [
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("SHO",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("PAC",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("PHY",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("PAS",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("DRI",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("DEF",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("TOT",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             );
                           }),
                         ),
-                      )),
+                      ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 16.0, left: 16.0),
+                      padding: EdgeInsets.only(top: 16.0, left: 16.0),
+                      child: Text("Delanteros",
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.w600)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 16.0, left: 16.0, right: 16.0),
                       child: Container(
-                          child: Card(
+                        height: 1150,
                         child: ListView.builder(
-                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: players["DL"]!.length,
                           itemBuilder: ((context, index) {
-                            return Container(
-                              child: Text('${players["DL"]![index]["name"]}'),
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: Container(
+                                child: Container(
+                                  constraints: BoxConstraints(
+                                    maxHeight: double.infinity,
+                                  ),
+                                  decoration: BoxDecoration(
+                                      color: players["DL"]![index]
+                                                  ["category"] ==
+                                              'Gold'
+                                          ? Color.fromARGB(255, 240, 203, 82)
+                                          : players["DL"]![index]["category"] ==
+                                                  'Silver'
+                                              ? const Color(0xffc0c0c0)
+                                              : Color.fromARGB(
+                                                  255, 179, 107, 36),
+                                      border: Border.all(
+                                          color: Colors.black, width: 1.0)),
+                                  child: Column(
+                                    children: <Widget>[
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Icon(Icons.account_circle,
+                                                size: 20),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text(
+                                                players["DL"]![index]["name"],
+                                                style: TextStyle(fontSize: 20)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text(
+                                                players["DL"]![index]["price"]
+                                                        .toString() +
+                                                    "M",
+                                                style: TextStyle(fontSize: 20)),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["DL"]![index]
+                                                              ["shooting"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["DL"]![index]
+                                                                  ["shooting"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["DL"]![index]
+                                                            ["shooting"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["DL"]![index]
+                                                              ["speed"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["DL"]![index]
+                                                                  ["speed"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["DL"]![index]
+                                                            ["speed"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["DL"]![index]
+                                                              ["strength"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["DL"]![index]
+                                                                  ["strength"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["DL"]![index]
+                                                            ["strength"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["DL"]![index]
+                                                              ["passing"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["DL"]![index]
+                                                                  ["passing"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["DL"]![index]
+                                                            ["passing"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor: players["DL"]![
+                                                          index]["dribbling"] <
+                                                      35
+                                                  ? Colors.red
+                                                  : players["DL"]![index]
+                                                              ["dribbling"] <
+                                                          70
+                                                      ? Colors.yellow
+                                                      : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["DL"]![index]
+                                                            ["dribbling"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["DL"]![index]
+                                                              ["defense"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["DL"]![index]
+                                                                  ["defense"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["DL"]![index]
+                                                            ["defense"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircleAvatar(
+                                              radius: 11.5,
+                                              backgroundColor:
+                                                  players["DL"]![index]
+                                                              ["rating"] <
+                                                          35
+                                                      ? Colors.red
+                                                      : players["DL"]![index]
+                                                                  ["rating"] <
+                                                              70
+                                                          ? Colors.yellow
+                                                          : Colors.green,
+                                              child: Center(
+                                                child: Text(
+                                                    players["DL"]![index]
+                                                            ["rating"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.black)),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: const [
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("SHO",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("PAC",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("PHY",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("PAS",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("DRI",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("DEF",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Text("TOT",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black)),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             );
                           }),
                         ),
-                      )),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
