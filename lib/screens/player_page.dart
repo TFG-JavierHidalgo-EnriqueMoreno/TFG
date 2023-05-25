@@ -1503,23 +1503,50 @@ class PlayerPageState extends State<PlayerPage> {
                   ];
                 } else {
                   children = <Widget>[
-                    Center(child: Text('Partida encontrada')),
+                    Center(
+                        child: Text(
+                      'Partida encontrada',
+                      style: TextStyle(
+                          fontSize: 30, color: const Color(0xFF4CAF50)),
+                    )),
                     Center(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 8.0),
-                        child: Text('${_player1} vs ${_player2}'),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Text('${_player1}', style: TextStyle(fontSize: 20)),
+                            Text(' VS ',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: const Color(0xFF4CAF50))),
+                            Text(
+                              '${_player2}',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ];
                 }
 
-                return SingleChildScrollView(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                if (loaded == true) {
+                  return SingleChildScrollView(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: children),
+                  );
+                } else {
+                  return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      children: children),
-                );
+                      children: children);
+                }
               },
             ),
           )),

@@ -32,12 +32,13 @@ class SelectPage extends StatefulWidget {
   }
 }
 
-class SelectPageState extends State<SelectPage> {
+class SelectPageState extends State<SelectPage> with TickerProviderStateMixin {
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   //
   // Note: This is a `GlobalKey<FormState>`,
   // not a GlobalKey<MyCustomFormState>.
+  late AnimationController controller;
 
   @override
   void initState() {
@@ -46,11 +47,21 @@ class SelectPageState extends State<SelectPage> {
     _x2 = widget.x2;
     _timer = widget.timer;
     _assignPlayers(cp);
+    controller = AnimationController(
+      /// [AnimationController]s can be created with `vsync: this` because of
+      /// [TickerProviderStateMixin].
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..addListener(() {
+        setState(() {});
+      });
+    controller.repeat();
   }
 
   @override
   void dispose() {
     _controller.pause();
+    controller.dispose();
     super.dispose();
   }
 
@@ -1487,18 +1498,34 @@ class SelectPageState extends State<SelectPage> {
             ),
             confirmed == true
                 ? Positioned(
-                    top: MediaQuery.of(context).size.height - 130,
-                    left: (MediaQuery.of(context).size.width) - 157,
-                    child: const Text(
-                      "Esperando al rival...",
-                      style: TextStyle(
-                          color: Colors.orangeAccent,
-                          fontWeight: FontWeight.w500),
+                    bottom: MediaQuery.of(context).size.height * 0.03,
+                    left: (MediaQuery.of(context).size.width) * 0.65,
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.06,
+                      width: (MediaQuery.of(context).size.width) * 0.32,
+                      child: Column(
+                        children: [
+                          const Text(
+                            "Esperando al rival...",
+                            style: TextStyle(
+                                color: Colors.amber,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          const SizedBox(height: 10),
+                          LinearProgressIndicator(
+                            backgroundColor: Colors.white,
+                            color: Colors.amber,
+                            semanticsLabel: "Esperando al rival...",
+                            value: controller.value,
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
                     ),
                   )
                 : Positioned(
-                    top: MediaQuery.of(context).size.height - 150,
-                    left: (MediaQuery.of(context).size.width) - 110,
+                    bottom: MediaQuery.of(context).size.height * 0.03,
+                    left: (MediaQuery.of(context).size.width) * 0.7,
                     child: _allSelected == true &&
                             teamValue >= 0 &&
                             _selectedPlayers.values
@@ -1520,8 +1547,8 @@ class SelectPageState extends State<SelectPage> {
                           ),
                   ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 150,
-              right: (MediaQuery.of(context).size.width) - 130,
+              bottom: MediaQuery.of(context).size.height * 0.03,
+              left: (MediaQuery.of(context).size.width) * 0.04,
               child: _selected.entries.any((element) => element.value == true)
                   ? ElevatedButton(
                       onPressed: () {

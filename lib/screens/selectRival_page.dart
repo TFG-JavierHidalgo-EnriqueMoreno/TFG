@@ -206,10 +206,10 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                       },
                     ),
                     Positioned(
-                      bottom: MediaQuery.of(context).size.height - 260,
+                      bottom: MediaQuery.of(context).size.height * 0.65,
                       left: l == "4-3-3"
-                          ? (MediaQuery.of(context).size.width) - 385
-                          : (MediaQuery.of(context).size.width) - 335,
+                          ? (MediaQuery.of(context).size.width) * 0.05
+                          : (MediaQuery.of(context).size.width) * 0.15,
                       child: Stack(
                         children: <Widget>[
                           SizedBox(
@@ -248,10 +248,10 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                       ),
                     ),
                     Positioned(
-                      bottom: MediaQuery.of(context).size.height - 260,
+                      bottom: MediaQuery.of(context).size.height * 0.65,
                       left: l == "4-3-3"
-                          ? (MediaQuery.of(context).size.width) - 270
-                          : (MediaQuery.of(context).size.width) - 210,
+                          ? (MediaQuery.of(context).size.width) * 0.31
+                          : (MediaQuery.of(context).size.width) * 0.46,
                       child: Stack(
                         children: <Widget>[
                           SizedBox(
@@ -290,12 +290,12 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                       ),
                     ),
                     Positioned(
-                      top: l == "4-3-3"
-                          ? MediaQuery.of(context).size.height - 667
-                          : MediaQuery.of(context).size.height - 560,
+                      bottom: l == "4-3-3"
+                          ? MediaQuery.of(context).size.height * 0.65
+                          : MediaQuery.of(context).size.height * 0.53,
                       left: l == "4-3-3"
-                          ? (MediaQuery.of(context).size.width) - 155
-                          : (MediaQuery.of(context).size.width) - 420,
+                          ? (MediaQuery.of(context).size.width) * 0.57
+                          : -(MediaQuery.of(context).size.width * 0.05),
                       child: Stack(
                         children: <Widget>[
                           SizedBox(
@@ -334,14 +334,14 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                       ),
                     ),
                     Positioned(
-                      top: l == "4-3-3"
-                          ? MediaQuery.of(context).size.height - 560
-                          : MediaQuery.of(context).size.height - 490,
+                      bottom: l == "4-3-3"
+                          ? MediaQuery.of(context).size.height * 0.53
+                          : MediaQuery.of(context).size.height * 0.42,
                       left: l == "4-3-3"
-                          ? (MediaQuery.of(context).size.width) - 420
+                          ? -(MediaQuery.of(context).size.width * 0.02)
                           : l == "5-3-2"
-                              ? (MediaQuery.of(context).size.width) - 270
-                              : (MediaQuery.of(context).size.width) - 335,
+                              ? (MediaQuery.of(context).size.width) * 0.31
+                              : (MediaQuery.of(context).size.width) * 0.15,
                       child: Stack(
                         children: <Widget>[
                           SizedBox(
@@ -380,14 +380,14 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                       ),
                     ),
                     Positioned(
-                      top: l == "5-3-2"
-                          ? MediaQuery.of(context).size.height - 560
-                          : MediaQuery.of(context).size.height - 490,
+                      bottom: l == "5-3-2"
+                          ? MediaQuery.of(context).size.height * 0.53
+                          : MediaQuery.of(context).size.height * 0.42,
                       left: l == "4-3-3"
-                          ? (MediaQuery.of(context).size.width) - 270
+                          ? (MediaQuery.of(context).size.width) * 0.31
                           : l == "5-3-2"
-                              ? (MediaQuery.of(context).size.width) - 125
-                              : (MediaQuery.of(context).size.width) - 210,
+                              ? (MediaQuery.of(context).size.width) * 0.65
+                              : (MediaQuery.of(context).size.width) * 0.46,
                       child: Stack(
                         children: <Widget>[
                           SizedBox(
@@ -426,10 +426,10 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                       ),
                     ),
                     Positioned(
-                      top: l == "5-3-2"
-                          ? MediaQuery.of(context).size.height - 450
-                          : MediaQuery.of(context).size.height - 560,
-                      left: (MediaQuery.of(context).size.width) - 125,
+                      bottom: l == "5-3-2"
+                          ? MediaQuery.of(context).size.height * 0.34
+                          : MediaQuery.of(context).size.height * 0.53,
+                      left: (MediaQuery.of(context).size.width) * 0.67,
                       child: Stack(
                         children: <Widget>[
                           SizedBox(
@@ -468,10 +468,9 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                       ),
                     ),
                     Positioned(
-                      top: l == "5-3-2"
-                          ? MediaQuery.of(context).size.height - 450
-                          : MediaQuery.of(context).size.height - 370,
-                      left: (MediaQuery.of(context).size.width) - 420,
+                      bottom: l == "5-3-2"
+                          ? MediaQuery.of(context).size.height * 0.34
+                          : MediaQuery.of(context).size.height * 0.27,
                       child: Stack(
                         children: <Widget>[
                           SizedBox(
@@ -510,12 +509,12 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                       ),
                     ),
                     Positioned(
-                      top: l == "5-3-2"
-                          ? MediaQuery.of(context).size.height - 350
-                          : MediaQuery.of(context).size.height - 300,
+                      bottom: l == "5-3-2"
+                          ? MediaQuery.of(context).size.height * 0.23
+                          : MediaQuery.of(context).size.height * 0.175,
                       left: l == "5-3-2"
-                          ? (MediaQuery.of(context).size.width) - 380
-                          : (MediaQuery.of(context).size.width) - 335,
+                          ? (MediaQuery.of(context).size.width) * 0.07
+                          : (MediaQuery.of(context).size.width) * 0.15,
                       child: Stack(
                         children: <Widget>[
                           SizedBox(
@@ -554,10 +553,12 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                       ),
                     ),
                     Positioned(
-                      top: MediaQuery.of(context).size.height - 300,
+                      bottom: l == "5-3-2"
+                          ? MediaQuery.of(context).size.height * 0.23
+                          : MediaQuery.of(context).size.height * 0.175,
                       left: l == "5-3-2"
-                          ? (MediaQuery.of(context).size.width / 2) - 75
-                          : (MediaQuery.of(context).size.width) - 210,
+                          ? (MediaQuery.of(context).size.width) * 0.54
+                          : (MediaQuery.of(context).size.width) * 0.46,
                       child: Stack(
                         children: <Widget>[
                           SizedBox(
@@ -596,12 +597,12 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                       ),
                     ),
                     Positioned(
-                      top: l == "5-3-2"
-                          ? MediaQuery.of(context).size.height - 350
-                          : MediaQuery.of(context).size.height - 370,
+                      bottom: l == "5-3-2"
+                          ? MediaQuery.of(context).size.height * 0.18
+                          : MediaQuery.of(context).size.height * 0.27,
                       left: l == "5-3-2"
-                          ? (MediaQuery.of(context).size.width) - 165
-                          : (MediaQuery.of(context).size.width) - 125,
+                          ? (MediaQuery.of(context).size.width) * 0.31
+                          : (MediaQuery.of(context).size.width) * 0.67,
                       child: Stack(
                         children: <Widget>[
                           SizedBox(
@@ -640,8 +641,8 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                       ),
                     ),
                     Positioned(
-                      top: MediaQuery.of(context).size.height - 200,
-                      left: (MediaQuery.of(context).size.width / 2) - 75,
+                      bottom: MediaQuery.of(context).size.height * 0.03,
+                      left: (MediaQuery.of(context).size.width) * 0.31,
                       child: Stack(
                         children: <Widget>[
                           SizedBox(
@@ -681,6 +682,7 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                     ),
                     confirmed == true
                         ? Positioned(
+                            //Establecer valores por porcentaje
                             top: MediaQuery.of(context).size.height - 130,
                             left: (MediaQuery.of(context).size.width) - 157,
                             child: const Text(
