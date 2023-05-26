@@ -136,7 +136,7 @@ class GameEventPageState extends State<GameEventPage> {
                           return SlideTransition(
                             key: UniqueKey(),
                             position: Tween<Offset>(
-                              begin: const Offset(-1, -0.5),
+                              begin: const Offset(0, -0.5),
                               end: const Offset(0, 0),
                             ).animate(animation),
                             child: RotationTransition(

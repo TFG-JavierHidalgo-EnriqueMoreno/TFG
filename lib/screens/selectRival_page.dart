@@ -39,9 +39,7 @@ class SelectRivalPage extends StatefulWidget {
   }
 }
 
-class SelectRivalPageState extends State<SelectRivalPage>
-    with TickerProviderStateMixin {
-  late AnimationController controller;
+class SelectRivalPageState extends State<SelectRivalPage> {
 
   @override
   void initState() {
@@ -50,21 +48,11 @@ class SelectRivalPageState extends State<SelectRivalPage>
     sl = widget.selectedLineup;
     _x2 = widget.x2;
     _timer = widget.timer;
-    controller = AnimationController(
-      /// [AnimationController]s can be created with `vsync: this` because of
-      /// [TickerProviderStateMixin].
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..addListener(() {
-        setState(() {});
-      });
-    controller.repeat();
   }
 
   @override
   void dispose() {
     _controller.pause();
-    controller.dispose();
     super.dispose();
   }
 
@@ -527,6 +515,7 @@ class SelectRivalPageState extends State<SelectRivalPage>
                       bottom: l == "5-3-2"
                           ? MediaQuery.of(context).size.height * 0.34
                           : MediaQuery.of(context).size.height * 0.27,
+                      left: -(MediaQuery.of(context).size.width * 0.06),
                       child: Stack(
                         children: <Widget>[
                           SizedBox(
@@ -752,12 +741,7 @@ class SelectRivalPageState extends State<SelectRivalPage>
                                         fontWeight: FontWeight.w500),
                                   ),
                                   const SizedBox(height: 10),
-                                  LinearProgressIndicator(
-                                    backgroundColor: Colors.white,
-                                    color: Colors.amber,
-                                    semanticsLabel: "Esperando al rival...",
-                                    value: controller.value,
-                                  ),
+                                  AnimatedContainer(),
                                   const SizedBox(height: 10),
                                 ],
                               ),
@@ -780,8 +764,20 @@ class SelectRivalPageState extends State<SelectRivalPage>
                             )),
                   ],
                 ));
+              } else if (snapshot.hasError) {
+                return Text('${snapshot.error}');
               } else {
-                return Center(child: CircularProgressIndicator());
+                return Center(
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: Text('Obteniendo jugadores del rival...'),
+                    ),
+                    CircularProgressIndicator(),
+                  ],
+                ));
               }
             }),
       ),
@@ -794,6 +790,49 @@ class SelectRivalPageState extends State<SelectRivalPage>
     });
     cp[i]["opponent"] = true;
     setState(() {});
+  }
+}
+
+class AnimatedContainer extends StatefulWidget {
+  const AnimatedContainer();
+
+  @override
+  _AnimatedContainer createState() => _AnimatedContainer();
+}
+
+class _AnimatedContainer extends State<AnimatedContainer>
+    with TickerProviderStateMixin {
+  late AnimationController animationController;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    animationController = AnimationController(
+      /// [AnimationController]s can be created with `vsync: this` because of
+      /// [TickerProviderStateMixin].
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..addListener(() {
+        setState(() {});
+      });
+    animationController.repeat();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LinearProgressIndicator(
+      backgroundColor: Colors.white,
+      color: Colors.amber,
+      semanticsLabel: "Esperando al rival...",
+      value: animationController.value,
+    );
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
   }
 }
 
