@@ -39,7 +39,10 @@ class SelectRivalPage extends StatefulWidget {
   }
 }
 
-class SelectRivalPageState extends State<SelectRivalPage> {
+class SelectRivalPageState extends State<SelectRivalPage>
+    with TickerProviderStateMixin {
+  late AnimationController controller;
+
   @override
   void initState() {
     super.initState();
@@ -47,11 +50,21 @@ class SelectRivalPageState extends State<SelectRivalPage> {
     sl = widget.selectedLineup;
     _x2 = widget.x2;
     _timer = widget.timer;
+    controller = AnimationController(
+      /// [AnimationController]s can be created with `vsync: this` because of
+      /// [TickerProviderStateMixin].
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..addListener(() {
+        setState(() {});
+      });
+    controller.repeat();
   }
 
   @override
   void dispose() {
     _controller.pause();
+    controller.dispose();
     super.dispose();
   }
 
@@ -147,8 +160,51 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                     ),
                     Countdown(
                       seconds: _timer,
-                      build: (BuildContext context, double time) => Text(
-                          "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}"),
+                      build: (BuildContext context, double time) {
+                        if (_timer <= 60) {
+                          return Text(
+                              "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}",
+                              style: TextStyle(
+                                  color: Colors.orange, fontSize: 16));
+                        } else if (_timer <= 10) {
+                          return Text(
+                              "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}",
+                              style:
+                                  TextStyle(color: Colors.red, fontSize: 16));
+                        } else {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black,
+                                        offset: Offset(0.0, 1.0), //(x,y)
+                                        blurRadius: 6.0,
+                                      ),
+                                    ],
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}",
+                                      style: TextStyle(
+                                          color: Colors.green.shade800,
+                                          fontSize: 16),
+                                    ),
+                                  ),
+                                  height: 35,
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      },
                       interval: Duration(milliseconds: 100),
                       onFinished: () async {
                         String playerStatus = await checkPlayerStatus();
@@ -682,19 +738,34 @@ class SelectRivalPageState extends State<SelectRivalPage> {
                     ),
                     confirmed == true
                         ? Positioned(
-                            //Establecer valores por porcentaje
-                            top: MediaQuery.of(context).size.height - 130,
-                            left: (MediaQuery.of(context).size.width) - 157,
-                            child: const Text(
-                              "Esperando al rival...",
-                              style: TextStyle(
-                                  color: Colors.orangeAccent,
-                                  fontWeight: FontWeight.w500),
+                            bottom: MediaQuery.of(context).size.height * 0.03,
+                            left: (MediaQuery.of(context).size.width) * 0.65,
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.06,
+                              width: (MediaQuery.of(context).size.width) * 0.32,
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    "Esperando al rival...",
+                                    style: TextStyle(
+                                        color: Colors.amber,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  LinearProgressIndicator(
+                                    backgroundColor: Colors.white,
+                                    color: Colors.amber,
+                                    semanticsLabel: "Esperando al rival...",
+                                    value: controller.value,
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
+                              ),
                             ),
                           )
                         : Positioned(
-                            top: MediaQuery.of(context).size.height - 150,
-                            left: (MediaQuery.of(context).size.width) - 110,
+                            bottom: MediaQuery.of(context).size.height * 0.03,
+                            left: (MediaQuery.of(context).size.width) * 0.7,
                             child: Visibility(
                               visible: cp.any(
                                   (element) => element["opponent"] == true),

@@ -213,8 +213,24 @@ class PlayerPageState extends State<PlayerPage> {
                               seconds: timer,
                               build: (BuildContext context, double time) {
                                 timer = time.round();
-                                return Text(
-                                    "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}");
+                                if (timer <= 60) {
+                                  return Text(
+                                      "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}",
+                                      style: TextStyle(
+                                          color: Colors.orange, fontSize: 16));
+                                } else if (timer <= 10) {
+                                  return Text(
+                                      "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}",
+                                      style: TextStyle(
+                                          color: Colors.red, fontSize: 16));
+                                } else {
+                                  return Text(
+                                    "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}",
+                                    style: TextStyle(
+                                        color: Colors.green.shade800,
+                                        fontSize: 16),
+                                  );
+                                }
                               },
                               interval: Duration(milliseconds: 100),
                               onFinished: () {

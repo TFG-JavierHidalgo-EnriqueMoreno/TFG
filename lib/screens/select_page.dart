@@ -890,8 +890,46 @@ class SelectPageState extends State<SelectPage> with TickerProviderStateMixin {
               seconds: _timer,
               build: (BuildContext context, double time) {
                 _timer = time.round();
-                return Text(
-                    "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}");
+                if (_timer <= 60) {
+                  return Text(
+                      "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}",
+                      style: TextStyle(color: Colors.orange, fontSize: 16));
+                } else if (_timer <= 10) {
+                  return Text(
+                      "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}",
+                      style: TextStyle(color: Colors.red, fontSize: 16));
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black,
+                                offset: Offset(0.0, 1.0), //(x,y)
+                                blurRadius: 6.0,
+                              ),
+                            ],
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}",
+                              style: TextStyle(
+                                  color: Colors.green.shade800, fontSize: 16),
+                            ),
+                          ),
+                          height: 35,
+                        ),
+                      ],
+                    ),
+                  );
+                }
               },
               interval: Duration(milliseconds: 100),
               onFinished: () {
@@ -906,51 +944,42 @@ class SelectPageState extends State<SelectPage> with TickerProviderStateMixin {
                 goToHome(context);
               },
             ),
-            Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Container(
-                      height: 40,
-                      padding: const EdgeInsets.all(10),
-                      margin: const EdgeInsets.only(
-                          left: 0.0, top: 30.0, right: 15.0, bottom: 0.0),
-                      decoration: BoxDecoration(
-                          color: Colors.white, // Background del seleccionable
-                          borderRadius: BorderRadius.circular(10)),
-                      child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                        alignment: AlignmentDirectional.topStart,
-                        dropdownColor: Colors.white,
-                        value: dropdownValue,
-                        icon: const Icon(Icons.arrow_downward),
-                        elevation: 0,
-                        style: const TextStyle(color: Colors.black),
-                        onChanged: (String? value) {
-                          // This is called when the user selects an item.
-                          setState(() {
-                            dropdownValue = value!;
-                            checkPlayerPositions();
-                          });
-                        },
-                        items:
-                            list.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Align(
-                                alignment: Alignment.center,
-                                child: Text(value)),
-                          );
-                        }).toList(),
-                      )),
-                    )
-                  ],
-                ),
-              ],
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.07,
+              left: MediaQuery.of(context).size.width * 0.75,
+              child: Container(
+                height: 40,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Colors.white, // Background del seleccionable
+                    borderRadius: BorderRadius.circular(10)),
+                child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                  alignment: AlignmentDirectional.topStart,
+                  dropdownColor: Colors.white,
+                  value: dropdownValue,
+                  icon: const Icon(Icons.arrow_downward),
+                  elevation: 0,
+                  style: const TextStyle(color: Colors.black),
+                  onChanged: (String? value) {
+                    // This is called when the user selects an item.
+                    setState(() {
+                      dropdownValue = value!;
+                      checkPlayerPositions();
+                    });
+                  },
+                  items: list.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Align(
+                          alignment: Alignment.center, child: Text(value)),
+                    );
+                  }).toList(),
+                )),
+              ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height * 0.04,
+              top: MediaQuery.of(context).size.height * 0.07,
               left: MediaQuery.of(context).size.width * 0.02,
               child: Container(
                 decoration: BoxDecoration(
@@ -984,7 +1013,7 @@ class SelectPageState extends State<SelectPage> with TickerProviderStateMixin {
               ),
             ),
             Positioned(
-              bottom: MediaQuery.of(context).size.height * 0.65,
+              bottom: MediaQuery.of(context).size.height * 0.63,
               left: dropdownValue == "4-3-3"
                   ? (MediaQuery.of(context).size.width) * 0.05
                   : (MediaQuery.of(context).size.width) * 0.15,
@@ -1029,7 +1058,7 @@ class SelectPageState extends State<SelectPage> with TickerProviderStateMixin {
               ),
             ),
             Positioned(
-              bottom: MediaQuery.of(context).size.height * 0.65,
+              bottom: MediaQuery.of(context).size.height * 0.63,
               left: dropdownValue == "4-3-3"
                   ? (MediaQuery.of(context).size.width) * 0.31
                   : (MediaQuery.of(context).size.width) * 0.46,
@@ -1075,7 +1104,7 @@ class SelectPageState extends State<SelectPage> with TickerProviderStateMixin {
             ),
             Positioned(
               bottom: dropdownValue == "4-3-3"
-                  ? MediaQuery.of(context).size.height * 0.65
+                  ? MediaQuery.of(context).size.height * 0.63
                   : MediaQuery.of(context).size.height * 0.53,
               left: dropdownValue == "4-3-3"
                   ? (MediaQuery.of(context).size.width) * 0.57
@@ -1124,10 +1153,10 @@ class SelectPageState extends State<SelectPage> with TickerProviderStateMixin {
             ),
             Positioned(
               bottom: dropdownValue == "4-3-3"
-                  ? MediaQuery.of(context).size.height * 0.53
+                  ? MediaQuery.of(context).size.height * 0.50
                   : MediaQuery.of(context).size.height * 0.42,
               left: dropdownValue == "4-3-3"
-                  ? -(MediaQuery.of(context).size.width * 0.02)
+                  ? -(MediaQuery.of(context).size.width * 0.01)
                   : dropdownValue == "5-3-2"
                       ? (MediaQuery.of(context).size.width) * 0.31
                       : (MediaQuery.of(context).size.width) * 0.15,
@@ -1174,7 +1203,9 @@ class SelectPageState extends State<SelectPage> with TickerProviderStateMixin {
             Positioned(
               bottom: dropdownValue == "5-3-2"
                   ? MediaQuery.of(context).size.height * 0.53
-                  : MediaQuery.of(context).size.height * 0.42,
+                  : dropdownValue == "4-3-3"
+                      ? MediaQuery.of(context).size.height * 0.38
+                      : MediaQuery.of(context).size.height * 0.42,
               left: dropdownValue == "4-3-3"
                   ? (MediaQuery.of(context).size.width) * 0.31
                   : dropdownValue == "5-3-2"
@@ -1223,7 +1254,9 @@ class SelectPageState extends State<SelectPage> with TickerProviderStateMixin {
             Positioned(
               bottom: dropdownValue == "5-3-2"
                   ? MediaQuery.of(context).size.height * 0.34
-                  : MediaQuery.of(context).size.height * 0.53,
+                  : dropdownValue == "4-4-2"
+                      ? MediaQuery.of(context).size.height * 0.53
+                      : MediaQuery.of(context).size.height * 0.50,
               left: (MediaQuery.of(context).size.width) * 0.67,
               child: Stack(
                 children: <Widget>[
