@@ -53,7 +53,7 @@ class PlayerPageState extends State<PlayerPage> {
   late Map<String, List<dynamic>> players;
   bool x2 = false;
 
-  int timer = 5000;
+  int timer = 300;
 
   confirmX2(BuildContext context) {
     globals.userLoggedIn.tokens = globals.userLoggedIn.getTokens - 1;

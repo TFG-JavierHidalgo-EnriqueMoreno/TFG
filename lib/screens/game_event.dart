@@ -85,23 +85,23 @@ class GameEventPageState extends State<GameEventPage> {
 
   // Add a new item to the list
   // This is trigger when the floating button is pressed
-  void _addItem(dynamic item) {
-    _items.insert(_items.length, "${item.keys.first} ${item.values.first}");
-    _key.currentState!.insertItem(0, duration: const Duration(seconds: 1));
-  }
+  // void _addItem(dynamic item) {
+  //   _items.insert(_items.length, "${item.keys.first} ${item.values.first}");
+  //   _key.currentState!.insertItem(0, duration: const Duration(seconds: 1));
+  // }
 
-  startTimer() {
-    int i = 0;
-    Timer t;
-    t = Timer.periodic(Duration(milliseconds: 2000), (Timer t) async {
-      if (_items.length < 6) {
-        _addItem(listItems[i]);
-      } else {
-        t.cancel();
-      }
-      i = i + 1;
-    });
-  }
+  // startTimer() {
+  //   int i = 0;
+  //   Timer t;
+  //   t = Timer.periodic(Duration(milliseconds: 2000), (Timer t) async {
+  //     if (_items.length < 6) {
+  //       _addItem(listItems[i]);
+  //     } else {
+  //       t.cancel();
+  //     }
+  //     i = i + 1;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -122,57 +122,136 @@ class GameEventPageState extends State<GameEventPage> {
                 List<Widget> children;
                 if (snapshot.hasData) {
                   listItems = snapshot.data!["hisOrdenado"];
-                  startTimer();
+                  //startTimer();
                   _updatePlayer1Points(snapshot.data!);
                   children = <Widget>[
-                    Text("0' Comienza el partido"),
-                    Container(
-                      height: 400,
-                      child: AnimatedList(
-                        key: _key,
-                        initialItemCount: 0,
-                        padding: const EdgeInsets.all(10),
-                        itemBuilder: (context, index, animation) {
-                          return SlideTransition(
-                            key: UniqueKey(),
-                            position: Tween<Offset>(
-                              begin: const Offset(0, -0.5),
-                              end: const Offset(0, 0),
-                            ).animate(animation),
-                            child: RotationTransition(
-                              turns: animation,
-                              child: SizeTransition(
-                                axis: Axis.vertical,
-                                sizeFactor: animation,
-                                child: SizedBox(
-                                  height: 150,
-                                  child: InkWell(
-                                    child: Card(
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 20),
-                                      elevation: 10,
-                                      color: Colors.primaries[(index * 100) %
-                                          Colors.primaries.length][300],
-                                      child: Center(
-                                        child: Text(_items[index],
-                                            style:
-                                                const TextStyle(fontSize: 28)),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                    Stepper(
+                      currentStep: 5,
+                      controlsBuilder: (context, _) {
+                        return Row(
+                          children: <Widget>[
+                            ElevatedButton(
+                                onPressed: () {
+                                  endGame(
+                                      context,
+                                      _player1Points,
+                                      _selectedLineup,
+                                      _otherLineup,
+                                      _player2,
+                                      _x2);
+                                },
+                                child: Text('Finalizar partido')),
+                          ],
+                        );
+                      },
+                      steps: <Step>[
+                        Step(
+                          title: const Text('Minuto 0: Comienza el partido'),
+                          isActive: false,
+                          content: Container(
+                            alignment: Alignment.centerLeft,
+                            child: const Text(''),
+                          ),
+                        ),
+                        Step(
+                          title: Text(
+                              'Minuto ${listItems[0].keys.first}: ${listItems[0].values.first}'),
+                          content: Text(''),
+                        ),
+                        Step(
+                          title: Text(
+                              'Minuto ${listItems[1].keys.first}: ${listItems[1].values.first}'),
+                          content: Text(''),
+                        ),
+                        Step(
+                          title: Text(
+                              'Minuto ${listItems[2].keys.first}: ${listItems[2].values.first}'),
+                          content: Text(''),
+                        ),
+                        Step(
+                          title: Text(
+                              'Minuto ${listItems[3].keys.first}: ${listItems[3].values.first}'),
+                          content: Text(''),
+                        ),
+                        Step(
+                          title: Text(
+                              'Minuto ${listItems[4].keys.first}: ${listItems[4].values.first}'),
+                          content: Text(''),
+                        ),
+                      ],
                     ),
-                    ElevatedButton(
-                        onPressed: () {
-                          endGame(context, _player1Points, _selectedLineup,
-                              _otherLineup, _player2, _x2);
-                        },
-                        child: Text('Finalizar partido'))
+
+                    // Container(
+                    //     decoration: BoxDecoration(
+                    //       border: Border.all(color: Colors.green),
+                    //     ),
+                    //     child: const Text(
+                    //       "0' Comienza el partido",
+                    //       style: TextStyle(fontSize: 16),
+                    //     )),
+                    // ListView.builder(
+                    //   padding: const EdgeInsets.all(8),
+                    //   itemCount: snapshot.data!.length,
+                    //   itemBuilder: (BuildContext context, int index) {
+                    //     return Container(
+                    //       decoration: BoxDecoration(
+                    //         border: Border.all(color: Colors.black),
+                    //       ),
+                    //       child: Text(
+                    //         "${snapshot.data![index]}",
+                    //         style: TextStyle(fontSize: 16),
+                    //       ),
+                    //     );
+                    //   },
+                    // ),
+
+                    // Container(
+                    //   height: 400,
+                    //   child: AnimatedList(
+                    //     key: _key,
+                    //     initialItemCount: 0,
+                    //     padding: const EdgeInsets.all(10),
+                    //     itemBuilder: (context, index, animation) {
+                    //       return SlideTransition(
+                    //         key: UniqueKey(),
+                    //         position: Tween<Offset>(
+                    //           begin: const Offset(0, -0.5),
+                    //           end: const Offset(0, 0),
+                    //         ).animate(animation),
+                    //         child: RotationTransition(
+                    //           turns: animation,
+                    //           child: SizeTransition(
+                    //             axis: Axis.vertical,
+                    //             sizeFactor: animation,
+                    //             child: SizedBox(
+                    //               height: 150,
+                    //               child: InkWell(
+                    //                 child: Card(
+                    //                   margin: const EdgeInsets.symmetric(
+                    //                       vertical: 20),
+                    //                   elevation: 10,
+                    //                   color: Colors.primaries[(index * 100) %
+                    //                       Colors.primaries.length][300],
+                    //                   child: Center(
+                    //                     child: Text(_items[index],
+                    //                         style:
+                    //                             const TextStyle(fontSize: 28)),
+                    //                   ),
+                    //                 ),
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         ),
+                    //       );
+                    //     },
+                    //   ),
+                    // ),
+                    // ElevatedButton(
+                    //     onPressed: () {
+                    //       endGame(context, _player1Points, _selectedLineup,
+                    //           _otherLineup, _player2, _x2);
+                    //     },
+                    //     child: Text('Finalizar partido'))
                   ];
                 } else if (snapshot.hasError) {
                   children = <Widget>[
