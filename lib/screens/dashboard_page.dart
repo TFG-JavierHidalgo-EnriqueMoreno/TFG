@@ -204,7 +204,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 ),
                                 Text("${snapshot.data!["favoriteLineUp"]}",
                                     style: TextStyle(
-                                        fontSize: 20,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.w600))
                               ],
                             ),
