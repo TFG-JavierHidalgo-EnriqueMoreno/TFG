@@ -1265,8 +1265,8 @@ Future<Map<String, dynamic>> getRandomEvents(
 
             break;
         }
-        i++;
     }
+    i++;
   }
 
   await db.collection("user_game").doc(lastGame.docs[0].id).update({
