@@ -449,27 +449,6 @@ class ResultPageState extends State<ResultPage> {
                               Text(_player2Points["rating"].toString())
                             ]),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Center(
-                          child: Text(
-                            "Vista general de atributos",
-                            style: TextStyle(
-                              fontSize: 25.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.max,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: const <Widget>[
-                              Text("Grafica"),
-                            ]),
-                      ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(

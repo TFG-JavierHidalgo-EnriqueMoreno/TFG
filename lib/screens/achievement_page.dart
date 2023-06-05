@@ -151,7 +151,7 @@ class _AchievementPageState extends State<AchievementPage> {
                                                 children: [
                                                   Text(
                                                       "${snapshot.data!["achievements"][index].data()["reward"]} "),
-                                                  Icon(Icons.diamond_outlined),
+                                                  //Icon(Icons.diamond_outlined),
                                                 ],
                                               ),
                                   ),
