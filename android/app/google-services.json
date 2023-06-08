@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "525215714726",
+    "firebase_url": "https://battledraft-9f3ce-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "battledraft-9f3ce",
+    "storage_bucket": "battledraft-9f3ce.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:525215714726:android:4897b2f20f06f3fb715367",
+        "android_client_info": {
+          "package_name": "com.example.my_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "525215714726-v19uk92ptkkh6i39qdb2mkpab4p28sgd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU-U0WP_tP9IfZyzAeC83agXyHmOabrHo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "525215714726-v19uk92ptkkh6i39qdb2mkpab4p28sgd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
