@@ -22,8 +22,6 @@
     {
       "name": "async",
       "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/async-2.9.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.14"
     },
     {
       "name": "boolean_selector",
