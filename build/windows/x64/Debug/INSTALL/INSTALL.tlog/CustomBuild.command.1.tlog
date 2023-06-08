@@ -1,0 +1,10 @@
+^C:\SRC\TFG\BUILD\WINDOWS\CMAKEFILES\48A6A73654440C79150B77916C1604EF\INSTALL_FORCE.RULE
+setlocal
+cd .
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
