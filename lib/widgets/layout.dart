@@ -12,6 +12,9 @@ Widget _getDrawer(BuildContext context) {
     child: ListView(
       children: <Widget>[
         UserAccountsDrawerHeader(
+            decoration: BoxDecoration(
+              color: const Color(0xFF4CAF50),
+            ),
             accountName: accountName, accountEmail: accountEmail),
         ListTile(
             title: const Text("Jugar Partido"),
@@ -25,6 +28,10 @@ Widget _getDrawer(BuildContext context) {
             title: const Text("Historial"),
             leading: const Icon(Icons.home),
             onTap: () => showHome(context)),
+        ListTile(
+            title: const Text("Estadísticas"),
+            leading: const Icon(Icons.query_stats),
+            onTap: () => stats(context)),
         ListTile(
             title: const Text("Cerrar Sesion"),
             leading: const Icon(Icons.home),

@@ -2,10 +2,15 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:my_app/screens/achievement_page.dart';
+import 'package:my_app/screens/dashboard_page.dart';
 import 'package:my_app/screens/login_page.dart';
 import 'package:my_app/screens/player_page.dart';
+import 'package:my_app/screens/ranking_page.dart';
+import 'package:my_app/screens/rules_page.dart';
 import 'package:my_app/screens/searching_page.dart';
 import 'package:my_app/screens/select_page.dart';
+import 'package:my_app/screens/termsService_page.dart';
 import 'package:my_app/screens/user_profile.dart';
 import 'package:my_app/services/firebase_service.dart';
 import '../routes/custom_route.dart';
@@ -26,6 +31,7 @@ class _HomePageState extends State<HomePage> {
       body: globals.isLoggedIn ? _page(context) : LoginScreen(),
       appBar: AppBar(
         title: const Text("BattleDraft"),
+        backgroundColor: const Color(0xFF4CAF50),
       ),
       drawer: _getDrawer(context),
     );
@@ -52,7 +58,13 @@ Widget _page(BuildContext context) {
                   children: [
                     Icon(Icons.person),
                     Text('Liga: ${globals.userLevel.name}'),
-                    Text("Puntos de liga: ${globals.userLoggedIn.elo}")
+                    Text("Puntos de liga: ${globals.userLoggedIn.elo}"),
+                    Row(
+                      children: [
+                        Text("${globals.userLoggedIn.tokens} "),
+                        Icon(Icons.diamond_outlined),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -84,6 +96,7 @@ Widget _page(BuildContext context) {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4CAF50)),
                   onPressed: () {
                     playGame(context);
                   },
@@ -195,6 +208,9 @@ Widget _getDrawer(BuildContext context) {
     child: ListView(
       children: <Widget>[
         UserAccountsDrawerHeader(
+            decoration: BoxDecoration(
+              color: const Color(0xFF4CAF50),
+            ),
             accountName: accountName,
             accountEmail: accountEmail,
             currentAccountPicture: accountPicture),
@@ -207,9 +223,25 @@ Widget _getDrawer(BuildContext context) {
             leading: const Icon(Icons.play_arrow),
             onTap: () => playGame(context)),
         ListTile(
-            title: const Text("Historial"),
-            leading: const Icon(Icons.history),
-            onTap: () => showHome(context)),
+            title: const Text("Logros"),
+            leading: const Icon(Icons.auto_stories_sharp),
+            onTap: () => achievement(context)),
+        ListTile(
+            title: const Text("Estadísticas"),
+            leading: const Icon(Icons.query_stats),
+            onTap: () => stats(context)),
+        ListTile(
+            title: const Text("Ranking Global"),
+            leading: const Icon(Icons.star_rate),
+            onTap: () => ranking(context)),
+        ListTile(
+            title: const Text("Terminos"),
+            leading: const Icon(Icons.library_books),
+            onTap: () => termsService(context)),
+        ListTile(
+            title: const Text("Reglas"),
+            leading: const Icon(Icons.rule),
+            onTap: () => showRules(context)),
         ListTile(
             title: const Text("Cerrar Sesion"),
             leading: const Icon(Icons.logout),
@@ -224,6 +256,14 @@ showHome(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const HomePage(),
+    ),
+  );
+}
+
+showRules(BuildContext context) {
+  Navigator.of(context).pushReplacement(
+    FadePageRoute(
+      builder: (context) => const RulesPage(),
     ),
   );
 }
@@ -245,12 +285,46 @@ playGame(BuildContext context) {
   );
 }
 
+ranking(BuildContext context) {
+  Navigator.of(context).pushReplacement(
+    FadePageRoute(
+      builder: (context) => const RankingPage(),
+    ),
+  );
+}
+
 logout(BuildContext context) {
   resetPlayerState();
   globals.isLoggedIn = false;
   Navigator.of(context).pushReplacement(
     FadePageRoute(
       builder: (context) => const LoginScreen(),
+    ),
+  );
+}
+
+achievement(BuildContext context) {
+  resetPlayerState();
+  Navigator.of(context).pushReplacement(
+    FadePageRoute(
+      builder: (context) => const AchievementPage(),
+    ),
+  );
+}
+
+termsService(BuildContext context) {
+  Navigator.of(context).pushReplacement(
+    FadePageRoute(
+      builder: (context) => TermsService(),
+    ),
+  );
+}
+
+stats(BuildContext context) {
+  resetPlayerState();
+  Navigator.of(context).pushReplacement(
+    FadePageRoute(
+      builder: (context) => const DashboardPage(),
     ),
   );
 }

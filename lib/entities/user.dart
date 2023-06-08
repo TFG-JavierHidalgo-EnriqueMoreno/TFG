@@ -13,9 +13,10 @@ class User extends ModelMVC {
   String email = "";
   int elo = 0;
   String status = "";
+  int tokens = 0;
 
   User? newUser(String username, String password, String name, String phone,
-      String email, int elo, String status) {
+      String email, int elo, String status, int tokens) {
     this.username = username;
     this.password = password;
     this.name = name;
@@ -23,6 +24,7 @@ class User extends ModelMVC {
     this.email = email;
     this.elo = elo;
     this.status = status;
+    this.tokens = tokens;
   }
 
   String get getUsername {
@@ -53,6 +55,10 @@ class User extends ModelMVC {
     return status;
   }
 
+  int get getTokens {
+    return tokens;
+  }
+
   set setUsername(String newUsername) {
     username = newUsername;
   }
@@ -79,5 +85,9 @@ class User extends ModelMVC {
 
   set setStatus(String newStatus) {
     status = newStatus;
+  }
+
+  set setTokens(int newTokens) {
+    tokens = newTokens;
   }
 }

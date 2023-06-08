@@ -32,7 +32,6 @@ Future<List> getUsers() async {
       "data": q.docs[i].data(),
       "level": level.docs[0].data()
     };
-
     users.add(u);
   }
   return users;
@@ -40,6 +39,8 @@ Future<List> getUsers() async {
 
 Future<void> saveUser(String? email, String? password, String? phone,
     String? username, String? name, String? surname) async {
+  var achievements = await getAchievements();
+
   await db.collection("users").add({
     "email": email,
     "password": password,
@@ -47,23 +48,40 @@ Future<void> saveUser(String? email, String? password, String? phone,
     "name": "$name $surname",
     "username": username,
     "elo": 0,
-    "status": "not_playing"
-  }).then((value) => value.collection("level").add({
-        "name": "Bronce",
-        "min": 0,
-        "max": 10,
-        "next": "Plata",
-        "previous": null,
-        "victory": 3,
-        "lose": 0,
-        "num_bronzes": 20,
-        "num_golds": 2,
-        "num_silvers": 13,
-        "team_value": 350
-      }));
+    "status": "not_playing",
+    "tokens": 0
+  }).then((value) {
+    value.collection("level").add({
+      "name": "Bronce",
+      "min": 0,
+      "max": 10,
+      "next": "Plata",
+      "previous": null,
+      "victory": 3,
+      "lose": 0,
+      "num_bronzes": 20,
+      "num_golds": 2,
+      "num_silvers": 13,
+      "team_value": 350
+    });
+    for (var element in achievements) {
+      db.collection("user_achievements").add({
+        "user_id": value.id,
+        "achievement_id": element.id,
+        "progress": 0,
+        "claimed": false
+      });
+    }
+  });
 }
 
-Future<void> calcElo(bool gameResult) async {
+Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+    getAchievements() async {
+  var achievements = await db.collection("achievements").get();
+  return achievements.docs;
+}
+
+Future<void> calcElo(bool gameResult, bool x2) async {
   Future<List> users = getUsers();
 
   User u = globals.userLoggedIn;
@@ -71,6 +89,10 @@ Future<void> calcElo(bool gameResult) async {
   List list = await users;
 
   var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+  if (x2) {
+    us["level"]["victory"] = us["level"]["victory"] * 2;
+    us["level"]["lose"] = us["level"]["lose"] * 2;
+  }
   if (gameResult) {
     if (us["level"]["name"] != "Maestro") {
       if (us["data"]["elo"] + us["level"]["victory"] > us["level"]["max"]) {
@@ -116,6 +138,7 @@ Future<void> calcElo(bool gameResult) async {
         "username": us["data"]["username"],
         "phone": us["data"]["phone"],
         "status": us["data"]["status"],
+        "tokens": us["data"]["tokens"]
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] + us["level"]["victory"];
@@ -129,6 +152,7 @@ Future<void> calcElo(bool gameResult) async {
         "username": us["data"]["username"],
         "phone": us["data"]["phone"],
         "status": us["data"]["status"],
+        "tokens": us["data"]["tokens"]
       });
 
       globals.userLoggedIn.elo = 250;
@@ -141,6 +165,7 @@ Future<void> calcElo(bool gameResult) async {
         "username": us["data"]["username"],
         "phone": us["data"]["phone"],
         "status": us["data"]["status"],
+        "tokens": us["data"]["tokens"]
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] + us["level"]["victory"];
@@ -193,6 +218,7 @@ Future<void> calcElo(bool gameResult) async {
         "username": us["data"]["username"],
         "phone": us["data"]["phone"],
         "status": us["data"]["status"],
+        "tokens": us["data"]["tokens"]
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] - us["level"]["lose"];
@@ -205,6 +231,7 @@ Future<void> calcElo(bool gameResult) async {
         "username": us["data"]["username"],
         "phone": us["data"]["phone"],
         "status": us["data"]["status"],
+        "tokens": us["data"]["tokens"]
       });
 
       globals.userLoggedIn.elo = 0;
@@ -217,6 +244,7 @@ Future<void> calcElo(bool gameResult) async {
         "username": us["data"]["username"],
         "phone": us["data"]["phone"],
         "status": us["data"]["status"],
+        "tokens": us["data"]["tokens"]
       });
 
       globals.userLoggedIn.elo = us["data"]["elo"] - us["level"]["lose"];
@@ -242,6 +270,7 @@ Future<void> editUser(
     "username": username,
     "phone": phone,
     "status": "not_playing",
+    "tokens": us["data"]["tokens"]
   });
 
   globals.userLoggedIn.name = name;
@@ -266,6 +295,20 @@ Future<void> deleteUser() async {
   globals.userLoggedIn.username = "";
   globals.userLoggedIn.phone = "";
   globals.userLoggedIn.password = "";
+}
+
+Future<void> updateUserTokens() async {
+  Future<List> users = getUsers();
+
+  User u = globals.userLoggedIn;
+
+  List list = await users;
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+
+  await db
+      .collection("users")
+      .doc(us["uid"])
+      .update({"tokens": us["data"]["tokens"] - 1});
 }
 
 Future<void> saveGame(int? localGoals, int? awayGoals, Lineup lineup) async {
@@ -599,6 +642,7 @@ Future<Map<String, List<dynamic>>> searchGame() async {
       .where('elo', isLessThanOrEqualTo: max)
       .where('elo', isGreaterThanOrEqualTo: min)
       .get();
+
   var player2;
   if (allPlayers.docs.length > 1) {
     player2 = allPlayers.docs.firstWhere(
@@ -854,7 +898,6 @@ getOtherPlayerCO() async {
 
   Map<String, String> res = {
     "otherPlayerCaptain": other_game.docs[0].data()["captain"],
-    //"otherPlayerOpponent": other_game.docs[0].data()["opponent"]
   };
 
   return res;
@@ -938,7 +981,7 @@ Future<Map<String, dynamic>> getRandomEvents(
     switch (events.docs[indexRandom].data()["type"]) {
       case "buena_forma":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         Random random2 = Random();
         int player = random.nextInt(players.length);
         var p = players[player];
@@ -980,7 +1023,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "medio_creativo":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         player1points["passing"] = (player1points["passing"]! +
             events.docs[indexRandom].data()["influence"]) as int?;
         Map<int, String> e = {
@@ -992,7 +1035,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "portero_intratable":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         player1points["defense"] = (player1points["defense"]! +
             events.docs[indexRandom].data()["influence"]) as int?;
         Map<int, String> e = {
@@ -1003,7 +1046,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "defensa_solida":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         player1points["defense"] = (player1points["defense"]! +
             events.docs[indexRandom].data()["influence"]) as int?;
         Map<int, String> e = {
@@ -1015,7 +1058,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "lesion":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         Random random2 = Random();
         int player = random.nextInt(players.length);
         var p = players[player];
@@ -1056,7 +1099,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "baja_forma":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         Random random2 = Random();
         int player = random.nextInt(players.length);
         var p = players[player];
@@ -1095,7 +1138,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "delantero_enchufado":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         player1points["shooting"] = (player1points["shooting"]! +
             events.docs[indexRandom].data()["influence"]) as int?;
         Map<int, String> e = {
@@ -1106,7 +1149,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "amarilla":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         Random random2 = Random();
         int player = random.nextInt(players.length);
         var p = players[player];
@@ -1146,7 +1189,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "molestia":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         Random random2 = Random();
         int player = random.nextInt(players.length);
         var p = players[player];
@@ -1185,7 +1228,7 @@ Future<Map<String, dynamic>> getRandomEvents(
         break;
       case "roja":
         Random random1 = Random();
-        int min = random.nextInt(91);
+        int min = (random.nextDouble() * 91).round();
         Random random2 = Random();
         int player = random.nextInt(players.length);
         var p = players[player];
@@ -1222,8 +1265,8 @@ Future<Map<String, dynamic>> getRandomEvents(
 
             break;
         }
-        i++;
     }
+    i++;
   }
 
   await db.collection("user_game").doc(lastGame.docs[0].id).update({
@@ -1252,6 +1295,56 @@ Future<Map<String, dynamic>> getRandomEvents(
   };
 }
 
+saveGameNotConfirm(Map<String, int?> player1points, String lineup,
+    Map<String, int> gameResult) async {
+  QuerySnapshot<Map<String, dynamic>> lastGame = await getLastGame();
+  Future<List> users = getUsers();
+  User u = globals.userLoggedIn;
+  Lineup l = Lineup();
+  l.newLineup(lineup, "");
+  List list = await users;
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+
+  await db.collection("user_game").doc(lastGame.docs[0].id).update({
+    "strength": player1points["strength"],
+    "shooting": player1points["shooting"],
+    "speed": player1points["speed"],
+    "dribbling": player1points["dribbling"],
+    "defense": player1points["defense"],
+    "passing": player1points["passing"],
+    "rating": player1points["rating"]
+  });
+
+  var player2 = await getPlayer2();
+  var game = await getLastGame();
+
+  var res = await db
+      .collection("user_game")
+      .where("game_id", isEqualTo: game.docs[0].data()["game_id"])
+      .where("user_id", isEqualTo: player2.id)
+      .get();
+
+  db.collection("user_game").doc(res.docs[0].id).update({
+    "strength": 0,
+    "shooting": 0,
+    "speed": 0,
+    "dribbling": 0,
+    "defense": 0,
+    "passing": 0,
+    "rating": 0
+  });
+  await db.collection("games").doc(lastGame.docs[0].data()["game_id"]).update({
+    "local_goals": 3,
+    "away_goals": 0,
+    "score": 1,
+    "local_user": us["uid"],
+    "away_user": player2.id,
+    "local_lineup": lineup,
+    "away_lineup": ""
+  });
+  updateAchievements(gameResult, player1points, l);
+}
+
 Future<Map<String, int>> getPlayer2Points() async {
   var player2 = await getPlayer2();
   var game = await getLastGame();
@@ -1271,4 +1364,293 @@ Future<Map<String, int>> getPlayer2Points() async {
     "passing": res.docs[0].data()["passing"],
     "rating": res.docs[0].data()["rating"]
   };
+}
+
+Future<Map<String, dynamic>> getUserAchievements() async {
+  Future<List> users = getUsers();
+  User u = globals.userLoggedIn;
+  List list = await users;
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+  QuerySnapshot<Map<String, dynamic>> user_achievements = await db
+      .collection("user_achievements")
+      .where("user_id", isEqualTo: us["uid"])
+      .get();
+  var achievements = await getAchievements();
+  return {
+    "achievements": achievements,
+    "user_achievements": user_achievements.docs
+  };
+}
+
+Future<Map<String, dynamic>> getUserStatistics() async {
+  Future<List> users = getUsers();
+  User u = globals.userLoggedIn;
+  List list = await users;
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+  var nGames = await db
+      .collection("user_game")
+      .where("user_id", isEqualTo: us["uid"])
+      .count()
+      .get();
+
+  var totalGames = await db
+      .collection("user_game")
+      .where("user_id", isEqualTo: us["uid"])
+      .get();
+
+  int nVictory = 0;
+  int? nGoals = 0;
+  int n442 = 0;
+  int n433 = 0;
+  int n532 = 0;
+  int? shooting = 0;
+  int? defense = 0;
+  int? passing = 0;
+  for (var user_game in totalGames.docs) {
+    var game =
+        await db.collection("games").doc(user_game.data()["game_id"]).get();
+    if (game.data()!["local_user"] == us["uid"]) {
+      if (game.data()!["score"] == 1) {
+        nVictory = nVictory + 1;
+      }
+      nGoals = (nGoals! + game.data()!["local_goals"]) as int?;
+
+      switch (game.data()!["local_lineup"]) {
+        case "4-4-2":
+          n442 = n442 + 1;
+          break;
+        case "4-3-3":
+          n433 = n433 + 1;
+          break;
+        case "5-3-2":
+          n532 = n532 + 1;
+          break;
+        default:
+      }
+    } else {
+      if (game.data()!["away_user"] == us["uid"]) {
+        if (game.data()!["score"] == 2) {
+          nVictory = nVictory + 1;
+        }
+        nGoals = (nGoals! + game.data()!["away_goals"]) as int?;
+
+        switch (game.data()!["away_lineup"]) {
+          case "4-4-2":
+            n442 = n442 + 1;
+            break;
+          case "4-3-3":
+            n433 = n433 + 1;
+            break;
+          case "5-3-2":
+            n532 = n532 + 1;
+            break;
+          default:
+        }
+      }
+    }
+    shooting = (shooting! + user_game.data()["shooting"]) as int?;
+    defense = (defense! + user_game.data()["defense"]) as int?;
+    passing = (passing! + user_game.data()["passing"]) as int?;
+  }
+
+  return {
+    "nGames": nGames.count,
+    "nVictory": nVictory,
+    "averageVictory": nGames.count == 0 ? 0 : (nVictory / nGames.count) * 100,
+    "nGoals": nGoals,
+    "averageGoals": nGames.count == 0 ? 0 : nGoals! / nGames.count,
+    "favoriteLineUp": nGames.count == 0
+        ? "Aún no has jugado ningún partido"
+        : n442 >= n433 && n442 >= n532
+            ? "4-4-2 ($n442 partidos)"
+            : n433 >= n532
+                ? "4-3-3 ($n433 partidos)"
+                : "5-3-2 ($n532 partidos)",
+    "styleGame": nGames.count == 0
+        ? "Aún no has jugado ningún partido"
+        : shooting! >= defense! && shooting >= passing!
+            ? "Ofensivo"
+            : defense >= passing!
+                ? "Defensivo"
+                : "Equilibrado"
+  };
+}
+
+updateAchievements(Map<String, int> gameResult, Map<String, int?> player1Points,
+    Lineup lineup) async {
+  Map<String, dynamic> user_achievements = await getUserAchievements();
+  for (var element in user_achievements["achievements"]) {
+    var user_achievement = user_achievements["user_achievements"]
+        .firstWhere((e) => e.data()["achievement_id"] == element.id);
+    switch (element.data()["title"]) {
+      case "Primer partido":
+        if (user_achievement.data()["progress"] != 1) {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": 1,
+          });
+        }
+        break;
+      case "Primera victoria":
+        if (user_achievement.data()["progress"] != 1 &&
+            gameResult["player1Goals"]! > gameResult["player2Goals"]!) {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": 1,
+          });
+        }
+        break;
+      case "10 victorias":
+        if (user_achievement.data()["progress"] != 10 &&
+            gameResult["player1Goals"]! > gameResult["player2Goals"]!) {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": user_achievement.data()["progress"] + 1,
+          });
+        }
+        break;
+      case "Victoria aplastante":
+        if (user_achievement.data()["progress"] != 1 &&
+            gameResult["player1Goals"]! == 7) {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": 1,
+          });
+        }
+        break;
+      case "Dream Team":
+        if (user_achievement.data()["progress"] != 1 &&
+            player1Points["rating"]! >= 94) {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": 1,
+          });
+        }
+        break;
+      case "Poner el autobús":
+        if (user_achievement.data()["progress"] != 5 &&
+            lineup.getLocalLineup == "5-3-2") {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": user_achievement.data()["progress"] + 1,
+          });
+        }
+        break;
+      case "Partido a partido":
+        if (user_achievement.data()["progress"] != 5 &&
+            lineup.getLocalLineup == "4-4-2") {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": user_achievement.data()["progress"] + 1,
+          });
+        }
+        break;
+      case "Hasta el final":
+        if (user_achievement.data()["progress"] != 5 &&
+            lineup.getLocalLineup == "4-3-3") {
+          await db
+              .collection("user_achievements")
+              .doc(user_achievement.id)
+              .update({
+            "progress": user_achievement.data()["progress"] + 1,
+          });
+        }
+        break;
+      default:
+    }
+  }
+}
+
+updateTokens(int reward, String id_achievement) async {
+  await db.collection("user_achievements").doc(id_achievement).update({
+    "claimed": true,
+  });
+  Future<List> users = getUsers();
+
+  User u = globals.userLoggedIn;
+
+  List list = await users;
+
+  var us = list.firstWhere((element) => element["data"]["email"] == u.email);
+  await db
+      .collection("users")
+      .doc(us["uid"])
+      .update({"tokens": us["data"]["tokens"] + reward});
+
+  globals.userLoggedIn.tokens = globals.userLoggedIn.tokens + reward;
+}
+
+deleteGame() async {
+  var game = await getLastGame();
+  await db.collection("games").doc(game.docs[0].data()["game_id"]).delete();
+  await db.collection("user_game").doc(game.docs[0].id).delete();
+}
+
+Future<Map<String, List<Map<String, int>>>> getGlobalRanking() async {
+  Map<String, List<Map<String, int>>> res = {};
+  List<Map<String, int>> listVictory = [];
+  List<Map<String, int>> listElo = [];
+  List<dynamic> users = await getUsers();
+
+  for (int i = 0; i < users.length; i++) {
+    Map<String, int> player_victory = {};
+    Map<String, int> player_elo = {};
+    int nVictory = 0;
+    QuerySnapshot<Map<String, dynamic>> q = await db
+        .collection("users")
+        .where("email", isEqualTo: users[i]["data"]["email"])
+        .get();
+    String uid = q.docs[0].id;
+    QuerySnapshot<Map<String, dynamic>> user_games =
+        await db.collection("user_game").where("user_id", isEqualTo: uid).get();
+    for (int j = 0; j < user_games.docs.length; j++) {
+      DocumentSnapshot<Map<String, dynamic>> game = await db
+          .collection("games")
+          .doc(user_games.docs[j].data()["game_id"])
+          .get();
+      if (game["local_user"] == uid) {
+        if (game["score"] == 1) {
+          nVictory = nVictory + 1;
+        }
+      } else {
+        if (game["score"] == 2) {
+          nVictory = nVictory + 1;
+        }
+      }
+    };
+    player_victory.putIfAbsent(users[i]["data"]["username"], () => nVictory);
+    listVictory.add(player_victory);
+
+    player_elo.putIfAbsent(
+        users[i]["data"]["username"], () => users[i]["data"]["elo"] as int);
+
+    listElo.add(player_elo);
+  }
+
+  listVictory.sort((a, b) => b.values.first.compareTo(a.values.first));
+  listElo.sort((a, b) => b.values.first.compareTo(a.values.first));
+  if(listVictory.length > 10){
+    listVictory = listVictory.sublist(0, 9);
+  }
+  if(listElo.length > 10){
+    listElo = listElo.sublist(0, 9);
+  }
+  res.putIfAbsent("nVictory", () => listVictory);
+  res.putIfAbsent("elo", () => listElo);
+
+  return res;
 }

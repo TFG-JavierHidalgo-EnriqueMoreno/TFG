@@ -13,14 +13,18 @@ import 'package:my_app/routes/custom_route.dart';
 import 'package:my_app/screens/selectRival_page.dart';
 import 'package:my_app/services/api_service.dart';
 import 'package:my_app/services/firebase_service.dart';
+import 'package:timer_count_down/timer_controller.dart';
+import 'package:timer_count_down/timer_count_down.dart';
 import 'home_page.dart';
 
 import 'package:my_app/entities/globals.dart' as globals;
 
 class SelectPage extends StatefulWidget {
   final Map<String, List<dynamic>> p;
-
-  const SelectPage({super.key, required this.p});
+  final bool x2;
+  final int timer;
+  const SelectPage(
+      {super.key, required this.p, required this.x2, required this.timer});
 
   @override
   SelectPageState createState() {
@@ -28,21 +32,45 @@ class SelectPage extends StatefulWidget {
   }
 }
 
-class SelectPageState extends State<SelectPage> {
+class SelectPageState extends State<SelectPage> with TickerProviderStateMixin {
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   //
   // Note: This is a `GlobalKey<FormState>`,
   // not a GlobalKey<MyCustomFormState>.
+  late AnimationController controller;
 
   @override
   void initState() {
     super.initState();
     cp = widget.p;
+    _x2 = widget.x2;
+    _timer = widget.timer;
     _assignPlayers(cp);
+    controller = AnimationController(
+      /// [AnimationController]s can be created with `vsync: this` because of
+      /// [TickerProviderStateMixin].
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..addListener(() {
+        setState(() {});
+      });
+    controller.repeat();
   }
 
+  @override
+  void dispose() {
+    _controller.pause();
+    controller.dispose();
+    super.dispose();
+  }
+
+  final CountdownController _controller =
+      new CountdownController(autoStart: true);
+
   late Map<String, List<dynamic>> cp;
+  late bool _x2;
+  late int _timer;
 
   List<dynamic>? g = [];
   List<dynamic>? d = [];
@@ -89,7 +117,7 @@ class SelectPageState extends State<SelectPage> {
     10: {},
   };
 
-  bool loaded = false;
+  bool confirmed = false;
 
   void _assignPlayers(Map<String, List<dynamic>> cp) {
     g = cp["PT"];
@@ -106,6 +134,13 @@ class SelectPageState extends State<SelectPage> {
     setState(() {
       _obscureText = !_obscureText;
     });
+  }
+
+  String _printDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$twoDigitMinutes:$twoDigitSeconds";
   }
 
   void _changeButton(BuildContext context, bool changed, int key,
@@ -213,15 +248,15 @@ class SelectPageState extends State<SelectPage> {
       List<dynamic>? l, List<dynamic>? lc) {
     showDialog<String>(
       context: context,
-      barrierColor: Colors.transparent,
+      barrierColor: Colors.black38,
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Selecciona jugador'),
         //content: const Text('Usuario eliminado'),
         actions: <Widget>[
           SingleChildScrollView(
             child: Container(
-              height: 300,
-              width: 300,
+              height: MediaQuery.of(context).size.height * 0.65,
+              width: MediaQuery.of(context).size.width * 0.9,
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: lc!.length,
@@ -267,7 +302,7 @@ class SelectPageState extends State<SelectPage> {
                               Row(
                                 children: [
                                   Padding(
-                                    padding: EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(6.0),
                                     child: CircleAvatar(
                                       radius: 11.5,
                                       backgroundColor:
@@ -286,7 +321,7 @@ class SelectPageState extends State<SelectPage> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(6.0),
                                     child: CircleAvatar(
                                       radius: 11.5,
                                       backgroundColor: lc[index]["speed"] < 35
@@ -304,7 +339,7 @@ class SelectPageState extends State<SelectPage> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(6.0),
                                     child: CircleAvatar(
                                       radius: 11.5,
                                       backgroundColor:
@@ -323,7 +358,7 @@ class SelectPageState extends State<SelectPage> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(6.0),
                                     child: CircleAvatar(
                                       radius: 11.5,
                                       backgroundColor: lc[index]["passing"] < 35
@@ -341,7 +376,7 @@ class SelectPageState extends State<SelectPage> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(6.0),
                                     child: CircleAvatar(
                                       radius: 11.5,
                                       backgroundColor:
@@ -360,7 +395,7 @@ class SelectPageState extends State<SelectPage> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(6.0),
                                     child: CircleAvatar(
                                       radius: 11.5,
                                       backgroundColor: lc[index]["defense"] < 35
@@ -378,7 +413,7 @@ class SelectPageState extends State<SelectPage> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(6.0),
                                     child: CircleAvatar(
                                       radius: 11.5,
                                       backgroundColor: lc[index]["rating"] < 35
@@ -400,43 +435,43 @@ class SelectPageState extends State<SelectPage> {
                               Row(
                                 children: const [
                                   Padding(
-                                    padding: EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(6.0),
                                     child: Text("SHO",
                                         style: TextStyle(
                                             fontSize: 12, color: Colors.black)),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(6.0),
                                     child: Text("PAC",
                                         style: TextStyle(
                                             fontSize: 12, color: Colors.black)),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(6.0),
                                     child: Text("PHY",
                                         style: TextStyle(
                                             fontSize: 12, color: Colors.black)),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(6.0),
                                     child: Text("PAS",
                                         style: TextStyle(
                                             fontSize: 12, color: Colors.black)),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(6.0),
                                     child: Text("DRI",
                                         style: TextStyle(
                                             fontSize: 12, color: Colors.black)),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(6.0),
                                     child: Text("DEF",
                                         style: TextStyle(
                                             fontSize: 12, color: Colors.black)),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(6.0),
                                     child: Text("TOT",
                                         style: TextStyle(
                                             fontSize: 12, color: Colors.black)),
@@ -466,8 +501,8 @@ class SelectPageState extends State<SelectPage> {
         actions: <Widget>[
           SingleChildScrollView(
             child: Container(
-              height: 300,
-              width: 300,
+              height: MediaQuery.of(context).size.height * 0.65,
+              width: MediaQuery.of(context).size.width * 0.9,
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: _selectedPlayers.length,
@@ -519,7 +554,7 @@ class SelectPageState extends State<SelectPage> {
                                 Row(
                                   children: [
                                     Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(6.0),
                                       child: CircleAvatar(
                                         radius: 11.5,
                                         backgroundColor: _selectedPlayers[index]
@@ -543,7 +578,7 @@ class SelectPageState extends State<SelectPage> {
                                       ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(6.0),
                                       child: CircleAvatar(
                                         radius: 11.5,
                                         backgroundColor: _selectedPlayers[index]
@@ -565,7 +600,7 @@ class SelectPageState extends State<SelectPage> {
                                       ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(6.0),
                                       child: CircleAvatar(
                                         radius: 11.5,
                                         backgroundColor: _selectedPlayers[index]
@@ -589,7 +624,7 @@ class SelectPageState extends State<SelectPage> {
                                       ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(6.0),
                                       child: CircleAvatar(
                                         radius: 11.5,
                                         backgroundColor: _selectedPlayers[index]
@@ -612,7 +647,7 @@ class SelectPageState extends State<SelectPage> {
                                       ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(6.0),
                                       child: CircleAvatar(
                                         radius: 11.5,
                                         backgroundColor: _selectedPlayers[index]
@@ -636,7 +671,7 @@ class SelectPageState extends State<SelectPage> {
                                       ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(6.0),
                                       child: CircleAvatar(
                                         radius: 11.5,
                                         backgroundColor: _selectedPlayers[index]
@@ -659,7 +694,7 @@ class SelectPageState extends State<SelectPage> {
                                       ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(6.0),
                                       child: CircleAvatar(
                                         radius: 11.5,
                                         backgroundColor: _selectedPlayers[index]
@@ -686,49 +721,49 @@ class SelectPageState extends State<SelectPage> {
                                 Row(
                                   children: const [
                                     Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(6.0),
                                       child: Text("SHO",
                                           style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.black)),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(6.0),
                                       child: Text("PAC",
                                           style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.black)),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(6.0),
                                       child: Text("PHY",
                                           style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.black)),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(6.0),
                                       child: Text("PAS",
                                           style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.black)),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(6.0),
                                       child: Text("DRI",
                                           style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.black)),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(6.0),
                                       child: Text("DEF",
                                           style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.black)),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(6.0),
                                       child: Text("TOT",
                                           style: TextStyle(
                                               fontSize: 12,
@@ -836,8 +871,8 @@ class SelectPageState extends State<SelectPage> {
     return MaterialApp(
       title: appTitle,
       home: Scaffold(
-        drawer: _getDrawer(context),
         appBar: AppBar(
+          backgroundColor: const Color(0xFF4CAF50),
           title: const Text(appTitle),
         ),
         body: Scaffold(
@@ -851,52 +886,101 @@ class SelectPageState extends State<SelectPage> {
                 ),
               ),
             ),
-            Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Container(
-                      height: 40,
-                      padding: const EdgeInsets.all(10),
-                      margin: const EdgeInsets.only(
-                          left: 0.0, top: 30.0, right: 15.0, bottom: 0.0),
-                      decoration: BoxDecoration(
-                          color: Colors.white, // Background del seleccionable
-                          borderRadius: BorderRadius.circular(10)),
-                      child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                        alignment: AlignmentDirectional.topStart,
-                        dropdownColor: Colors.white,
-                        value: dropdownValue,
-                        icon: const Icon(Icons.arrow_downward),
-                        elevation: 0,
-                        style: const TextStyle(color: Colors.black),
-                        onChanged: (String? value) {
-                          // This is called when the user selects an item.
-                          setState(() {
-                            dropdownValue = value!;
-                            checkPlayerPositions();
-                          });
-                        },
-                        items:
-                            list.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Align(
-                                alignment: Alignment.center,
-                                child: Text(value)),
-                          );
-                        }).toList(),
-                      )),
-                    )
-                  ],
-                ),
-              ],
+            Countdown(
+              seconds: _timer,
+              build: (BuildContext context, double time) {
+                _timer = time.round();
+                if (_timer <= 60) {
+                  return Text(
+                      "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}",
+                      style: TextStyle(color: Colors.orange, fontSize: 16));
+                } else if (_timer <= 10) {
+                  return Text(
+                      "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}",
+                      style: TextStyle(color: Colors.red, fontSize: 16));
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black,
+                                offset: Offset(0.0, 1.0), //(x,y)
+                                blurRadius: 6.0,
+                              ),
+                            ],
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "Tiempo restante de partido: ${_printDuration(Duration(seconds: time.round()))}",
+                              style: TextStyle(
+                                  color: Colors.green.shade800, fontSize: 16),
+                            ),
+                          ),
+                          height: 35,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+              interval: Duration(milliseconds: 100),
+              onFinished: () {
+                deleteGame();
+                // ScaffoldMessenger.of(context).showSnackBar(
+                //   const SnackBar(
+                //       duration: Duration(seconds: 3),
+                //       backgroundColor: Color.fromARGB(255, 209, 67, 67),
+                //       content: Text(
+                //           'Ningun jugador ha completado el partido. Partida cancelada')),
+                // );
+                goToHome(context);
+              },
             ),
             Positioned(
-              top: 30,
-              left: 10,
+              top: MediaQuery.of(context).size.height * 0.07,
+              left: MediaQuery.of(context).size.width * 0.75,
+              child: Container(
+                height: 40,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Colors.white, // Background del seleccionable
+                    borderRadius: BorderRadius.circular(10)),
+                child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                  alignment: AlignmentDirectional.topStart,
+                  dropdownColor: Colors.white,
+                  value: dropdownValue,
+                  icon: const Icon(Icons.arrow_downward),
+                  elevation: 0,
+                  style: const TextStyle(color: Colors.black),
+                  onChanged: (String? value) {
+                    // This is called when the user selects an item.
+                    setState(() {
+                      dropdownValue = value!;
+                      checkPlayerPositions();
+                    });
+                  },
+                  items: list.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Align(
+                          alignment: Alignment.center, child: Text(value)),
+                    );
+                  }).toList(),
+                )),
+              ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.07,
+              left: MediaQuery.of(context).size.width * 0.02,
               child: Container(
                 decoration: BoxDecoration(
                   boxShadow: [
@@ -929,10 +1013,10 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              bottom: MediaQuery.of(context).size.height - 260,
+              bottom: MediaQuery.of(context).size.height * 0.63,
               left: dropdownValue == "4-3-3"
-                  ? (MediaQuery.of(context).size.width) - 385
-                  : (MediaQuery.of(context).size.width) - 335,
+                  ? (MediaQuery.of(context).size.width) * 0.05
+                  : (MediaQuery.of(context).size.width) * 0.15,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -974,10 +1058,10 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              bottom: MediaQuery.of(context).size.height - 260,
+              bottom: MediaQuery.of(context).size.height * 0.63,
               left: dropdownValue == "4-3-3"
-                  ? (MediaQuery.of(context).size.width) - 270
-                  : (MediaQuery.of(context).size.width) - 210,
+                  ? (MediaQuery.of(context).size.width) * 0.31
+                  : (MediaQuery.of(context).size.width) * 0.46,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -1019,12 +1103,12 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: dropdownValue == "4-3-3"
-                  ? MediaQuery.of(context).size.height - 667
-                  : MediaQuery.of(context).size.height - 560,
+              bottom: dropdownValue == "4-3-3"
+                  ? MediaQuery.of(context).size.height * 0.63
+                  : MediaQuery.of(context).size.height * 0.53,
               left: dropdownValue == "4-3-3"
-                  ? (MediaQuery.of(context).size.width) - 155
-                  : (MediaQuery.of(context).size.width) - 420,
+                  ? (MediaQuery.of(context).size.width) * 0.57
+                  : -(MediaQuery.of(context).size.width * 0.05),
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -1068,14 +1152,14 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: dropdownValue == "4-3-3"
-                  ? MediaQuery.of(context).size.height - 560
-                  : MediaQuery.of(context).size.height - 490,
+              bottom: dropdownValue == "4-3-3"
+                  ? MediaQuery.of(context).size.height * 0.50
+                  : MediaQuery.of(context).size.height * 0.42,
               left: dropdownValue == "4-3-3"
-                  ? (MediaQuery.of(context).size.width) - 420
+                  ? -(MediaQuery.of(context).size.width * 0.01)
                   : dropdownValue == "5-3-2"
-                      ? (MediaQuery.of(context).size.width) - 270
-                      : (MediaQuery.of(context).size.width) - 335,
+                      ? (MediaQuery.of(context).size.width) * 0.31
+                      : (MediaQuery.of(context).size.width) * 0.15,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -1117,14 +1201,16 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: dropdownValue == "5-3-2"
-                  ? MediaQuery.of(context).size.height - 560
-                  : MediaQuery.of(context).size.height - 490,
+              bottom: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height * 0.53
+                  : dropdownValue == "4-3-3"
+                      ? MediaQuery.of(context).size.height * 0.38
+                      : MediaQuery.of(context).size.height * 0.42,
               left: dropdownValue == "4-3-3"
-                  ? (MediaQuery.of(context).size.width) - 270
+                  ? (MediaQuery.of(context).size.width) * 0.31
                   : dropdownValue == "5-3-2"
-                      ? (MediaQuery.of(context).size.width) - 125
-                      : (MediaQuery.of(context).size.width) - 210,
+                      ? (MediaQuery.of(context).size.width) * 0.65
+                      : (MediaQuery.of(context).size.width) * 0.46,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -1166,10 +1252,12 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: dropdownValue == "5-3-2"
-                  ? MediaQuery.of(context).size.height - 450
-                  : MediaQuery.of(context).size.height - 560,
-              left: (MediaQuery.of(context).size.width) - 125,
+              bottom: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height * 0.34
+                  : dropdownValue == "4-4-2"
+                      ? MediaQuery.of(context).size.height * 0.53
+                      : MediaQuery.of(context).size.height * 0.50,
+              left: (MediaQuery.of(context).size.width) * 0.67,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -1213,10 +1301,10 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: dropdownValue == "5-3-2"
-                  ? MediaQuery.of(context).size.height - 450
-                  : MediaQuery.of(context).size.height - 370,
-              left: (MediaQuery.of(context).size.width) - 420,
+              bottom: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height * 0.34
+                  : MediaQuery.of(context).size.height * 0.27,
+              left: -(MediaQuery.of(context).size.width * 0.06),
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -1258,12 +1346,12 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: dropdownValue == "5-3-2"
-                  ? MediaQuery.of(context).size.height - 350
-                  : MediaQuery.of(context).size.height - 300,
+              bottom: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height * 0.23
+                  : MediaQuery.of(context).size.height * 0.175,
               left: dropdownValue == "5-3-2"
-                  ? (MediaQuery.of(context).size.width) - 380
-                  : (MediaQuery.of(context).size.width) - 335,
+                  ? (MediaQuery.of(context).size.width) * 0.07
+                  : (MediaQuery.of(context).size.width) * 0.15,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -1305,10 +1393,12 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 300,
+              bottom: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height * 0.23
+                  : MediaQuery.of(context).size.height * 0.175,
               left: dropdownValue == "5-3-2"
-                  ? (MediaQuery.of(context).size.width / 2) - 75
-                  : (MediaQuery.of(context).size.width) - 210,
+                  ? (MediaQuery.of(context).size.width) * 0.54
+                  : (MediaQuery.of(context).size.width) * 0.46,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -1350,12 +1440,12 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: dropdownValue == "5-3-2"
-                  ? MediaQuery.of(context).size.height - 350
-                  : MediaQuery.of(context).size.height - 370,
+              bottom: dropdownValue == "5-3-2"
+                  ? MediaQuery.of(context).size.height * 0.18
+                  : MediaQuery.of(context).size.height * 0.27,
               left: dropdownValue == "5-3-2"
-                  ? (MediaQuery.of(context).size.width) - 165
-                  : (MediaQuery.of(context).size.width) - 125,
+                  ? (MediaQuery.of(context).size.width) * 0.31
+                  : (MediaQuery.of(context).size.width) * 0.67,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -1397,8 +1487,8 @@ class SelectPageState extends State<SelectPage> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 200,
-              left: (MediaQuery.of(context).size.width / 2) - 75,
+              bottom: MediaQuery.of(context).size.height * 0.03,
+              left: (MediaQuery.of(context).size.width) * 0.31,
               child: Stack(
                 children: <Widget>[
                   SizedBox(
@@ -1439,27 +1529,59 @@ class SelectPageState extends State<SelectPage> {
                 ],
               ),
             ),
-            Positioned(
-              top: MediaQuery.of(context).size.height - 150,
-              left: (MediaQuery.of(context).size.width) - 110,
-              child: _allSelected == true && teamValue >= 0
-                  ? ElevatedButton(
-                      onPressed: () {
-                        confirm(context, _selectedPlayers, dropdownValue);
-                        setState(() {});
-                      },
-                      child: Text('Confirmar'))
-                  : Visibility(
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        child: Text(''),
+            confirmed == true
+                ? Positioned(
+                    bottom: MediaQuery.of(context).size.height * 0.03,
+                    left: (MediaQuery.of(context).size.width) * 0.65,
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.06,
+                      width: (MediaQuery.of(context).size.width) * 0.32,
+                      child: Column(
+                        children: [
+                          const Text(
+                            "Esperando al rival...",
+                            style: TextStyle(
+                                color: Colors.amber,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          const SizedBox(height: 10),
+                          LinearProgressIndicator(
+                            backgroundColor: Colors.white,
+                            color: Colors.amber,
+                            semanticsLabel: "Esperando al rival...",
+                            value: controller.value,
+                          ),
+                          const SizedBox(height: 10),
+                        ],
                       ),
-                      visible: false,
                     ),
-            ),
+                  )
+                : Positioned(
+                    bottom: MediaQuery.of(context).size.height * 0.03,
+                    left: (MediaQuery.of(context).size.width) * 0.7,
+                    child: _allSelected == true &&
+                            teamValue >= 0 &&
+                            _selectedPlayers.values
+                                .any((element) => element["captain"] == true)
+                        ? ElevatedButton(
+                            onPressed: () {
+                              confirmed = true;
+                              confirm(context, _selectedPlayers, dropdownValue,
+                                  _x2, _timer);
+                              setState(() {});
+                            },
+                            child: Text('Confirmar'))
+                        : Visibility(
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: Text(''),
+                            ),
+                            visible: false,
+                          ),
+                  ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 150,
-              right: (MediaQuery.of(context).size.width) - 130,
+              bottom: MediaQuery.of(context).size.height * 0.03,
+              left: (MediaQuery.of(context).size.width) * 0.04,
               child: _selected.entries.any((element) => element.value == true)
                   ? ElevatedButton(
                       onPressed: () {
@@ -1492,108 +1614,21 @@ class SelectPageState extends State<SelectPage> {
   }
 }
 
-// TODO: BOTON DE CONFIRMAR
-// Row(
-//   mainAxisAlignment: MainAxisAlignment.end,
-//   children: [
-//     Padding(
-//       padding: const EdgeInsets.only(left: 260.0),
-//       child: _allSelected == true
-//           ? ElevatedButton(
-//               onPressed: () {
-//                 confirm(context);
-//                 setState(() {});
-//               },
-//               child: Text('Confirmar'))
-//           : Visibility(
-//               child: ElevatedButton(
-//                 onPressed: () {},
-//                 child: Text(''),
-//               ),
-//               visible: false,
-//             ),
-//     ),
-//   ],
-// ),
-
-Widget _getDrawer(BuildContext context) {
-  var accountEmail = Text(globals.userLoggedIn.email);
-  var accountName = Text(globals.userLoggedIn.username);
-  var accountPicture = const Icon(FontAwesomeIcons.userLarge);
-  return Drawer(
-    child: ListView(
-      children: <Widget>[
-        UserAccountsDrawerHeader(
-            accountName: accountName,
-            accountEmail: accountEmail,
-            currentAccountPicture: accountPicture),
-        ListTile(
-            title: const Text("Inicio"),
-            leading: const Icon(Icons.home),
-            onTap: () => showHome(context)),
-        ListTile(
-            title: const Text("Editar Perfil"),
-            leading: const Icon(Icons.edit),
-            onTap: () => showProfile(context)),
-        ListTile(
-            title: const Text("Historial"),
-            leading: const Icon(Icons.history),
-            onTap: () => showHome(context)),
-        ListTile(
-            title: const Text("Cerrar Sesion"),
-            leading: const Icon(Icons.logout),
-            onTap: () => logout(context)),
-      ],
-    ),
-  );
-}
-
-confirm(BuildContext context, Map<int, dynamic> selectedPlayers, String dropdownValue) {
+confirm(BuildContext context, Map<int, dynamic> selectedPlayers,
+    String dropdownValue, bool x2, int timer) {
   saveUserPlayer(selectedPlayers);
   readyPlayer();
-  Timer? t;
-  var player2Players = [];
-  var otherPlayerLineup = "";
-  t = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
+  Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
     if (await checkOtherPlayerStatus() == "ready") {
       Timer(Duration(seconds: 3), (() async {
-        player2Players = await getPlayer2Players();
-      }));
-      Timer(Duration(seconds: 4), (() async {
-        otherPlayerLineup = await getOtherPlayerLineup(player2Players);
-      }));
-      Timer(Duration(seconds: 5), (() async {
-        Navigator.of(context).push(MaterialPageRoute(
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => SelectRivalPage(
-                  selectedLineup: dropdownValue,
-                  selectedPlayers: selectedPlayers,
-                  playersOthers: player2Players,
-                  lineup: otherPlayerLineup,
-                )));
+                selectedLineup: dropdownValue,
+                selectedPlayers: selectedPlayers,
+                x2: x2,
+                timer: timer)));
       }));
-
       t.cancel();
     }
   });
-  
-
-}
-
-getOtherPlayerLineup(dynamic player2Players) {
-  var lineup = "4-4-2";
-  var df = 0;
-  var dl = 0;
-  for (var element in player2Players) {
-    if (element["position"] == "DF") {
-      df++;
-    } else if (element["position"] == "DL") {
-      dl++;
-    }
-  }
-  if (df == 5) {
-    lineup = "5-3-2";
-  } else if (dl == 3) {
-    lineup = "4-3-3";
-  }
-  return lineup;
 }

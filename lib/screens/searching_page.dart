@@ -14,46 +14,31 @@ import 'home_page.dart';
 
 import 'package:my_app/entities/globals.dart' as globals;
 
-class SearchingPage extends StatelessWidget {
+class SearchingPage extends StatefulWidget {
   const SearchingPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    const appTitle = 'Jugadores';
-    const floatingbutton = null;
+  SearchingPageState createState() {
+    return SearchingPageState();
+  }
+}
 
-    return MaterialApp(
-      title: appTitle,
-      home: Scaffold(
-        drawer: _getDrawer(context),
-        appBar: AppBar(
-          title: const Text(appTitle),
-        ),
-        body: const SearchingPageForm(),
-      ),
+class SearchingPageState extends State<SearchingPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _page(context),
     );
   }
-}
-
-class SearchingPageForm extends StatefulWidget {
-  const SearchingPageForm({super.key});
-
-  @override
-  SearchingPageFormState createState() {
-    return SearchingPageFormState();
-  }
-}
-
-class SearchingPageFormState extends State<SearchingPageForm> {
-  // Create a global key that uniquely identifies the Form widget
-  // and allows validation of the form.
-  //
-  // Note: This is a `GlobalKey<FormState>`,
-  // not a GlobalKey<MyCustomFormState>.
 
   @override
   void initState() {
     super.initState();
+    BuildContext c = context;
+    _player2.addListener(() {
+      goToPlayerPage2(c, _player2.value, redirected);
+      redirected = true;
+    });
     var duration = Duration(seconds: 20);
     timer = Timer(duration, (() {
       if (!isPlaying) {
@@ -78,13 +63,25 @@ class SearchingPageFormState extends State<SearchingPageForm> {
     super.dispose();
   }
 
+  bool redirected = false;
   late Timer timer;
   bool loaded = false;
   late Map<String, List<dynamic>> players;
   static bool isPlaying = false;
+  ValueNotifier<String> _player2 = ValueNotifier<String>('');
 
-  @override
-  Widget build(BuildContext context) {
+  checkForGame(BuildContext context, bool isPlaying) {
+    Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
+      isPlaying = await checkPlayerStatus() == "playing";
+      if (isPlaying) {
+        var player2 = await getPlayer2();
+        _player2.value = player2.data()["username"];
+        t.cancel();
+      }
+    });
+  }
+
+  Widget _page(BuildContext context) {
     return Container(
       child: FutureBuilder<Map<String, List<dynamic>>>(
         future: searchGame(),
@@ -93,7 +90,6 @@ class SearchingPageFormState extends State<SearchingPageForm> {
           List<Widget> children;
           if (snapshot.hasData) {
             if (snapshot.data!.isEmpty) {
-              // start15secTime(context, isPlaying, timer);
               checkForGame(context, isPlaying);
               children = <Widget>[
                 Center(child: Text('Buscando partido...')),
@@ -106,9 +102,10 @@ class SearchingPageFormState extends State<SearchingPageForm> {
                 Padding(
                   padding: const EdgeInsets.only(top: 40.0),
                   child: FloatingActionButton.extended(
+                    heroTag: "btn4",
                     onPressed: () {
                       resetPlayerState();
-                      Navigator.of(context).push(
+                      Navigator.of(context).pushReplacement(
                           MaterialPageRoute(builder: (context) => HomePage()));
                     },
                     backgroundColor: Color.fromARGB(255, 209, 67, 67),
@@ -156,42 +153,6 @@ class SearchingPageFormState extends State<SearchingPageForm> {
   }
 }
 
-Widget _getDrawer(BuildContext context) {
-  var accountEmail = Text(globals.userLoggedIn.email);
-  var accountName = Text(globals.userLoggedIn.username);
-  var accountPicture = const Icon(FontAwesomeIcons.userLarge);
-  return Drawer(
-    child: ListView(
-      children: <Widget>[
-        UserAccountsDrawerHeader(
-            accountName: accountName,
-            accountEmail: accountEmail,
-            currentAccountPicture: accountPicture),
-        ListTile(
-            title: const Text("Inicio"),
-            leading: const Icon(Icons.home),
-            onTap: () => showHome(context)),
-        ListTile(
-            title: const Text("Editar Perfil"),
-            leading: const Icon(Icons.edit),
-            onTap: () => showProfile(context)),
-        ListTile(
-            title: const Text("Jugar Partido"),
-            leading: const Icon(Icons.play_arrow),
-            onTap: () => playGame(context)),
-        ListTile(
-            title: const Text("Historial"),
-            leading: const Icon(Icons.history),
-            onTap: () => showHome(context)),
-        ListTile(
-            title: const Text("Cerrar Sesion"),
-            leading: const Icon(Icons.logout),
-            onTap: () => logout(context)),
-      ],
-    ),
-  );
-}
-
 goToHome(BuildContext context) {
   Navigator.of(context).pushReplacement(
     FadePageRoute(
@@ -202,7 +163,7 @@ goToHome(BuildContext context) {
 
 goToPlayerPage(BuildContext context, Map<String, List<dynamic>> players) {
   SchedulerBinding.instance.addPostFrameCallback((_) {
-    Navigator.of(context).push(MaterialPageRoute(
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => PlayerPage(
               player1: players["player1"]![0]["username"],
               player2: players["player2"]![0]["username"],
@@ -210,22 +171,14 @@ goToPlayerPage(BuildContext context, Map<String, List<dynamic>> players) {
   });
 }
 
-checkForGame(BuildContext context, bool isPlaying) async {
-  Timer? timer;
-  timer = Timer.periodic(Duration(milliseconds: 500), (Timer t) async {
-    isPlaying = await checkPlayerStatus() == "playing";
-    if (isPlaying) {
-      SearchingPageFormState.isPlaying = true;
-      timer!.cancel();
-      Timer(Duration(seconds: 2), (() async {
-        var player2 = await getPlayer2();
-      Navigator.of(context).push(MaterialPageRoute(
+goToPlayerPage2(BuildContext context, String player2, bool redirected) {
+  if (player2 != '' && redirected == false) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => PlayerPage(
                 player1: globals.userLoggedIn.username,
-                player2: player2.data()["username"],
+                player2: player2,
               )));
-      }));
-      
-    }
-  });
+    });
+  }
 }

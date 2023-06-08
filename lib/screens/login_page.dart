@@ -105,13 +105,31 @@ class _LoginScreenState extends StateMVC<LoginScreen> {
       //   ),
       // ],
       additionalSignupFields: [
-        const UserFormField(
+        UserFormField(
           keyName: 'Username',
           displayName: "Nombre de usuario",
           icon: Icon(FontAwesomeIcons.userLarge),
+          fieldValidator: (value) {
+            if(value == '' || value == false){
+              return "El nombre de usuario no puede ser vacío";
+            }
+            return null;
+          },
         ),
-        const UserFormField(keyName: 'Nombre'),
-        const UserFormField(keyName: 'Apellidos'),
+         UserFormField(keyName: 'Nombre', 
+          fieldValidator: (value) {
+            if(value == '' || value == false){
+              return "El nombre no puede ser vacío";
+            }
+            return null;
+          },),
+         UserFormField(keyName: 'Apellidos', 
+          fieldValidator: (value) {
+            if(value == '' || value == false){
+              return "Los apellidos no pueden ser vacíos";
+            }
+            return null;
+          },),
         UserFormField(
           keyName: 'phone_number',
           displayName: 'Numero de teléfono',
@@ -122,7 +140,7 @@ class _LoginScreenState extends StateMVC<LoginScreen> {
               '^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}\$',
             );
             if (value != null &&
-                value.length < 7 &&
+                value.length != 9 &&
                 !phoneRegExp.hasMatch(value)) {
               return "El número de teléfono no es correcto";
             }
