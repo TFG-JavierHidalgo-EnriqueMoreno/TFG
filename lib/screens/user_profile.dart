@@ -258,7 +258,7 @@ class UserProfileFormState extends State<UserProfileForm> {
                       ),
                       TextButton(
                         onPressed: () {
-                          beforeDeleteUser(context);
+                          afterDeleteUser(context);
                           setState(() {});
                         },
                         child: const Text('Confirmar'),
@@ -336,22 +336,6 @@ logout(BuildContext context) {
   );
 }
 
-beforeDeleteUser(BuildContext context) {
-  showDialog<String>(
-    context: context,
-    barrierColor: Colors.transparent,
-    builder: (BuildContext context) => AlertDialog(
-      title: const Text('Eliminar usuario'),
-      content: const Text('Usuario eliminado'),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => afterDeleteUser(context),
-          child: const Text('Confirmar'),
-        ),
-      ],
-    ),
-  );
-}
 
 afterDeleteUser(BuildContext context) {
   deleteUser().then((_) {
