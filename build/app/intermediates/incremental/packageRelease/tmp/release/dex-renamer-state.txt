@@ -1,0 +1,4 @@
+#Thu Jun 08 18:08:44 CEST 2023
+base.0=C\:\\src\\TFG\\build\\app\\intermediates\\dex\\release\\minifyReleaseWithR8\\classes.dex
+renamed.0=classes.dex
+path.0=classes.dex
